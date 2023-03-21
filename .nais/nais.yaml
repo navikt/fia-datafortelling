@@ -12,7 +12,7 @@ spec:
   backoffLimit: 2
   gcp:
     bigQueryDatasets:
-      - name: {{ dataset }}
+      - name: pia_bigquery_sink_v1_dataset_dev
         permission: READ
   envFrom:
     - secret: fia-datastory-secrets # value is the secret name in Google Secret Manager
