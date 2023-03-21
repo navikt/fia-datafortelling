@@ -1,0 +1,5 @@
+datastory==0.1.13
+google-auth==2.16.2
+google-cloud-bigquery==3.7.0
+pandas==1.5.3
+plotly==5.13.1
