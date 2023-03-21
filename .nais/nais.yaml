@@ -1,0 +1,18 @@
+apiVersion: nais.io/v1
+kind: Naisjob
+metadata:
+  labels:
+    team: pia
+  name: fia-datafortelling
+  namespace: pia
+spec:
+  image: {{ image }}
+  ttlSecondsAfterFinished: 340
+  schedule: "0 7-17/1 * * *"
+  backoffLimit: 2
+  gcp:
+    bigQueryDatasets:
+      - name: {{ dataset }}
+        permission: READ
+  envFrom:
+    - secret: fia-datastory-secrets # value is the secret name in Google Secret Manager
