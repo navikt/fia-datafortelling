@@ -18,4 +18,6 @@ RUN pip3 install -r requirements.txt
 COPY main.qmd .
 COPY run.sh .
 
+RUN chown 1069:1069 /tmp/quarto -R
+
 ENTRYPOINT ["./run.sh"]
