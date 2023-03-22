@@ -19,6 +19,7 @@ RUN mkdir /.cache
 RUN chmod 777 /.cache
 RUN mkdir main_files
 RUN chmod 777 main_files
+RUN chmod 777 .
 
 
 COPY main.qmd .
