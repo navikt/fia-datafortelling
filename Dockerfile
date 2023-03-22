@@ -1,28 +1,24 @@
-FROM python:3.9
-
-USER root
+FROM python:3.11
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
-    curl
+    curl \
+    jq && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-ENV QUARTO_VERSION=1.2.335
-
-RUN cd /opt && \
+RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest | jq '.tag_name' | sed -e 's/[\"v]//g') && \
     wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
-    tar -zxvf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
+    tar -xvzf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
+    ln -s /usr/local/quarto-v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}/bin/quarto /usr/local/bin/quarto && \
     rm -rf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
-WORKDIR /tmp/quarto
+WORKDIR /quarto
+
+COPY run.sh .
 
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 COPY main.qmd .
-COPY run.sh .
-
-RUN chown 1069:1069 /tmp/quarto -R
-ENV DENO_DIR=/tmp/quarto/deno
-ENV XDG_CACHE_HOME=/tmp/cache
-USER 1069
 
 ENTRYPOINT ["./run.sh"]
