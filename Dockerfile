@@ -1,7 +1,5 @@
 FROM python:3.9
 
-USER root
-
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl
 
@@ -12,15 +10,10 @@ RUN cd /opt && \
     tar -zxvf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     rm -rf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
+WORKDIR /tmp/quarto
+
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
-
-RUN mkdir /.cache
-RUN chmod 777 /.cache
-RUN mkdir main_files
-RUN chmod 777 main_files
-RUN chmod 777 .
-
 
 COPY main.qmd .
 COPY run.sh .
