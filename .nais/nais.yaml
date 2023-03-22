@@ -10,10 +10,6 @@ spec:
   ttlSecondsAfterFinished: 340
   schedule: "0 7-17/1 * * *"
   backoffLimit: 2
-  command:
-    - quarto
-    - render
-    - main.qmd
   gcp:
     bigQueryDatasets:
       - name: {{ dataset }}
