@@ -16,9 +16,7 @@ COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
 RUN mkdir /.cache
-RUN mkdir /.cache/quarto
-RUN mkdir /.cache/deno
-RUN mkdir /.cache/deno/gen
+RUN chmod 777 /.cache
 RUN mkdir main_files
 RUN chmod 777 main_files
 
