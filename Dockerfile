@@ -15,9 +15,9 @@ RUN cd /opt && \
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
+RUN mkdir /.cache/deno/gen
+
 COPY main.qmd .
 COPY run.sh .
-
-ENV DENO_DIR=/tmp/deno
 
 ENTRYPOINT ["./run.sh"]
