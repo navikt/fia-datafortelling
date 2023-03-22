@@ -1,4 +1,6 @@
-FROM python:3.9
+FROM jupyter/base-notebook:python-3.9
+
+USER root
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl
