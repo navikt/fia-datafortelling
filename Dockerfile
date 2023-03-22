@@ -18,4 +18,6 @@ RUN pip3 install -r requirements.txt
 COPY main.qmd .
 COPY run.sh .
 
+ENV DENO_DIR=/tmp/deno
+
 ENTRYPOINT ["./run.sh"]
