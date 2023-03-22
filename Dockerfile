@@ -1,4 +1,4 @@
-FROM jupyter/base-notebook:python-3.9
+FROM python:3.9
 
 USER root
 
@@ -17,7 +17,5 @@ RUN pip3 install -r requirements.txt
 
 COPY main.qmd .
 COPY run.sh .
-
-RUN chmod +x run.sh
 
 ENTRYPOINT ["./run.sh"]
