@@ -1,5 +1,7 @@
 FROM python:3.9
 
+USER root
+
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl
 
@@ -19,5 +21,8 @@ COPY main.qmd .
 COPY run.sh .
 
 RUN chown 1069:1069 /tmp/quarto -R
+ENV DENO_DIR=/tmp/quarto/deno
+ENV XDG_CACHE_HOME=/tmp/cache
+USER 1069
 
 ENTRYPOINT ["./run.sh"]
