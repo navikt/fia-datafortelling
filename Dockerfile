@@ -17,3 +17,7 @@ RUN pip3 install -r requirements.txt
 COPY main.qmd .
 
 ENTRYPOINT ["quarto"]
+
+RUN curl -X PUT -F file=@main.html \
+        https://${NADA_ENV}/quarto/update/${QUARTO_ID} \
+        -H 'Authorization:Bearer ${QUARTO_TOKEN}'

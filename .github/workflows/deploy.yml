@@ -4,7 +4,7 @@ on:
       - main
 
 env:
-  docker_image: ghcr.io/${{ github.repository }}:${{ github.sha }}
+  IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
 jobs:
   build:
@@ -21,9 +21,9 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.docker_image }}
-  deploy:
-    name: Deploy to NAIS
+          tags: ${{ env.IMAGE }}
+  deploy-dev:
+    name: Deploy to NADA dev
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -34,4 +34,4 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: .nais/nais.yaml
-          VAR: image=${{ env.docker_image }}
+          VARS: ".nais/prod.yaml"

@@ -16,7 +16,12 @@ spec:
     - main.qmd
   gcp:
     bigQueryDatasets:
-      - name: pia_bigquery_sink_v1_dataset_dev
+      - name: {{ dataset }}
         permission: READ
   envFrom:
-    - secret: fia-datastory-secrets # value is the secret name in Google Secret Manager
+    - secret: fia-quarto-secrets # value is the secret name in Google Secret Manager
+  env:
+    - name: NADA_ENV
+      value: {{ nada_env }}
+    - name: QUARTO_ID
+      value: {{ quarto_id }}

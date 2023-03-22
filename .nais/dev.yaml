@@ -1,1 +1,4 @@
+project: pia-dev-214a
 dataset: pia_bigquery_sink_v1_dataset_dev
+nada_env: nada.dev.intern.nav.no
+quarto_id: ""
