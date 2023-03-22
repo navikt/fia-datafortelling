@@ -5,6 +5,10 @@ Datafortelling basert på [Fia](https://github.com/navikt/lydia-api)
 
 # Komme i gang
 
+Bygg docker image på M1:
+
+`docker build . --platform=linux/amd64`
+
 Hvordan bygge, teste og kjøre koden viss aktuelt.
 
 ---
