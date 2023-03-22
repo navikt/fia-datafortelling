@@ -8,8 +8,10 @@ metadata:
 spec:
   image: {{ image }}
   ttlSecondsAfterFinished: 340
-  schedule: "0 7-17/1 * * *"
+  schedule: "*/10 7-17/1 * * *"
   backoffLimit: 2
+  command:
+    - run.sh
   gcp:
     bigQueryDatasets:
       - name: {{ dataset }}
