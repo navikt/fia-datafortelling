@@ -15,6 +15,8 @@ RUN cd /opt && \
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
+RUN mkdir /.cache
+RUN mkdir /.cache/deno
 RUN mkdir /.cache/deno/gen
 
 COPY main.qmd .
