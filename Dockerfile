@@ -21,4 +21,11 @@ RUN pip3 install -r requirements.txt
 
 COPY main.qmd .
 
+ENV DENO_DIR=/quarto/deno
+ENV XDG_CACHE_HOME=/quarto/cache
+
+RUN chown 1069:1069 /quarto -R
+
+USER 1069:1069
+
 ENTRYPOINT ["./run.sh"]
