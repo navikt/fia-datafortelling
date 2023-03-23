@@ -23,6 +23,7 @@ COPY main.qmd .
 
 ENV DENO_DIR=/quarto/deno
 ENV XDG_CACHE_HOME=/quarto/cache
+ENV XDG_DATA_HOME=/quarto/share
 
 RUN chown 1069:1069 /quarto -R
 

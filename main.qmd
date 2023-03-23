@@ -1,5 +1,6 @@
 ---
 title: "Hello world"
+jupyter: python3
 ---
 
 ```{python}
