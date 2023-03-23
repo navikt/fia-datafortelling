@@ -1,6 +1,6 @@
 #!/bin/bash
 
-/opt/quarto-${QUARTO_VERSION}/bin/quarto render main.qmd
+quarto render main.qmd
 
 curl -X PUT -F file=@main.html \
     https://${NADA_ENV}/quarto/update/${QUARTO_ID} \
