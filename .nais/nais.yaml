@@ -3,7 +3,6 @@ kind: Naisjob
 metadata:
   annotations:
     nais.io/read-only-file-system: "false"
-    nais.io/runAsNonRoot: "false"
   labels:
     team: pia
   name: fia-datafortelling
