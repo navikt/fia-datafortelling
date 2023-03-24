@@ -130,3 +130,7 @@ dmypy.json
 
 # IntelliJ
 .idea/
+
+# Lokalt genererte fortellinger
+/main.html
+main_files/
