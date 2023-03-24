@@ -1,17 +1,58 @@
 ---
-title: "Hello world"
+title: "Fia datafortelling"
 format:
-  html:
-    code-fold: true
-jupyter: python3
+    html:
+        echo: false
 ---
 
 ```{python}
+from google.cloud.bigquery import Client
+import pandas as pd
+import plotly.express as px
+from datetime import datetime, timezone
 
-from datetime import datetime
+# todo: hente variablene project og dataset fra dev/prod.yaml
+PROJECT = "pia-dev-214a"
+DATASET = "pia_bigquery_sink_v1_dataset_dev"
+TABLE_STATISTIKK = "ia-sak-statistikk-v1"
+TABLE_LEVERANSE = "ia-sak-leveranse-v1"
+SQL_QUERY_STATISTIKK = f"SELECT  * FROM `{PROJECT}.{DATASET}.{TABLE_STATISTIKK}`"
+SQL_QUERY_LEVERANSE = f"SELECT  * FROM `{PROJECT}.{DATASET}.{TABLE_LEVERANSE}`"
 
-currentDateAndTime = datetime.now()
+bq_client = Client(project=PROJECT)
+data_statistikk = bq_client.query(query=SQL_QUERY_STATISTIKK).to_dataframe()
+data_leveranse = bq_client.query(query=SQL_QUERY_LEVERANSE).to_dataframe()
+```
 
-print("Denne siden ble generert ", currentDateAndTime)
+# Antall leveranser per status
+```{python}
+px.bar(data_leveranse.status.value_counts())
+```
 
+# Antall leveranser per IA modul
+```{python}
+px.bar(data_leveranse.iaModulNavn.value_counts())
+```
+
+# Dager siden siste oppdatering i Fia, per aktiv sak
+```{python}
+data_statistikk["aktiv_sak"] = ~data_statistikk.status.isin(['IKKE_AKTUELL', 'FULLFØRT', 'NY'])
+print(data_statistikk.groupby(["aktiv_sak", "status"]).size())
+
+siste_oppdatering_statistikk = data_statistikk[data_statistikk.aktiv_sak].groupby("saksnummer").endretTidspunkt.max().reset_index()
+siste_oppdatering_leveranse = data_leveranse.groupby("saksnummer").sistEndret.max().reset_index()
+
+siste_oppdatering = siste_oppdatering_statistikk.merge(siste_oppdatering_leveranse, on='saksnummer', how='left')
+siste_oppdatering = siste_oppdatering.rename(
+    columns={'endretTidspunkt': 'siste_oppdatering_statistikk', 'sistEndret': 'siste_oppdatering_leveranse'}
+)
+
+siste_oppdatering["siste_oppdatering"] = siste_oppdatering[
+    ['siste_oppdatering_statistikk', 'siste_oppdatering_leveranse']
+].max(axis=1, numeric_only=False)
+
+now = datetime.now(timezone.utc)
+siste_oppdatering["dager_siden_siste_oppdatering"] = (now - siste_oppdatering.siste_oppdatering).dt.days
+
+px.histogram(siste_oppdatering.dager_siden_siste_oppdatering)
 ```
