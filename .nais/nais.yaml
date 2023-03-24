@@ -23,3 +23,7 @@ spec:
       value: {{ nada_env }}
     - name: QUARTO_ID
       value: {{ quarto_id }}
+    - name: GCP_PROJECT
+      value: {{ project }}
+    - name: DATASET
+      value: {{ dataset }}

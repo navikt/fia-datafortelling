@@ -7,13 +7,13 @@ format:
 
 ```{python}
 from google.cloud.bigquery import Client
+import os
 import pandas as pd
 import plotly.express as px
 from datetime import datetime, timezone
 
-# todo: hente variablene project og dataset fra dev/prod.yaml
-PROJECT = "pia-dev-214a"
-DATASET = "pia_bigquery_sink_v1_dataset_dev"
+PROJECT = os.environ['GCP_PROJECT']
+DATASET = os.environ['DATASET']
 TABLE_STATISTIKK = "ia-sak-statistikk-v1"
 TABLE_LEVERANSE = "ia-sak-leveranse-v1"
 SQL_QUERY_STATISTIKK = f"SELECT  * FROM `{PROJECT}.{DATASET}.{TABLE_STATISTIKK}`"
