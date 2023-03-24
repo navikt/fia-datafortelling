@@ -23,7 +23,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}
   deploy-dev:
-    name: Deploy to NADA dev
+    name: Deploy naisjob to dev
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
