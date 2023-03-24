@@ -34,8 +34,14 @@ px.bar(data_leveranse.status.value_counts())
 px.bar(data_leveranse.iaModulNavn.value_counts())
 ```
 
+# Antall saker uavhengig av status
+```{python}
+print("Antall saker: ", data_statistikk.saksnummer.nunique())
+```
+
 # Dager siden siste oppdatering i Fia, per aktiv sak
 ```{python}
+
 data_statistikk["aktiv_sak"] = ~data_statistikk.status.isin(['IKKE_AKTUELL', 'FULLFØRT', 'NY'])
 print(data_statistikk.groupby(["aktiv_sak", "status"]).size())
 
