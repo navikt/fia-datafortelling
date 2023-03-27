@@ -1,5 +1,29 @@
-import plotly.express as px
+import plotly.graph_objects as go
 from datetime import datetime, timezone
+
+
+def aktive_saker_per_fylke(data_statistikk):
+    aktive_saker_per_fylke = (
+        data_statistikk[data_statistikk.aktiv_sak]
+        .groupby("fylkesnummer")
+        .saksnummer.nunique()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=aktive_saker_per_fylke["fylkesnummer"],
+                y=aktive_saker_per_fylke["saksnummer"],
+            )
+        ]
+    )
+    fig.update_layout(
+        xaxis_title="Fylkesnummer",
+        yaxis_title="Antall aktive saker",
+    )
+    return fig
 
 
 def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
@@ -32,4 +56,16 @@ def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
         now - siste_oppdatering.siste_oppdatering
     ).dt.days
 
-    return px.histogram(siste_oppdatering.dager_siden_siste_oppdatering)
+    fig = go.Figure(
+        data=[
+            go.Histogram(
+                x=siste_oppdatering["dager_siden_siste_oppdatering"], nbinsx=20
+            )
+        ]
+    )
+    fig.update_layout(
+        xaxis_title="Dager siden siste oppdatering i Fia",
+        yaxis_title="Antall saker",
+    )
+
+    return fig

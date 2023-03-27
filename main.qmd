@@ -29,6 +29,13 @@ print("Antall aktive saker: ", data_statistikk[data_statistikk.aktiv_sak].saksnu
 print("Antall saker per status: ", data_statistikk.groupby("siste_status").saksnummer.nunique())
 ```
 
+# Antall aktive saker per fylke
+```{python}
+from code.plots import aktive_saker_per_fylke
+fig = aktive_saker_per_fylke(data_statistikk)
+fig.show()
+```
+
 # Dager siden siste oppdatering i Fia, per aktiv sak
 ```{python}
 from code.plots import dager_siden_siste_oppdatering
