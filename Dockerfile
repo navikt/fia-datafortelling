@@ -19,7 +19,7 @@ COPY run.sh .
 RUN python3 -m pip install --upgrade pip && \
     python3 -m pip install --user virtualenv && \
     python3 -m venv env && \
-    source env/bin/activate
+    . env/bin/activate
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
 
