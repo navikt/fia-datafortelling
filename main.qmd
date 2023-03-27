@@ -10,22 +10,15 @@ import os
 import plotly.express as px
 from datetime import datetime
 
-from code.helper import load_data
+from code.helper import load_data, get_aktive_saker
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
 data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
-```
 
-# Antall leveranser per status
-```{python}
-px.bar(data_leveranse.status.value_counts())
-```
-
-# Antall leveranser per IA modul
-```{python}
-px.bar(data_leveranse.iaModulNavn.value_counts())
+aktive_saker = get_aktive_saker(data_statistikk)
+data_statistikk = data_statistikk.merge(aktive_saker, on="saksnummer", how="left")
 ```
 
 # Antall saker uavhengig av status

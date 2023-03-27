@@ -3,10 +3,6 @@ from datetime import datetime, timezone
 
 
 def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
-    data_statistikk["aktiv_sak"] = ~data_statistikk.status.isin(
-        ["IKKE_AKTUELL", "FULLFØRT", "NY"]
-    )
-
     siste_oppdatering_statistikk = (
         data_statistikk[data_statistikk.aktiv_sak]
         .groupby("saksnummer")
