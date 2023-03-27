@@ -16,12 +16,10 @@ RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/rel
 
 COPY run.sh .
 
-RUN python3 -m pip install --upgrade pip && \
-    python3 -m pip install --user virtualenv && \
-    python3 -m venv env && \
-    . env/bin/activate
 COPY requirements.txt .
 RUN pip3 install -r requirements.txt
+
+COPY code/ code/
 
 COPY main.qmd .
 
