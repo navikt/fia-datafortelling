@@ -19,6 +19,8 @@ Som en god praksis, opprett et virtuelt pythonmiljø i root til prosjektet:\
 
 Installer requirements `pip3 install -r requirements.txt`.
 
+Installer [black](https://pypi.org/project/black/), en python-kode formatter, med `pip install black`.
+
 (noe mer?)
 
 ### Lokal utvikling
