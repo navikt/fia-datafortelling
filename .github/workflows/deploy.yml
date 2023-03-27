@@ -22,8 +22,11 @@ jobs:
           context: .
           push: true
           tags: ${{ env.IMAGE }}
-  deploy-dev:
-    name: Deploy naisjob to dev
+  deploy:
+    strategy:
+      matrix:
+        cluster: [dev, prod]
+    name: "Deploy naisjob to ${{ matrix.cluster }}"
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
@@ -32,6 +35,6 @@ jobs:
       - uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-gcp
+          CLUSTER: "${{ matrix.cluster }}-gcp"
           RESOURCE: .nais/nais.yaml
-          VARS: ".nais/dev.yaml"
+          VARS: ".nais/${{ matrix.cluster }}.yaml"
