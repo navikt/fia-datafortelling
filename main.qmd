@@ -6,22 +6,16 @@ format:
 ---
 
 ```{python}
-from google.cloud.bigquery import Client
 import os
-import pandas as pd
 import plotly.express as px
-from datetime import datetime, timezone
+from datetime import datetime
+
+from code.helper import load_data
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
-TABLE_STATISTIKK = "ia-sak-statistikk-v1"
-TABLE_LEVERANSE = "ia-sak-leveranse-v1"
-SQL_QUERY_STATISTIKK = f"SELECT  * FROM `{PROJECT}.{DATASET}.{TABLE_STATISTIKK}`"
-SQL_QUERY_LEVERANSE = f"SELECT  * FROM `{PROJECT}.{DATASET}.{TABLE_LEVERANSE}`"
-
-bq_client = Client(project=PROJECT)
-data_statistikk = bq_client.query(query=SQL_QUERY_STATISTIKK).to_dataframe()
-data_leveranse = bq_client.query(query=SQL_QUERY_LEVERANSE).to_dataframe()
+data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
+data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 ```
 
 # Antall leveranser per status
@@ -41,28 +35,11 @@ print("Antall saker: ", data_statistikk.saksnummer.nunique())
 
 # Dager siden siste oppdatering i Fia, per aktiv sak
 ```{python}
-
-data_statistikk["aktiv_sak"] = ~data_statistikk.status.isin(['IKKE_AKTUELL', 'FULLFØRT', 'NY'])
-print(data_statistikk.groupby(["aktiv_sak", "status"]).size())
-
-siste_oppdatering_statistikk = data_statistikk[data_statistikk.aktiv_sak].groupby("saksnummer").endretTidspunkt.max().reset_index()
-siste_oppdatering_leveranse = data_leveranse.groupby("saksnummer").sistEndret.max().reset_index()
-
-siste_oppdatering = siste_oppdatering_statistikk.merge(siste_oppdatering_leveranse, on='saksnummer', how='left')
-siste_oppdatering = siste_oppdatering.rename(
-    columns={'endretTidspunkt': 'siste_oppdatering_statistikk', 'sistEndret': 'siste_oppdatering_leveranse'}
-)
-
-siste_oppdatering["siste_oppdatering"] = siste_oppdatering[
-    ['siste_oppdatering_statistikk', 'siste_oppdatering_leveranse']
-].max(axis=1, numeric_only=False)
-
-now = datetime.now(timezone.utc)
-siste_oppdatering["dager_siden_siste_oppdatering"] = (now - siste_oppdatering.siste_oppdatering).dt.days
-
-px.histogram(siste_oppdatering.dager_siden_siste_oppdatering)
+from code.plots import dager_siden_siste_oppdatering
+fig = dager_siden_siste_oppdatering(data_statistikk, data_leveranse)
+fig.show()
 ```
 
 ```{python}
-print("Denne siden ble generert ", now)
+print("Denne siden ble generert ", datetime.now())
 ```
