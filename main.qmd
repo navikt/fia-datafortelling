@@ -10,20 +10,23 @@ import os
 import plotly.express as px
 from datetime import datetime
 
-from code.helper import load_data, get_aktive_saker
+from code.helper import load_data, get_siste_status
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
 data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
-aktive_saker = get_aktive_saker(data_statistikk)
-data_statistikk = data_statistikk.merge(aktive_saker, on="saksnummer", how="left")
+siste_status = get_siste_status(data_statistikk)
+data_statistikk = data_statistikk.merge(siste_status, on="saksnummer", how="left")
+data_statistikk["aktiv_sak"] = ~data_statistikk.siste_status.isin(["IKKE_AKTUELL", "FULLFØRT", "NY"])
 ```
 
-# Antall saker uavhengig av status
+# Antall saker
 ```{python}
-print("Antall saker: ", data_statistikk.saksnummer.nunique())
+print("Totalt antall saker: ", data_statistikk.saksnummer.nunique())
+print("Antall aktive saker: ", data_statistikk[data_statistikk.aktiv_sak].saksnummer.nunique())
+print("Antall saker per status: ", data_statistikk.groupby("siste_status").saksnummer.nunique())
 ```
 
 # Dager siden siste oppdatering i Fia, per aktiv sak

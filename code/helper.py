@@ -8,9 +8,9 @@ def load_data(project, dataset, table):
     return data
 
 
-def get_aktive_saker(data_statistikk):
+def get_siste_status(data_statistikk):
     df = data_statistikk.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
     ).drop_duplicates("saksnummer", keep="last")
-    df["aktiv_sak"] = ~df.status.isin(["IKKE_AKTUELL", "FULLFØRT", "NY"])
-    return df[["saksnummer", "aktiv_sak"]]
+    df["siste_status"] = df.status
+    return df[["saksnummer", "siste_status"]]
