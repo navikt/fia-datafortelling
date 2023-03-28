@@ -24,22 +24,27 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-WORKDIR /tmp/quarto
-COPY --from=compile-image /opt/venv /opt/venv
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+RUN groupadd -g 999 python && \
+    useradd -r -u 999 -g python python
 
-COPY --from=compile-image quarto-dist/ quarto-dist/
+COPY --chown=python:python --from=compile-image /opt/venv /opt/venv
+COPY --chown=python:python --from=compile-image quarto-dist/ /tmp/quarto/quarto-dist/
 RUN ln -s /tmp/quarto/quarto-dist/bin/quarto /usr/local/bin/quarto
-COPY run.sh .
-COPY code/ code/
-COPY main.qmd .
 
+WORKDIR /tmp/quarto
+
+RUN python3 -m venv /opt/venv
+RUN chown python:python /tmp/quarto -R
+
+USER 999
+ENV QUARTO_PROJECT_DIR=/tmp/quarto
+ENV PATH="/opt/venv/bin:$PATH"
 ENV DENO_DIR=/tmp/quarto/deno
 ENV XDG_CACHE_HOME=/tmp/quarto/cache
 ENV XDG_DATA_HOME=/tmp/quarto/share
 
-RUN chown 1069:1069 /tmp/quarto -R
-USER 1069:1069
+COPY run.sh .
+COPY code/ code/
+COPY main.qmd .
 
 ENTRYPOINT ["./run.sh"]
