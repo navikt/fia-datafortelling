@@ -1,0 +1,10 @@
+---
+title: "Test"
+jupyter: python3
+---
+
+```{python}
+from datetime import datetime
+
+print("Denne siden ble generert ", datetime.now())
+```
