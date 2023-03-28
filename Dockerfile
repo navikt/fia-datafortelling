@@ -1,4 +1,4 @@
-FROM python:3.11-slim-buster AS setup-image
+FROM python:3.11 AS compile-image
 
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -6,7 +6,6 @@ COPY requirements.txt .
 RUN pip3 install --no-cache-dir -r requirements.txt
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
-    wget \
     curl \
     jq && \
     apt-get clean && \
@@ -18,7 +17,7 @@ RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/rel
     rm -rf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
 
-FROM python:3.11-slim-buster AS runner-image
+FROM python:3.11-slim AS runner-image
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl && \
@@ -26,11 +25,11 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /quarto
-COPY --from=setup-image /opt/venv /opt/venv
+COPY --from=compile-image /opt/venv /opt/venv
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-COPY --from=setup-image quarto-dist/ quarto-dist/
+COPY --from=compile-image quarto-dist/ quarto-dist/
 RUN ln -s /quarto/quarto-dist/bin/quarto /usr/local/bin/quarto
 COPY run.sh .
 COPY code/ code/
