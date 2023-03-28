@@ -24,8 +24,8 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -g 999 python && \
-    useradd -r -u 999 -g python python
+RUN groupadd -g 1069 python && \
+    useradd -r -u 1069 -g python python
 
 WORKDIR /quarto
 COPY --chown=python:python --from=compile-image /opt/venv /opt/venv
@@ -45,5 +45,5 @@ ENV DENO_DIR=/quarto/deno
 ENV XDG_CACHE_HOME=/quarto/cache
 ENV XDG_DATA_HOME=/quarto/share
 
-USER 999
+USER 1069
 ENTRYPOINT ["./run.sh"]
