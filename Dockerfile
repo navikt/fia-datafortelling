@@ -41,9 +41,9 @@ COPY main.qmd .
 
 RUN chown python:python /quarto -R
 
-ENV DENO_DIR=/tmp/quarto/deno
-ENV XDG_CACHE_HOME=/tmp/quarto/cache
-ENV XDG_DATA_HOME=/tmp/quarto/share
+ENV DENO_DIR=/quarto/deno
+ENV XDG_CACHE_HOME=/quarto/cache
+ENV XDG_DATA_HOME=/quarto/share
 
 USER 999
 ENTRYPOINT ["./run.sh"]
