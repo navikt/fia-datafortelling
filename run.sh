@@ -1,7 +1,7 @@
 #!/bin/bash
 
-quarto render main.qmd
+quarto render /tmp/quarto/project/main.qmd --to html --execute-dir /tmp/quarto/project
 
-curl -X PUT -F file=@main.html \
+curl -X PUT -F file=@/tmp/quarto/project/main.html \
     https://${NADA_ENV}/quarto/update/${QUARTO_ID} \
     -H "Authorization:Bearer ${QUARTO_TOKEN}"
