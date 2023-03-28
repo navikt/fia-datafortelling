@@ -15,7 +15,7 @@ spec:
     requests:
       memory: 1Gi
   ttlSecondsAfterFinished: 340
-  schedule: "*/10 6-19 * * *"
+  schedule: "*/10 6-21 * * *"
   backoffLimit: 2
   gcp:
     bigQueryDatasets:
