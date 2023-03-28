@@ -34,7 +34,9 @@ RUN ln -s /tmp/quarto/quarto-dist/bin/quarto /usr/local/bin/quarto
 WORKDIR /tmp/quarto
 RUN python3 -m venv /opt/venv
 
-COPY run.sh .
+COPY run.sh /run.sh
+RUN chmod +x /run.sh
+
 COPY code/ code/
 COPY main.qmd .
 
@@ -47,4 +49,4 @@ ENV XDG_CACHE_HOME=/tmp/quarto/cache
 ENV XDG_DATA_HOME=/tmp/quarto/share
 
 USER 999
-ENTRYPOINT ["./run.sh"]
+ENTRYPOINT ["/run.sh"]
