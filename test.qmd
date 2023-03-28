@@ -16,7 +16,6 @@ from code.helper import load_data, get_siste_status
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
 
-data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
 print("Denne siden ble generert ", datetime.now())
