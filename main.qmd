@@ -3,6 +3,7 @@ title: "Fia datafortelling"
 format:
     html:
         echo: false
+        embed-resources: true
 jupyter: python3
 ---
 
