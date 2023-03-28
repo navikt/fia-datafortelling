@@ -4,7 +4,15 @@ jupyter: python3
 ---
 
 ```{python}
+import os
+import plotly.express as px
 from datetime import datetime
 
+from code.helper import load_data, get_siste_status
+
+PROJECT = os.environ['GCP_PROJECT']
+DATASET = os.environ['DATASET']
+
+print("Project: ", PROJECT, ". Dataset: ", DATASET)
 print("Denne siden ble generert ", datetime.now())
 ```
