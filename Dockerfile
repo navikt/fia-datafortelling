@@ -32,19 +32,19 @@ COPY --chown=python:python --from=compile-image quarto-dist/ /tmp/quarto/quarto-
 RUN ln -s /tmp/quarto/quarto-dist/bin/quarto /usr/local/bin/quarto
 
 WORKDIR /tmp/quarto
-
 RUN python3 -m venv /opt/venv
+
+COPY run.sh .
+COPY code/ code/
+COPY main.qmd .
+
 RUN chown python:python /tmp/quarto -R
 
-USER 999
 ENV QUARTO_PROJECT_DIR=/tmp/quarto
 ENV PATH="/opt/venv/bin:$PATH"
 ENV DENO_DIR=/tmp/quarto/deno
 ENV XDG_CACHE_HOME=/tmp/quarto/cache
 ENV XDG_DATA_HOME=/tmp/quarto/share
 
-COPY run.sh .
-COPY code/ code/
-COPY main.qmd .
-
+USER 999
 ENTRYPOINT ["./run.sh"]
