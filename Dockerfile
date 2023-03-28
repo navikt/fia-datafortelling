@@ -36,9 +36,9 @@ COPY run.sh .
 COPY code/ code/
 COPY main.qmd .
 
-ENV DENO_DIR=/quarto/deno
-ENV XDG_CACHE_HOME=/quarto/cache
-ENV XDG_DATA_HOME=/quarto/share
+ENV DENO_DIR=/tmp/quarto/deno
+ENV XDG_CACHE_HOME=/tmp/quarto/cache
+ENV XDG_DATA_HOME=/tmp/quarto/share
 
 RUN chown 1069:1069 /quarto -R
 USER 1069:1069
