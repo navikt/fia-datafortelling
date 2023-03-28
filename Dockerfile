@@ -36,11 +36,10 @@ ENV PATH="/opt/venv/bin:$PATH"
 RUN python3 -m venv /opt/venv
 
 COPY run.sh .
-COPY code/ /tmp/quarto/project/code/
-COPY main.qmd /tmp/quarto/project/
+COPY code/ code/
+COPY main.qmd .
 
 RUN chown python:python /quarto -R
-RUN chown python:python /tmp/quarto -R
 
 ENV DENO_DIR=/tmp/quarto/deno
 ENV XDG_CACHE_HOME=/tmp/quarto/cache
