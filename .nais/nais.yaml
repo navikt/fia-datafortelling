@@ -9,6 +9,10 @@ metadata:
   namespace: pia
 spec:
   image: {{ image }}
+  resources:
+    requests:
+      memory:
+        8Gi
   ttlSecondsAfterFinished: 340
   schedule: "*/5 6-18 * * *"
   backoffLimit: 2
