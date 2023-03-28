@@ -3,6 +3,7 @@ title: "Fia datafortelling"
 format:
     html:
         echo: false
+jupyter: python3
 ---
 
 ```{python}
@@ -26,7 +27,12 @@ data_statistikk["aktiv_sak"] = ~data_statistikk.siste_status.isin(["IKKE_AKTUELL
 ```{python}
 print("Totalt antall saker: ", data_statistikk.saksnummer.nunique())
 print("Antall aktive saker: ", data_statistikk[data_statistikk.aktiv_sak].saksnummer.nunique())
-print("Antall saker per status: ", data_statistikk.groupby("siste_status").saksnummer.nunique())
+```
+
+# Antall saker per status
+```{python}
+from code.tables import antall_saker_per_status
+antall_saker_per_status(data_statistikk)
 ```
 
 # Antall aktive saker per fylke
