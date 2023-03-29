@@ -1,6 +1,20 @@
 import plotly.graph_objects as go
 from datetime import datetime, timezone
 
+fylker = {
+    "03": "Oslo",
+    "11": "Rogaland",
+    "15": "Møre og Romsdal",
+    "18": "Nordland",
+    "V30": "Vest-Viken",
+    "Ø30": "Øst-Viken",
+    "34": "Innlandet",
+    "38": "Vestfold og Telemark",
+    "42": "Agder",
+    "46": "Vestland",
+    "50": "Trøndelag",
+    "54": "Troms og Finnmark",
+}
 
 def aktive_saker_per_fylke(data_statistikk):
     aktive_saker_per_fylke = (
@@ -14,7 +28,7 @@ def aktive_saker_per_fylke(data_statistikk):
     fig = go.Figure(
         data=[
             go.Bar(
-                x=aktive_saker_per_fylke["fylkesnummer"],
+                x=aktive_saker_per_fylke["fylkesnummer"].map(fylker),
                 y=aktive_saker_per_fylke["saksnummer"],
             )
         ]
