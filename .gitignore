@@ -134,10 +134,13 @@ dmypy.json
 # Lokalt genererte fortellinger
 /main.html
 /test.html
+/index.html
 /main.ipynb
+/index.ipynb
 /test.ipynb
 main_files/
 test_files/
+index_files/
 
 # OS generated files
 .DS_Store
