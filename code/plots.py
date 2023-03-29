@@ -34,7 +34,7 @@ def aktive_saker_per_fylke(data_statistikk):
         ]
     )
     fig.update_layout(
-        xaxis_title="Fylkesnummer",
+        xaxis_title="Fylke",
         yaxis_title="Antall aktive saker",
     )
     return fig
