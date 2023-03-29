@@ -12,7 +12,7 @@ jupyter: python3
 ```{python}
 import os
 import plotly.express as px
-from datetime import datetime
+from datetime import datetime, timezone
 
 from code.helper import load_data, get_siste_status
 
@@ -53,5 +53,7 @@ fig.show()
 ```
 
 ```{python}
-print("Denne siden ble generert ", datetime.now())
+import pytz
+
+print("Denne siden ble generert {}".format(datetime.now(pytz.timezone("Europe/Oslo")).isoformat()))
 ```
