@@ -1,0 +1,18 @@
+```{mermaid}
+%%| mermaid-format: svg
+
+flowchart LR
+    A[Virksomhet vurderes] --> B(Ta eierskap)
+    B --> Z{Virksomhet aktuell}
+    Z --> I[Ikke aktuell]
+    Z --> C(Virksomhet kontaktes)
+    C --> V{Virksomhet aktuell}
+    V --> I
+    V --> D(Virksomhet kartlegges)
+    D --> K{Virksomhet aktuell}
+    K --> I
+    K --> E(Virksomhet bistås)
+    E --> Y{Virksomhet aktuell}
+    Y --> I
+    Y --> F[Bistand fullført]
+```
