@@ -43,10 +43,9 @@ print("Antall aktive saker: ", data_statistikk[data_statistikk.aktiv_sak].saksnu
 
 ::: {.callout-tip}
 En sak i Fia er en tidsbegrenset vurdering, med eventuell bistand, av en virksomhet i IA-samarbeidet.
-:::
 
-::: {.callout-tip}
 En aktiv sak i Fia er en sak som står i status Vurderes, Kontaktes, Kartlegges eller Vi bistår.
+
 En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Fullført.
 :::
 
