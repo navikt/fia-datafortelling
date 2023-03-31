@@ -41,7 +41,10 @@ print("Totalt antall saker: ", data_statistikk.saksnummer.nunique())
 print("Antall aktive saker: ", data_statistikk[data_statistikk.aktiv_sak].saksnummer.nunique())
 ```
 
-::: {.callout-tip}
+::: {.callout-note}
+
+## Forklaring av begrepet "sak" i Fia
+
 En sak i Fia er en tidsbegrenset vurdering, med eventuell bistand, av en virksomhet i IA-samarbeidet.
 
 En aktiv sak i Fia er en sak som står i status Vurderes, Kontaktes, Kartlegges eller Vi bistår.
@@ -53,10 +56,10 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 
 ::: {.panel-tabset}
 ## Forenklet saksgang
-{{< include includes/forenklet-saksgang.qmd >}}
+![forenklet-saksgang](bilder/forenklet-saksgang.png)
 
 ## Komplett saksgang
-{{< include includes/komplett-saksgang.qmd >}}
+![komplett-saksgang](bilder/komplett-saksgang.png)
 
 :::
 
@@ -66,6 +69,29 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 from code.tables import antall_saker_per_status
 antall_saker_per_status(data_statistikk)
 ```
+::: {.callout-note collapse="true"}
+## Forklaring av de forskjellige statusene i Fia
+
+*   Vurderes
+
+    Forklaring av Vurderes kommer på ett senere tidspunkt.
+*   Kontaktes
+
+    Forklaring av Kontaktes kommer på ett senere tidspunkt.
+*   Kartlegges
+
+    Forklaring av Kartlegges kommer på ett senere tidspunkt.
+*   Vi bistår
+
+    Forklaring av Vi bistår kommer på ett senere tidspunkt.
+*   Fullført
+
+    Forklaring av Fullført kommer på ett senere tidspunkt.
+*   Ikke aktuell
+
+    Forklaring av Ikke aktuell kommer på ett senere tidspunkt.
+:::
+
 
 ## Antall aktive saker per fylke
 

@@ -1,9 +1,9 @@
 ```{mermaid}
-%%| mermaid-format: svg
+%%| mermaid-format: png
 
 flowchart LR
     A[Virksomhet vurderes] --> B(Ta eierskap)
-    B --> I[Ikke aktuell]
+    B --> I[Virksomhet ikke aktuell]
     B --> C(Virksomhet kontaktes)
     C --> I
     C --> D(Virksomhet kartlegges)
