@@ -5,6 +5,8 @@ execute:
     warning: false
 format:
     html:
+        toc: true
+        page-layout: full
         embed-resources: true
 jupyter: python3
 ---
