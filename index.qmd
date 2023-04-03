@@ -19,10 +19,12 @@ Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-
 
 ```{python}
 import os
-import plotly.express as px
-from datetime import datetime, timezone
+from datetime import datetime
+import pytz
 
 from code.helper import load_data, get_siste_status
+from code.tables import antall_saker_per_status
+from code.plots import aktive_saker_per_fylke, dager_siden_siste_oppdatering
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
@@ -31,7 +33,8 @@ data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
 siste_status = get_siste_status(data_statistikk)
 data_statistikk = data_statistikk.merge(siste_status, on="saksnummer", how="left")
-data_statistikk["aktiv_sak"] = ~data_statistikk.siste_status.isin(["IKKE_AKTUELL", "FULLFØRT", "NY"])
+aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
+data_statistikk["aktiv_sak"] = data_statistikk.siste_status.isin(aktive_statuser)
 ```
 
 ## Antall saker
@@ -66,7 +69,6 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 ## Antall saker per status
 
 ```{python}
-from code.tables import antall_saker_per_status
 antall_saker_per_status(data_statistikk)
 ```
 ::: {.callout-note collapse="true"}
@@ -96,23 +98,54 @@ antall_saker_per_status(data_statistikk)
 ## Antall aktive saker per fylke
 
 ```{python}
-from code.plots import aktive_saker_per_fylke
 fig = aktive_saker_per_fylke(data_statistikk)
 fig.show()
 ```
 
 ## Dager siden siste oppdatering i Fia
 
+::: {.panel-tabset}
+## Alle aktive saker
 ```{python}
-from code.plots import dager_siden_siste_oppdatering
 fig = dager_siden_siste_oppdatering(data_statistikk, data_leveranse)
 fig.show()
 ```
+## Vurderes
+```{python}
+fig = dager_siden_siste_oppdatering(
+    data_statistikk[data_statistikk.siste_status=="VURDERES"],
+    data_leveranse
+)
+fig.show()
+```
+## Kontaktes
+```{python}
+fig = dager_siden_siste_oppdatering(
+    data_statistikk[data_statistikk.siste_status=="KONTAKTES"],
+    data_leveranse
+)
+fig.show()
+```
+## Kartlegges
+```{python}
+fig = dager_siden_siste_oppdatering(
+    data_statistikk[data_statistikk.siste_status=="KARTLEGGES"],
+    data_leveranse
+)
+fig.show()
+```
+## Vi bistår
+```{python}
+fig = dager_siden_siste_oppdatering(
+    data_statistikk[data_statistikk.siste_status=="VI_BISTÅR"],
+    data_leveranse
+)
+fig.show()
+```
+:::
 
 ---
 
 ```{python}
-import pytz
-
 print("Denne siden ble generert {}".format(datetime.now(pytz.timezone("Europe/Oslo")).isoformat()))
 ```
