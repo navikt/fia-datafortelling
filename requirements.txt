@@ -1,6 +1,6 @@
-google-auth==2.16.2
-google-cloud-bigquery==3.7.0
-pandas==1.5.3
-plotly==5.13.1
+google-auth==2.17.3
+google-cloud-bigquery==3.9.0
+pandas==2.0.0
+plotly==5.14.1
 jupyter==1.0.0
-db-dtypes==1.0.5
+db-dtypes==1.1.1
