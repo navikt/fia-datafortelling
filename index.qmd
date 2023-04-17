@@ -14,7 +14,7 @@ jupyter: python3
 Statistikk som viser bruk av Fagsystemet for IA (Fia).
 
 Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
- Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2).
+ Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia` ved `nav.no`. 
 
 
 ```{python}
