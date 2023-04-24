@@ -38,6 +38,7 @@ RUN python3 -m venv /opt/venv
 COPY run.sh .
 COPY code/ code/
 COPY bilder/ bilder/
+COPY includes/ includes/
 COPY *.qmd .
 
 RUN chown python:python /quarto -R
