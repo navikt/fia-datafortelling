@@ -23,8 +23,7 @@ from datetime import datetime
 import pytz
 
 from code.helper import load_data, preprocess_data
-from code.tables import antall_saker_per_status
-from code.plots import aktive_saker_per_fylke, dager_siden_siste_oppdatering
+from code.plots import aktive_saker_per_fylke, dager_siden_siste_oppdatering, antall_saker_per_status
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
@@ -66,7 +65,8 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 ## Antall saker per status
 
 ```{python}
-antall_saker_per_status(data_statistikk)
+fig = antall_saker_per_status(data_statistikk)
+fig.show()
 ```
 {{< include includes/status-forklaring.qmd >}}
 

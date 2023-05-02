@@ -1,6 +1,7 @@
 import plotly.graph_objects as go
 from datetime import datetime, timezone
 
+
 def aktive_saker_per_fylke(data_statistikk):
     aktive_saker_per_fylke = (
         data_statistikk[data_statistikk.aktiv_sak]
@@ -66,5 +67,42 @@ def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
         xaxis_title="Dager siden siste oppdatering i Fia",
         yaxis_title="Antall saker",
     )
+
+    return fig
+
+
+def antall_saker_per_status(data_statistikk):
+    sortering = [
+        "VURDERES",
+        "KONTAKTES",
+        "KARTLEGGES",
+        "VI_BISTÅR",
+        "FULLFØRT",
+        "IKKE_AKTUELL",
+        "SLETTET",
+    ]
+
+    saker_per_status = (
+        data_statistikk.groupby("siste_status")
+        .saksnummer.nunique()
+        .reset_index()
+        .sort_values(
+            by="siste_status", key=lambda col: -col.map(lambda e: sortering.index(e))
+        )
+        .reset_index()
+    )
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                y=saker_per_status["siste_status"],
+                x=saker_per_status["saksnummer"],
+                text=saker_per_status["saksnummer"],
+                orientation="h",
+            )
+        ]
+    )
+    fig.update_xaxes(visible=False)
+    fig.update_layout(plot_bgcolor="rgb(255,255,255)")
 
     return fig
