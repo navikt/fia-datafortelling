@@ -22,7 +22,7 @@ import os
 from datetime import datetime
 import pytz
 
-from code.helper import load_data, get_siste_status
+from code.helper import load_data, preprocess_data
 from code.tables import antall_saker_per_status
 from code.plots import aktive_saker_per_fylke, dager_siden_siste_oppdatering
 
@@ -31,10 +31,7 @@ DATASET = os.environ['DATASET']
 data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
-siste_status = get_siste_status(data_statistikk)
-data_statistikk = data_statistikk.merge(siste_status, on="saksnummer", how="left")
-aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
-data_statistikk["aktiv_sak"] = data_statistikk.siste_status.isin(aktive_statuser)
+data_statistikk = preprocess_data(data_statistikk)
 ```
 
 ## Antall saker
