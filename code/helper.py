@@ -79,4 +79,13 @@ def preprocess_data(data_statistikk):
         data_statistikk.hoved_nering.str.len() > 50, "hoved_nering_truncated"
     ] = (data_statistikk.hoved_nering.str[:47] + "...")
 
+    # Gruppering av virksomheter per antall ansatte
+    data_statistikk.loc[data_statistikk.antallPersoner==0, "antallPersoner_gruppe"] = "0"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(1, 4), "antallPersoner_gruppe"] = "1-4"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(5, 19), "antallPersoner_gruppe"] = "5-19"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(20, 49), "antallPersoner_gruppe"] = "20-49"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(50, 99), "antallPersoner_gruppe"] = "50-99"
+    data_statistikk.loc[data_statistikk.antallPersoner>=100, "antallPersoner_gruppe"] = "100+"
+    data_statistikk.loc[data_statistikk.antallPersoner.isna(), "antallPersoner_gruppe"] = "Ukjent"
+
     return data_statistikk

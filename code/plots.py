@@ -242,7 +242,27 @@ def virksomhetsprofil(data_input, title):
     )
 
     # Antall ansatte
-    fig.add_trace(go.Histogram(x=data.antallPersoner), row=1, col=1)
+    saker_per_storrelsesgruppe = (
+        data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
+    )
+    fig.add_trace(
+        go.Bar(
+            x=saker_per_storrelsesgruppe.antallPersoner_gruppe,
+            y=saker_per_storrelsesgruppe.saksnummer,
+            text=saker_per_storrelsesgruppe.saksnummer,
+        ),
+        row=1,
+        col=1,
+    )
+    fig.update_yaxes(visible=False, row=1, col=1)
+    storrelse_sortering = (
+        data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
+    )
+    fig.update_layout(
+        xaxis_tickvals=list(range(len(storrelse_sortering))),
+        xaxis_ticktext=list(storrelse_sortering),
+    )
+
 
     # Sykefraværsprosent
     fig.add_trace(go.Histogram(x=data.sykefraversprosent), row=1, col=2)
