@@ -113,7 +113,7 @@ def antall_saker_per_status(data_statistikk):
 def antall_leveranser_per_sak(data_leveranse):
 
     leveranse_status = (
-        data_leveranse.sort_values(["saksnummer", "tidsstempel"], ascending=True)
+        data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
         .drop_duplicates(["saksnummer", "iaTjenesteNavn", "iaModulId"], keep="last")
     )
 
@@ -143,7 +143,7 @@ def antall_leveranser_per_sak(data_leveranse):
 def antall_leveranser_per_tjeneste(data_leveranse):
 
     leveranse_status = (
-        data_leveranse.sort_values(["saksnummer", "tidsstempel"], ascending=True)
+        data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
         .drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
     )
 
@@ -176,7 +176,7 @@ def antall_leveranser_per_tjeneste(data_leveranse):
 def antall_leveranser_per_modul(data_leveranse):
 
     leveranse_status = (
-        data_leveranse.sort_values(["saksnummer", "tidsstempel"], ascending=True)
+        data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
         .drop_duplicates(["saksnummer", "iaModulId"], keep="last")
     )
 
@@ -207,7 +207,7 @@ def antall_leveranser_per_modul(data_leveranse):
 
 def virksomhetsprofil(data_input, title):
     data = data_input.sort_values(
-        ["saksnummer", "tidsstempel"], ascending=True
+        ["saksnummer", "endretTidspunkt"], ascending=True
     ).drop_duplicates(["saksnummer"], keep="last")
 
     specs = [

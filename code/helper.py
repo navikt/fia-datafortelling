@@ -27,7 +27,7 @@ def load_data(project, dataset, table):
 
 def preprocess_data(data_statistikk):
     data_statistikk = data_statistikk.sort_values(
-        ["saksnummer", "tidsstempel"], ascending=True
+        ["saksnummer", "endretTidspunkt"], ascending=True
     )
 
     # Forrige status
