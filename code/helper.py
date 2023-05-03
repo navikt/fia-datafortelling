@@ -51,9 +51,13 @@ def preprocess_data(data_statistikk):
     # Fylkesnavn
     data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
 
-    # Første næring
-    data_statistikk["første_nering"] = data_statistikk.neringer.apply(
+    # Hoved næring
+    data_statistikk["hoved_nering"] = data_statistikk.neringer.apply(
         lambda x: json.loads(x)[0]["navn"]
     )
+    data_statistikk["hoved_nering_truncated"] = data_statistikk.hoved_nering
+    data_statistikk.loc[
+        data_statistikk.hoved_nering.str.len() > 50, "hoved_nering_truncated"
+    ] = (data_statistikk.hoved_nering.str[:47] + "...")
 
     return data_statistikk
