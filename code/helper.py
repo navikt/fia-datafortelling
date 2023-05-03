@@ -28,12 +28,26 @@ def load_data(project, dataset, table):
 def preprocess_data(data_statistikk):
 
     # Fjern dupliserte rader
-    data_statistikk = data_statistikk.drop_duplicates("endretAvHendelseId")
+    data_statistikk = data_statistikk.drop_duplicates("endretAvHendelseId").reset_index(drop=True)
 
     # Sorter basert på sak og endret tidspunkt
     data_statistikk = data_statistikk.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
     )
+
+    # Fjern rader som ikke er relevant til analysen
+    data_statistikk = data_statistikk[data_statistikk.hendelse!="TA_EIERSKAP_I_SAK"].reset_index(drop=True)
+    data_statistikk = data_statistikk[data_statistikk.status!="NY"].reset_index(drop=True)
+
+    # Fjern rader basert på tilbake-knapp
+    tilbake_rader = data_statistikk[data_statistikk.hendelse=="TILBAKE"].index.tolist()
+    fjern_rader = set(tilbake_rader)
+    for index in tilbake_rader:
+        rad = index-1
+        while rad in fjern_rader:
+            rad -= 1
+        fjern_rader.add(rad)
+    data_statistikk = data_statistikk.drop(index=fjern_rader).reset_index(drop=True)
 
     # Forrige status
     data_statistikk.loc[
