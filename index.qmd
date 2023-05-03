@@ -23,7 +23,14 @@ from datetime import datetime
 import pytz
 
 from code.helper import load_data, preprocess_data
-from code.plots import aktive_saker_per_fylke, dager_siden_siste_oppdatering, antall_saker_per_status
+from code.plots import (
+    aktive_saker_per_fylke,
+    dager_siden_siste_oppdatering,
+    antall_saker_per_status,
+    antall_leveranser_per_sak,
+    antall_leveranser_per_tjeneste,
+    antall_leveranser_per_modul,
+)
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
@@ -118,6 +125,31 @@ fig = dager_siden_siste_oppdatering(
 )
 fig.show()
 ```
+:::
+
+
+## Leveranser
+
+::: {.panel-tabset}
+
+## Per tjeneste
+```{python}
+fig = antall_leveranser_per_tjeneste(data_leveranse)
+fig.show()
+```
+
+## Per modul
+```{python}
+fig = antall_leveranser_per_modul(data_leveranse)
+fig.show()
+```
+
+## Per sak
+```{python}
+fig = antall_leveranser_per_sak(data_leveranse)
+fig.show()
+```
+
 :::
 
 ---

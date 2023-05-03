@@ -106,3 +106,99 @@ def antall_saker_per_status(data_statistikk):
     fig.update_layout(plot_bgcolor="rgb(255,255,255)")
 
     return fig
+
+
+def antall_leveranser_per_sak(data_leveranse):
+
+    leveranse_status = (
+        data_leveranse.sort_values(["saksnummer", "tidsstempel"], ascending=True)
+        .drop_duplicates(["saksnummer", "iaTjenesteNavn", "iaModulId"], keep="last")
+    )
+
+    leveranser_per_sak = (
+        leveranse_status[leveranse_status.status!="SLETTET"]
+        .groupby("saksnummer")
+        .iaModulId.nunique()
+    )
+
+    fig = go.Figure(
+        data=[
+            go.Histogram(
+                x=leveranser_per_sak
+            )
+        ]
+    )
+
+    fig.update_layout(
+        height=500, width=850,
+        xaxis_title="Antall leveranser",
+        yaxis_title="Antall saker",
+    )
+
+    return fig
+
+
+def antall_leveranser_per_tjeneste(data_leveranse):
+
+    leveranse_status = (
+        data_leveranse.sort_values(["saksnummer", "tidsstempel"], ascending=True)
+        .drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
+    )
+
+    leveranser_per_tjeneste = (
+        leveranse_status[leveranse_status.status!="SLETTET"]
+        .groupby("iaTjenesteNavn").saksnummer.nunique()
+        .sort_values(ascending=True)
+        .reset_index()
+    )
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                y=leveranser_per_tjeneste["iaTjenesteNavn"],
+                x=leveranser_per_tjeneste["saksnummer"],
+                text=leveranser_per_tjeneste["saksnummer"],
+                orientation='h',
+            )
+        ]
+    )
+    fig.update_layout(
+        height=500, width=850,
+        yaxis_title="IA-tjeneste",
+        xaxis_title="Antall saker",
+    )
+
+    return fig
+
+
+def antall_leveranser_per_modul(data_leveranse):
+
+    leveranse_status = (
+        data_leveranse.sort_values(["saksnummer", "tidsstempel"], ascending=True)
+        .drop_duplicates(["saksnummer", "iaModulId"], keep="last")
+    )
+
+    leveranser_per_modul = (
+        leveranse_status[leveranse_status.status!="SLETTET"]
+        .groupby("iaModulNavn").saksnummer.nunique()
+        .sort_values(ascending=True)
+        .reset_index()
+    )
+
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                y=leveranser_per_modul["iaModulNavn"],
+                x=leveranser_per_modul["saksnummer"],
+                text=leveranser_per_modul["saksnummer"],
+                orientation='h',
+            )
+        ]
+    )
+    fig.update_layout(
+        height=500, width=850,
+        yaxis_title="IA-modul",
+        xaxis_title="Antall saker",
+    )
+
+    return fig
