@@ -1,3 +1,4 @@
+from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from datetime import datetime, timezone
 
@@ -200,6 +201,128 @@ def antall_leveranser_per_modul(data_leveranse):
         height=500, width=850,
         yaxis_title="IA-modul",
         xaxis_title="Antall saker",
+    )
+
+    return fig
+
+def virksomhetsprofil(data_input, title):
+    data = data_input.sort_values(
+        ["saksnummer", "tidsstempel"], ascending=True
+    ).drop_duplicates(["saksnummer"], keep="last")
+
+    specs = [
+        [{}, {}],
+        [{"type": "domain"}, {}],
+        [{}, {}],
+    ]
+    subplot_titles = (
+        "Antall ansatte",
+        "Sykefraværsprosent",
+        "Sektor",
+        "Bransjeprogram",
+        "",
+        "Hoved næring",
+    )
+
+    fig = make_subplots(
+        rows=3,
+        cols=2,
+        specs=specs,
+        subplot_titles=subplot_titles,
+        horizontal_spacing=0.1,
+        vertical_spacing=0.1,
+    )
+    fig.update_layout(
+        height=900,
+        width=850,
+        title_text=title,
+        showlegend=False,
+    )
+
+    # Antall ansatte
+    fig.add_trace(go.Histogram(x=data.antallPersoner), row=1, col=1)
+
+    # Sykefraværsprosent
+    fig.add_trace(go.Histogram(x=data.sykefraversprosent), row=1, col=2)
+    gjennomsnitt = data.sykefraversprosent.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color="red",
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.3}",
+        annotation_position="top right",
+        annotation_bgcolor="red",
+        row=1,
+        col=2,
+    )
+
+    # Sektor
+    virksomheter_per_sektor = (
+        data.groupby("sektor")
+        .saksnummer.nunique()
+        .sort_values(ascending=True)
+        .reset_index()
+    )
+    fig.add_trace(
+        go.Pie(
+            labels=virksomheter_per_sektor.sektor,
+            values=virksomheter_per_sektor.saksnummer,
+            text=virksomheter_per_sektor.sektor,
+            sort=False,
+        ),
+        row=2,
+        col=1,
+    )
+    fig.update_xaxes(visible=False, row=2, col=1)
+
+    # Bransje
+    virksomheter_per_bransje = (
+        data.groupby("bransjeprogram", dropna=False)
+        .saksnummer.nunique()
+        .sort_values(ascending=True)
+        .reset_index()
+        .fillna("Ikke brasjeprogram")
+    )
+    fig.add_trace(
+        go.Bar(
+            y=virksomheter_per_bransje.bransjeprogram,
+            x=virksomheter_per_bransje.saksnummer,
+            text=virksomheter_per_bransje.saksnummer,
+            orientation="h",
+        ),
+        row=2,
+        col=2,
+    )
+    fig.update_xaxes(visible=False, row=2, col=2)
+
+    # Hoved næring
+    virksomheter_per_nering = (
+        data.groupby("hoved_nering")
+        .saksnummer.nunique()
+        .sort_values(ascending=True)
+        .reset_index()
+    )
+    n_nering = 10
+    truncation_map = dict(zip(data.hoved_nering, data.hoved_nering_truncated))
+    fig.add_trace(
+        go.Bar(
+            y=virksomheter_per_nering[-n_nering:].hoved_nering,
+            x=virksomheter_per_nering[-n_nering:].saksnummer,
+            text=virksomheter_per_nering[-n_nering:].saksnummer,
+            orientation="h",
+            
+        ),
+        row=3,
+        col=2,
+    )
+    fig.update_layout(
+        yaxis5_tickvals=list(truncation_map.keys()),
+        yaxis5_ticktext=list(truncation_map.values()),
+    )
+    fig.update_xaxes(
+        visible=False,
+        row=3, col=2,
     )
 
     return fig

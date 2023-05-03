@@ -30,6 +30,7 @@ from code.plots import (
     antall_leveranser_per_sak,
     antall_leveranser_per_tjeneste,
     antall_leveranser_per_modul,
+    virksomhetsprofil,
 )
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -150,6 +151,36 @@ fig = antall_leveranser_per_sak(data_leveranse)
 fig.show()
 ```
 
+:::
+
+
+# Virksomhetsprofil
+
+::: {.panel-tabset}
+
+## Aktive saker
+```{python}
+data_input = data_statistikk[data_statistikk.aktiv_sak]
+fig = virksomhetsprofil(data_input, title="Virksomhetsprofil av alle aktive saker")
+fig.show()
+```
+
+## Vurderte
+```{python}
+data_input = data_statistikk[data_statistikk.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
+fig = virksomhetsprofil(data_input, title="Vurderte virksomheter")
+fig.show()
+```
+
+## Vurderte ikke aktuell
+```{python}
+data_input = data_statistikk[
+    (data_statistikk.status=="IKKE_AKTUELL") &
+    (data_statistikk.forrige_status=="VURDERES")
+].drop_duplicates("saksnummer", keep="last")
+fig = virksomhetsprofil(data_input, title="Virksomheter vurderte ikke aktuell")
+fig.show()
+```
 :::
 
 ---
