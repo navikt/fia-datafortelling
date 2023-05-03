@@ -31,6 +31,7 @@ from code.plots import (
     antall_leveranser_per_tjeneste,
     antall_leveranser_per_modul,
     virksomhetsprofil,
+    statusflyt,
 )
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -182,6 +183,13 @@ fig = virksomhetsprofil(data_input, title="Virksomheter vurderte ikke aktuell")
 fig.show()
 ```
 :::
+
+
+# Statusflyt
+```{python}
+fig = statusflyt(data_statistikk)
+fig.show()
+```
 
 ---
 

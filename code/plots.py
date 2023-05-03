@@ -328,3 +328,27 @@ def virksomhetsprofil(data_input, title):
     )
 
     return fig
+
+
+def statusflyt(data_statistikk):
+    status_indexes = dict(zip(statusordre, range(len(statusordre))))
+    status_endringer = data_statistikk.value_counts(["forrige_status", "status"])
+    source_status = status_endringer.index.get_level_values(0).map(status_indexes)
+    target_status = status_endringer.index.get_level_values(1).map(status_indexes)
+    count_endringer = status_endringer.values
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Sankey(
+            node=dict(
+                pad=200,
+                label=statusordre,
+            ),
+            link=dict(
+                source=source_status,
+                target=target_status,
+                value=count_endringer,
+            ),
+        )
+    )
+    return fig
