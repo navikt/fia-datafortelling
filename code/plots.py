@@ -64,6 +64,7 @@ def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
         ]
     )
     fig.update_layout(
+        height=500, width=850,
         xaxis_title="Dager siden siste oppdatering i Fia",
         yaxis_title="Antall saker",
     )
