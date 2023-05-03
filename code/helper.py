@@ -26,6 +26,11 @@ def load_data(project, dataset, table):
 
 
 def preprocess_data(data_statistikk):
+
+    # Fjern dupliserte rader
+    data_statistikk = data_statistikk.drop_duplicates("endretAvHendelseId")
+
+    # Sorter basert på sak og endret tidspunkt
     data_statistikk = data_statistikk.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
     )
