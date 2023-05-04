@@ -179,32 +179,46 @@ def antall_leveranser_per_modul(data_leveranse):
 
     leveranse_status = (
         data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
-        .drop_duplicates(["saksnummer", "iaModulId"], keep="last")
+        .drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
     )
 
     leveranser_per_modul = (
         leveranse_status[leveranse_status.status!="SLETTET"]
-        .groupby("iaModulNavn").saksnummer.nunique()
-        .sort_values(ascending=True)
+        .groupby(["iaTjenesteNavn", "iaModulNavn"]).saksnummer.nunique()
+        .sort_values(ascending=False)
         .reset_index()
     )
 
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                y=leveranser_per_modul["iaModulNavn"],
-                x=leveranser_per_modul["saksnummer"],
-                text=leveranser_per_modul["saksnummer"],
-                orientation='h',
-            )
+    fig = go.Figure()
+
+    for tjeneste in leveranser_per_modul.iaTjenesteNavn.unique():
+        leveranser_per_modul_filtered = leveranser_per_modul[
+            leveranser_per_modul.iaTjenesteNavn==tjeneste
         ]
-    )
+        fig.add_trace(
+            go.Bar(
+                y=leveranser_per_modul_filtered.iaModulNavn,
+                x=leveranser_per_modul_filtered.saksnummer,
+                text=leveranser_per_modul_filtered.saksnummer,
+                orientation='h',
+                name=tjeneste,
+            )
+        )
+
     fig.update_layout(
         height=500, width=850,
-        yaxis_title="IA-modul",
-        xaxis_title="Antall saker",
+        plot_bgcolor="rgb(255,255,255)",
+        xaxis_visible=False,
+        yaxis_autorange="reversed",
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=0,
+            xanchor="right",
+            x=1
+        ),
     )
-
+    
     return fig
 
 def virksomhetsprofil(data_input, title):
