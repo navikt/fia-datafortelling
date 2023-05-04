@@ -283,8 +283,8 @@ def virksomhetsprofil(data_input, title):
     virksomheter_per_sektor = (
         data.groupby("sektor")
         .saksnummer.nunique()
-        .sort_values(ascending=True)
         .reset_index()
+        .sort_values("sektor")
     )
     fig.add_trace(
         go.Pie(
