@@ -154,7 +154,9 @@ def antall_leveranser_per_tjeneste(data_leveranse):
     fig.update_layout(
         height=500, width=850,
         plot_bgcolor="rgb(255,255,255)",
-        xaxis_visible=False,
+        xaxis_showticklabels=False,
+        xaxis_title="Antall saker (fullførte og under arbeid)",
+        xaxis_title_standoff=80,
     )
 
     return fig
@@ -188,7 +190,9 @@ def antall_leveranser_per_modul(data_leveranse):
     fig.update_layout(
         height=500, width=850,
         plot_bgcolor="rgb(255,255,255)",
-        xaxis_visible=False,
+        xaxis_showticklabels=False,
+        xaxis_title="Antall saker (fullførte og under arbeid)",
+        xaxis_title_standoff=80,
         yaxis_autorange="reversed",
         legend=dict(
             orientation="h",
