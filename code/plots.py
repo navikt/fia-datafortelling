@@ -135,27 +135,31 @@ def antall_leveranser_per_sak(data_leveranse):
 def antall_leveranser_per_tjeneste(data_leveranse):
     leveranser_per_tjeneste = (
         data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
-        .groupby("iaTjenesteNavn")
+        .groupby(["iaTjenesteNavn", "status"])
         .saksnummer.nunique()
         .sort_values(ascending=True)
         .reset_index()
     )
 
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                y=leveranser_per_tjeneste["iaTjenesteNavn"],
-                x=leveranser_per_tjeneste["saksnummer"],
-                text=leveranser_per_tjeneste["saksnummer"],
-                orientation='h',
-            )
+    fig = go.Figure()
+
+    for status in leveranser_per_tjeneste.status.unique():
+        leveranser_per_tjeneste_filtered = leveranser_per_tjeneste[
+            leveranser_per_tjeneste.status==status
         ]
-    )
+        fig.add_trace(go.Bar(
+            y=leveranser_per_tjeneste_filtered["iaTjenesteNavn"],
+            x=leveranser_per_tjeneste_filtered["saksnummer"],
+            text=leveranser_per_tjeneste_filtered["saksnummer"],
+            orientation='h',
+            name=status,
+        ))
+
     fig.update_layout(
         height=500, width=850,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
-        xaxis_title="Antall saker (fullførte og under arbeid)",
+        xaxis_title="Antall saker",
         xaxis_title_standoff=80,
     )
 
