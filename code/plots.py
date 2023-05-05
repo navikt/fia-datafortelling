@@ -153,8 +153,8 @@ def antall_leveranser_per_tjeneste(data_leveranse):
     )
     fig.update_layout(
         height=500, width=850,
-        yaxis_title="IA-tjeneste",
-        xaxis_title="Antall saker",
+        plot_bgcolor="rgb(255,255,255)",
+        xaxis_visible=False,
     )
 
     return fig
