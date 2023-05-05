@@ -6,6 +6,7 @@ execute:
 format:
     html:
         toc: true
+        toc-title: Indeks
         page-layout: full
         embed-resources: true
 jupyter: python3
