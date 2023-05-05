@@ -80,8 +80,7 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 ## Antall saker per status
 
 ```{python}
-fig = antall_saker_per_status(data_statistikk[data_statistikk.siste_status!="SLETTET"])
-fig.show()
+antall_saker_per_status(data_statistikk[data_statistikk.siste_status!="SLETTET"])
 ```
 {{< include includes/status-forklaring.qmd >}}
 
@@ -89,8 +88,7 @@ fig.show()
 ## Antall aktive saker per fylke
 
 ```{python}
-fig = aktive_saker_per_fylke(data_statistikk)
-fig.show()
+aktive_saker_per_fylke(data_statistikk)
 ```
 
 ## Dager siden siste oppdatering i Fia
@@ -98,40 +96,35 @@ fig.show()
 ::: {.panel-tabset}
 ## Alle aktive saker
 ```{python}
-fig = dager_siden_siste_oppdatering(data_statistikk, data_leveranse)
-fig.show()
+dager_siden_siste_oppdatering(data_statistikk, data_leveranse)
 ```
 ## Vurderes
 ```{python}
-fig = dager_siden_siste_oppdatering(
+dager_siden_siste_oppdatering(
     data_statistikk[data_statistikk.siste_status=="VURDERES"],
     data_leveranse
 )
-fig.show()
 ```
 ## Kontaktes
 ```{python}
-fig = dager_siden_siste_oppdatering(
+dager_siden_siste_oppdatering(
     data_statistikk[data_statistikk.siste_status=="KONTAKTES"],
     data_leveranse
 )
-fig.show()
 ```
 ## Kartlegges
 ```{python}
-fig = dager_siden_siste_oppdatering(
+dager_siden_siste_oppdatering(
     data_statistikk[data_statistikk.siste_status=="KARTLEGGES"],
     data_leveranse
 )
-fig.show()
 ```
 ## Vi bistår
 ```{python}
-fig = dager_siden_siste_oppdatering(
+dager_siden_siste_oppdatering(
     data_statistikk[data_statistikk.siste_status=="VI_BISTÅR"],
     data_leveranse
 )
-fig.show()
 ```
 :::
 
@@ -142,20 +135,17 @@ fig.show()
 
 ## Per tjeneste
 ```{python}
-fig = antall_leveranser_per_tjeneste(data_leveranse)
-fig.show()
+antall_leveranser_per_tjeneste(data_leveranse)
 ```
 
 ## Per modul
 ```{python}
-fig = antall_leveranser_per_modul(data_leveranse)
-fig.show()
+antall_leveranser_per_modul(data_leveranse)
 ```
 
 ## Per sak
 ```{python}
-fig = antall_leveranser_per_sak(data_leveranse)
-fig.show()
+antall_leveranser_per_sak(data_leveranse)
 ```
 
 :::
@@ -168,15 +158,13 @@ fig.show()
 ## Aktive saker
 ```{python}
 data_input = data_statistikk[data_statistikk.aktiv_sak]
-fig = virksomhetsprofil(data_input, title="Virksomhetsprofil av alle aktive saker")
-fig.show()
+virksomhetsprofil(data_input, title="Virksomhetsprofil av alle aktive saker")
 ```
 
 ## Vurderte
 ```{python}
 data_input = data_statistikk[data_statistikk.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
-fig = virksomhetsprofil(data_input, title="Vurderte virksomheter")
-fig.show()
+virksomhetsprofil(data_input, title="Vurderte virksomheter")
 ```
 
 ## Vurderte ikke aktuell
@@ -185,16 +173,14 @@ data_input = data_statistikk[
     (data_statistikk.status=="IKKE_AKTUELL") &
     (data_statistikk.forrige_status=="VURDERES")
 ].drop_duplicates("saksnummer", keep="last")
-fig = virksomhetsprofil(data_input, title="Virksomheter vurderte ikke aktuell")
-fig.show()
+virksomhetsprofil(data_input, title="Virksomheter vurderte ikke aktuell")
 ```
 :::
 
 
 # Statusflyt
 ```{python}
-fig = statusflyt(data_statistikk)
-fig.show()
+statusflyt(data_statistikk)
 ```
 
 ---
