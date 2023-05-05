@@ -25,7 +25,7 @@ def load_data(project, dataset, table):
     return data
 
 
-def preprocess_data(data_statistikk):
+def preprocess_data_statistikk(data_statistikk):
 
     # Fjern dupliserte rader
     data_statistikk = data_statistikk.drop_duplicates("endretAvHendelseId").reset_index(drop=True)
@@ -89,3 +89,15 @@ def preprocess_data(data_statistikk):
     data_statistikk.loc[data_statistikk.antallPersoner.isna(), "antallPersoner_gruppe"] = "Ukjent"
 
     return data_statistikk
+
+
+def preprocess_data_leveranse(data_leveranse):
+
+    data_leveranse = (
+        data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
+        .drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
+    )
+
+    data_leveranse = data_leveranse[data_leveranse.status!="SLETTET"]
+
+    return data_leveranse

@@ -113,17 +113,7 @@ def antall_saker_per_status(data_statistikk):
 
 
 def antall_leveranser_per_sak(data_leveranse):
-
-    leveranse_status = (
-        data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
-        .drop_duplicates(["saksnummer", "iaTjenesteNavn", "iaModulId"], keep="last")
-    )
-
-    leveranser_per_sak = (
-        leveranse_status[leveranse_status.status!="SLETTET"]
-        .groupby("saksnummer")
-        .iaModulId.nunique()
-    )
+    leveranser_per_sak = data_leveranse.groupby("saksnummer").iaModulId.nunique()
 
     fig = go.Figure(
         data=[
@@ -143,15 +133,10 @@ def antall_leveranser_per_sak(data_leveranse):
 
 
 def antall_leveranser_per_tjeneste(data_leveranse):
-
-    leveranse_status = (
-        data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
-        .drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
-    )
-
     leveranser_per_tjeneste = (
-        leveranse_status[leveranse_status.status!="SLETTET"]
-        .groupby("iaTjenesteNavn").saksnummer.nunique()
+        data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
+        .groupby("iaTjenesteNavn")
+        .saksnummer.nunique()
         .sort_values(ascending=True)
         .reset_index()
     )
@@ -177,14 +162,9 @@ def antall_leveranser_per_tjeneste(data_leveranse):
 
 def antall_leveranser_per_modul(data_leveranse):
 
-    leveranse_status = (
-        data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True)
-        .drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
-    )
-
     leveranser_per_modul = (
-        leveranse_status[leveranse_status.status!="SLETTET"]
-        .groupby(["iaTjenesteNavn", "iaModulNavn"]).saksnummer.nunique()
+        data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
+        .saksnummer.nunique()
         .sort_values(ascending=False)
         .reset_index()
     )

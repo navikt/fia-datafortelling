@@ -22,7 +22,11 @@ import os
 from datetime import datetime
 import pytz
 
-from code.helper import load_data, preprocess_data
+from code.helper import (
+    load_data,
+    preprocess_data_statistikk,
+    preprocess_data_leveranse,
+)
 from code.plots import (
     aktive_saker_per_fylke,
     dager_siden_siste_oppdatering,
@@ -39,7 +43,8 @@ DATASET = os.environ['DATASET']
 data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
-data_statistikk = preprocess_data(data_statistikk)
+data_statistikk = preprocess_data_statistikk(data_statistikk)
+data_leveranse = preprocess_data_leveranse(data_leveranse)
 ```
 
 ## Antall saker
