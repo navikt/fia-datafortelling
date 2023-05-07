@@ -125,8 +125,8 @@ def antall_leveranser_per_sak(data_leveranse):
 
     fig.update_layout(
         height=500, width=850,
-        xaxis_title="Antall leveranser",
-        yaxis_title="Antall saker",
+        xaxis_title="Antall moduler",
+        yaxis_title="Antall saker (fullførte og under arbeid)",
     )
 
     return fig
@@ -216,6 +216,7 @@ def antall_leveranser_per_modul(data_leveranse):
     
     return fig
 
+
 def virksomhetsprofil(data_input, title):
     data = data_input.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
@@ -271,7 +272,6 @@ def virksomhetsprofil(data_input, title):
         xaxis_tickvals=list(range(len(storrelse_sortering))),
         xaxis_ticktext=list(storrelse_sortering),
     )
-
 
     # Sykefraværsprosent
     fig.add_trace(go.Histogram(x=data.sykefraversprosent), row=1, col=2)
@@ -334,13 +334,13 @@ def virksomhetsprofil(data_input, title):
         .sort_values(ascending=True)
         .reset_index()
     )
-    n_nering = 10
+    show_n_neringer = 10
     truncation_map = dict(zip(data.hoved_nering, data.hoved_nering_truncated))
     fig.add_trace(
         go.Bar(
-            y=virksomheter_per_nering[-n_nering:].hoved_nering,
-            x=virksomheter_per_nering[-n_nering:].saksnummer,
-            text=virksomheter_per_nering[-n_nering:].saksnummer,
+            y=virksomheter_per_nering[-show_n_neringer:].hoved_nering,
+            x=virksomheter_per_nering[-show_n_neringer:].saksnummer,
+            text=virksomheter_per_nering[-show_n_neringer:].saksnummer,
             orientation="h",
             
         ),
