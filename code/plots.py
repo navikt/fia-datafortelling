@@ -161,6 +161,13 @@ def antall_leveranser_per_tjeneste(data_leveranse):
         xaxis_showticklabels=False,
         xaxis_title="Antall saker",
         xaxis_title_standoff=80,
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=0,
+            xanchor="right",
+            x=1
+        ),
     )
 
     return fig
