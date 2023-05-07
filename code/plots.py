@@ -77,7 +77,8 @@ def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
         ]
     )
     fig.update_layout(
-        height=500, width=850,
+        height=500,
+        width=850,
         xaxis_title="Dager siden siste oppdatering i Fia",
         yaxis_title="Antall saker",
     )
@@ -99,7 +100,9 @@ def antall_saker_per_status(data_statistikk):
     fig = go.Figure(
         data=[
             go.Bar(
-                y=saker_per_status["siste_status"].str.capitalize().str.replace("_", " "),
+                y=saker_per_status["siste_status"]
+                .str.capitalize()
+                .str.replace("_", " "),
                 x=saker_per_status["saksnummer"],
                 text=saker_per_status["saksnummer"],
                 orientation="h",
@@ -115,16 +118,11 @@ def antall_saker_per_status(data_statistikk):
 def antall_leveranser_per_sak(data_leveranse):
     leveranser_per_sak = data_leveranse.groupby("saksnummer").iaModulId.nunique()
 
-    fig = go.Figure(
-        data=[
-            go.Histogram(
-                x=leveranser_per_sak
-            )
-        ]
-    )
+    fig = go.Figure(data=[go.Histogram(x=leveranser_per_sak)])
 
     fig.update_layout(
-        height=500, width=850,
+        height=500,
+        width=850,
         xaxis_title="Antall moduler",
         yaxis_title="Antall saker (fullførte og under arbeid)",
     )
@@ -145,36 +143,32 @@ def antall_leveranser_per_tjeneste(data_leveranse):
 
     for status in leveranser_per_tjeneste.status.unique():
         leveranser_per_tjeneste_filtered = leveranser_per_tjeneste[
-            leveranser_per_tjeneste.status==status
+            leveranser_per_tjeneste.status == status
         ]
-        fig.add_trace(go.Bar(
-            y=leveranser_per_tjeneste_filtered["iaTjenesteNavn"],
-            x=leveranser_per_tjeneste_filtered["saksnummer"],
-            text=leveranser_per_tjeneste_filtered["saksnummer"],
-            orientation='h',
-            name=status.capitalize().replace("_", " "),
-        ))
+        fig.add_trace(
+            go.Bar(
+                y=leveranser_per_tjeneste_filtered["iaTjenesteNavn"],
+                x=leveranser_per_tjeneste_filtered["saksnummer"],
+                text=leveranser_per_tjeneste_filtered["saksnummer"],
+                orientation="h",
+                name=status.capitalize().replace("_", " "),
+            )
+        )
 
     fig.update_layout(
-        height=500, width=850,
+        height=500,
+        width=850,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
         xaxis_title="Antall saker",
         xaxis_title_standoff=80,
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=0,
-            xanchor="right",
-            x=1
-        ),
+        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
     )
 
     return fig
 
 
 def antall_leveranser_per_modul(data_leveranse):
-
     leveranser_per_modul = (
         data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
         .saksnummer.nunique()
@@ -186,34 +180,29 @@ def antall_leveranser_per_modul(data_leveranse):
 
     for tjeneste in leveranser_per_modul.iaTjenesteNavn.unique():
         leveranser_per_modul_filtered = leveranser_per_modul[
-            leveranser_per_modul.iaTjenesteNavn==tjeneste
+            leveranser_per_modul.iaTjenesteNavn == tjeneste
         ]
         fig.add_trace(
             go.Bar(
                 y=leveranser_per_modul_filtered.iaModulNavn,
                 x=leveranser_per_modul_filtered.saksnummer,
                 text=leveranser_per_modul_filtered.saksnummer,
-                orientation='h',
+                orientation="h",
                 name=tjeneste,
             )
         )
 
     fig.update_layout(
-        height=500, width=850,
+        height=500,
+        width=850,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
         xaxis_title="Antall saker (fullførte og under arbeid)",
         xaxis_title_standoff=80,
         yaxis_autorange="reversed",
-        legend=dict(
-            orientation="h",
-            yanchor="bottom",
-            y=0,
-            xanchor="right",
-            x=1
-        ),
+        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
     )
-    
+
     return fig
 
 
@@ -290,10 +279,7 @@ def virksomhetsprofil(data_input, title):
 
     # Sektor
     virksomheter_per_sektor = (
-        data.groupby("sektor")
-        .saksnummer.nunique()
-        .reset_index()
-        .sort_values("sektor")
+        data.groupby("sektor").saksnummer.nunique().reset_index().sort_values("sektor")
     )
     fig.add_trace(
         go.Pie(
@@ -342,7 +328,6 @@ def virksomhetsprofil(data_input, title):
             x=virksomheter_per_nering[-show_n_neringer:].saksnummer,
             text=virksomheter_per_nering[-show_n_neringer:].saksnummer,
             orientation="h",
-            
         ),
         row=3,
         col=2,
@@ -353,7 +338,8 @@ def virksomhetsprofil(data_input, title):
     )
     fig.update_xaxes(
         visible=False,
-        row=3, col=2,
+        row=3,
+        col=2,
     )
 
     return fig
