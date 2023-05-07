@@ -164,13 +164,13 @@ moduler_per_maaned(data_leveranse)
 ## Aktive saker
 ```{python}
 data_input = data_statistikk[data_statistikk.aktiv_sak]
-virksomhetsprofil(data_input, title="Virksomhetsprofil av alle aktive saker")
+virksomhetsprofil(data_input, title="Saker med nåværende status Vurderes, Kontaktes, Kartlegges, eller Vi bistår")
 ```
 
 ## Vurderte
 ```{python}
 data_input = data_statistikk[data_statistikk.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
-virksomhetsprofil(data_input, title="Vurderte virksomheter")
+virksomhetsprofil(data_input, title="Saker som hadde eller har status Vurderes")
 ```
 
 ## Vurderte ikke aktuell
@@ -179,7 +179,7 @@ data_input = data_statistikk[
     (data_statistikk.status=="IKKE_AKTUELL") &
     (data_statistikk.forrige_status=="VURDERES")
 ].drop_duplicates("saksnummer", keep="last")
-virksomhetsprofil(data_input, title="Virksomheter vurderte ikke aktuell")
+virksomhetsprofil(data_input, title="Saker som gikk fra status Vurderes til Ikke aktuell")
 ```
 :::
 
