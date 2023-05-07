@@ -213,7 +213,7 @@ def virksomhetsprofil(data_input, title):
 
     specs = [
         [{}, {}],
-        [{"type": "domain"}, {}],
+        [{"type": "domain", "r": 0.1}, {}],
         [{}, {}],
     ]
     subplot_titles = (
