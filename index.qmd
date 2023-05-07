@@ -38,6 +38,7 @@ from code.plots import (
     virksomhetsprofil,
     statusflyt,
 )
+from code.tables import moduler_per_maaned
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
@@ -146,6 +147,11 @@ antall_leveranser_per_modul(data_leveranse)
 ## Per sak
 ```{python}
 antall_leveranser_per_sak(data_leveranse)
+```
+
+## Fullførte per måned
+```{python}
+moduler_per_maaned(data_leveranse)
 ```
 
 :::
