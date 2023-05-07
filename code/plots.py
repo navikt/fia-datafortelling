@@ -99,7 +99,7 @@ def antall_saker_per_status(data_statistikk):
     fig = go.Figure(
         data=[
             go.Bar(
-                y=saker_per_status["siste_status"],
+                y=saker_per_status["siste_status"].str.capitalize().str.replace("_", " "),
                 x=saker_per_status["saksnummer"],
                 text=saker_per_status["saksnummer"],
                 orientation="h",
@@ -152,7 +152,7 @@ def antall_leveranser_per_tjeneste(data_leveranse):
             x=leveranser_per_tjeneste_filtered["saksnummer"],
             text=leveranser_per_tjeneste_filtered["saksnummer"],
             orientation='h',
-            name=status,
+            name=status.capitalize().replace("_", " "),
         ))
 
     fig.update_layout(
@@ -299,7 +299,7 @@ def virksomhetsprofil(data_input, title):
         go.Pie(
             labels=virksomheter_per_sektor.sektor,
             values=virksomheter_per_sektor.saksnummer,
-            text=virksomheter_per_sektor.sektor,
+            text=virksomheter_per_sektor.sektor.str.capitalize(),
             sort=False,
         ),
         row=2,
@@ -317,7 +317,7 @@ def virksomhetsprofil(data_input, title):
     )
     fig.add_trace(
         go.Bar(
-            y=virksomheter_per_bransje.bransjeprogram,
+            y=virksomheter_per_bransje.bransjeprogram.str.capitalize(),
             x=virksomheter_per_bransje.saksnummer,
             text=virksomheter_per_bransje.saksnummer,
             orientation="h",
@@ -371,7 +371,7 @@ def statusflyt(data_statistikk):
         go.Sankey(
             node=dict(
                 pad=200,
-                label=statusordre,
+                label=[x.capitalize().replace("_", " ") for x in statusordre],
             ),
             link=dict(
                 source=source_status,
