@@ -5,11 +5,12 @@ from tabulate import tabulate
 
 
 def moduler_per_maaned(data_leveranse):
-    data_leveranse.loc[
-        data_leveranse.status == "LEVERT", "fullfort_yearmonth"
-    ] = data_leveranse[data_leveranse.status == "LEVERT"].fullfort.apply(
-        lambda x: f"{x.year}/{x.month:02d}"
-    )
+    fullforte_saker = (
+        data_leveranse.status == "LEVERT"
+    ) & ~data_leveranse.fullfort.isna()
+    data_leveranse.loc[fullforte_saker, "fullfort_yearmonth"] = data_leveranse[
+        fullforte_saker
+    ].fullfort.apply(lambda x: f"{x.year}/{x.month:02d}")
 
     table = pd.pivot_table(
         data=(
