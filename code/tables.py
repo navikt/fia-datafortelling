@@ -14,12 +14,14 @@ def moduler_per_maaned(data_leveranse):
 
     table = pd.pivot_table(
         data=(
-            data_leveranse.groupby(["iaModulNavn", "fullfort_yearmonth"])
+            data_leveranse.groupby(
+                ["iaTjenesteNavn", "iaModulNavn", "fullfort_yearmonth"]
+            )
             .saksnummer.size()
             .reset_index()
         ),
         values="saksnummer",
-        index="iaModulNavn",
+        index=["iaTjenesteNavn", "iaModulNavn"],
         columns="fullfort_yearmonth",
         aggfunc=np.sum,
     )
@@ -29,8 +31,9 @@ def moduler_per_maaned(data_leveranse):
         .assign(Total=table.sum(axis=1))
         .astype(int)
         .sort_values("Total", ascending=False)
+        .sort_values("iaTjenesteNavn")
         .reset_index()
-        .rename(columns={"iaModulNavn": "IA-modul"})
+        .rename(columns={"iaTjenesteNavn": "IA-tjeneste", "iaModulNavn": "IA-modul"})
     )
 
     return Markdown(tabulate(table.to_numpy(), headers=table.columns))
