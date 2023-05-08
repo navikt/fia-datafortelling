@@ -17,6 +17,10 @@ spec:
   ttlSecondsAfterFinished: 340
   schedule: "*/30 7-17 * * *"
   backoffLimit: 2
+  accessPolicy:
+    outbound:
+      external:
+      - host: https://nada.intern.nav.no
   gcp:
     bigQueryDatasets:
       - name: {{ dataset }}
