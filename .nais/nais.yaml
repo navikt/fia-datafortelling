@@ -20,7 +20,7 @@ spec:
   accessPolicy:
     outbound:
       external:
-      - host: https://nada.intern.nav.no
+      - host: {{ nada_env }}
   gcp:
     bigQueryDatasets:
       - name: {{ dataset }}
