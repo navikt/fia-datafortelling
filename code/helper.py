@@ -50,7 +50,6 @@ def preprocess_data_statistikk(data_statistikk):
 
     # Fjern rader som ikke er relevant til analysen
     data_statistikk = data_statistikk[data_statistikk.hendelse!="TA_EIERSKAP_I_SAK"].reset_index(drop=True)
-    data_statistikk = data_statistikk[data_statistikk.status!="NY"].reset_index(drop=True)
 
     # Fjern rader basert på tilbake-knapp
     tilbake_rader = data_statistikk[data_statistikk.hendelse=="TILBAKE"].index.tolist()

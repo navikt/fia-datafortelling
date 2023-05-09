@@ -86,7 +86,7 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 ## Antall saker per status
 
 ```{python}
-antall_saker_per_status(data_statistikk[data_statistikk.siste_status!="SLETTET"])
+antall_saker_per_status(data_statistikk[~data_statistikk.siste_status.isin(["SLETTET", "NY"])])
 ```
 {{< include includes/status-forklaring.qmd >}}
 
