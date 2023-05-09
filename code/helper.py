@@ -25,6 +25,21 @@ def load_data(project, dataset, table):
     return data
 
 
+def load_data_deduplicate(project, dataset, table):
+    sql_query = f"""
+        SELECT
+           * except (radnummerBasertPaaTidsstempel)
+        FROM (
+            SELECT
+                *,
+                row_number() over (partition by endretAvHendelseId order by tidsstempel desc) radnummerBasertPaaTidsstempel
+            FROM `{project}.{dataset}.{table}`
+        ) WHERE radnummerBasertPaaTidsstempel = 1;
+    """
+    bq_client = Client(project=project)
+    data = bq_client.query(query=sql_query).to_dataframe()
+    return data
+
 def preprocess_data_statistikk(data_statistikk):
 
     # Fjern dupliserte rader
