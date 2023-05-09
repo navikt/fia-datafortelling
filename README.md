@@ -12,8 +12,6 @@ Installer quarto ved å følge guiden [på quarto sine nettsider](https://quarto
 Installer [python3](https://www.python.org/downloads/).
 
 Som en god praksis, opprett et virtuelt pythonmiljø i root til prosjektet:\
-`python3 -m pip install --upgrade pip`\
-`python3 -m pip install --user virtualenv`\
 `python3 -m venv env`\
 `source env/bin/activate`
 
