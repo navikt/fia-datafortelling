@@ -40,10 +40,8 @@ def load_data_deduplicate(project, dataset, table):
     data = bq_client.query(query=sql_query).to_dataframe()
     return data
 
-def preprocess_data_statistikk(data_statistikk):
 
-    # Fjern dupliserte rader
-    data_statistikk = data_statistikk.drop_duplicates("endretAvHendelseId").reset_index(drop=True)
+def preprocess_data_statistikk(data_statistikk):
 
     # Sorter basert på sak og endret tidspunkt
     data_statistikk = data_statistikk.sort_values(

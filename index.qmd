@@ -25,6 +25,7 @@ import pytz
 
 from code.helper import (
     load_data,
+    load_data_deduplicate,
     preprocess_data_statistikk,
     preprocess_data_leveranse,
 )
@@ -42,7 +43,7 @@ from code.tables import moduler_per_maaned
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
-data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
+data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
 data_statistikk = preprocess_data_statistikk(data_statistikk)
