@@ -16,25 +16,46 @@ statusordre = [
 
 
 def aktive_saker_per_fylke(data_statistikk):
-    aktive_saker_per_fylke = (
+    fylkeordre = (
         data_statistikk[data_statistikk.aktiv_sak]
         .groupby("fylkesnavn")
         .saksnummer.nunique()
         .sort_values(ascending=False)
-        .reset_index()
+        .index.tolist()
     )
 
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                x=aktive_saker_per_fylke["fylkesnavn"],
-                y=aktive_saker_per_fylke["saksnummer"],
-            )
-        ]
+    aktive_saker_per_fylke_og_status = (
+        data_statistikk[data_statistikk.aktiv_sak]
+        .groupby(["fylkesnavn", "siste_status"])
+        .saksnummer.nunique()
+        .reset_index()
+        .sort_values(
+            by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e))
+        )
+        .sort_values(
+            by="fylkesnavn", key=lambda col: -col.map(lambda e: fylkeordre.index(e))
+        )
     )
+
+    fig = go.Figure()
+
+    for status in aktive_saker_per_fylke_og_status.siste_status.unique():
+        aktive_saker_per_fylke_filtered = aktive_saker_per_fylke_og_status[
+            aktive_saker_per_fylke_og_status.siste_status == status
+        ]
+        fig.add_trace(
+            go.Bar(
+                y=aktive_saker_per_fylke_filtered["fylkesnavn"],
+                x=aktive_saker_per_fylke_filtered["saksnummer"],
+                name=status.capitalize().replace("_", " "),
+                orientation="h",
+            )
+        )
+
     fig.update_layout(
-        xaxis_title="Fylke",
-        yaxis_title="Antall aktive saker",
+        xaxis_title="Antall aktive saker",
+        barmode='stack',
+        hovermode="y unified",
     )
     return fig
 
