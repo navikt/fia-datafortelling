@@ -227,7 +227,7 @@ def antall_leveranser_per_modul(data_leveranse):
     return fig
 
 
-def virksomhetsprofil(data_input, title):
+def virksomhetsprofil(data_input):
     data = data_input.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
     ).drop_duplicates(["saksnummer"], keep="last")
@@ -257,7 +257,6 @@ def virksomhetsprofil(data_input, title):
     fig.update_layout(
         height=900,
         width=850,
-        title_text=title,
         showlegend=False,
     )
 
