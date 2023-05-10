@@ -91,6 +91,7 @@ statusflyt(data_statistikk)
 
 
 ## Antall saker per status
+Her vises antall saker per sine nåværende status, bortsett fra saker i status Slettet og Ny.
 
 ```{python}
 antall_saker_per_status(data_statistikk[~data_statistikk.siste_status.isin(["SLETTET", "NY"])])
@@ -105,12 +106,11 @@ aktive_saker_per_fylke(data_statistikk)
 ```
 
 ## Dager siden siste oppdatering i Fia
-Fia må holdes oppdatert for at vi har riktig statistikk, derfor sjekker vi ut taller som kan si noe om datakvalitet i Fia.
-Grafene nedenfor viser hvor mange dager det har vært siden siste oppdatering per sak i Fia.
-Vi teller som oppdatering endringer av status, leveranser som blir lagt til eller fullførte, og tatt eierskap.
-Hvis en endring av status er tatt tilbake eller en leveranse blir slettet, telles den hendelsen og den respektive slettet/angret hendelsen ikke som en oppdatering.
-Vi viser disse tallene delt per status, siden statusene kan ha forskjellige typiske varigheter.
-Grafene gir en indikasjon av hvor mange saker ligger stille i Fia.
+Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
+Vi teller som oppdatering endringer av status, leveranser som blir lagt til eller fullført, og tatt eierskap.
+Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke den hendelsen og den respektive slettet/angret hendelsen som oppdateringer.
+Vi viser disse tallene delt på status, siden statusene kan ha ulike typiske varigheter.
+Grafene gir en indikasjon på hvor mange saker ligger urørt i Fia.
 
 ::: {.panel-tabset}
 ## Alle aktive saker
@@ -149,8 +149,8 @@ dager_siden_siste_oppdatering(
 
 
 ## Leveranser
-Når en sak har status "Vi bistår" kan eieren til saken registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
-En sak kan ikke gå videre til status "Fullført" før alle leveranser er satt som levert/fullført, eller slettet.
+Når en sak har status Vi bistår kan sakseier registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
+En sak kan ikke gå videre til status Fullført før alle registrerte leveranser er satt som levert/fullført eller er slettet.
 
 ::: {.panel-tabset}
 
@@ -166,14 +166,14 @@ antall_leveranser_per_modul(data_leveranse)
 
 ## Per sak
 Grafen nedenfor viser hvor mange moduler som leveres til virksomheter under bistand.
-Her gjelder alle saker som hadde eller har status "Vi bistår" og har registrerte leveranser.
+Her gjelder alle saker som hadde eller har status Vi bistår og har registrerte leveranser.
 
 ```{python}
 antall_leveranser_per_sak(data_leveranse)
 ```
 
 ## Per måned
-Tabellen viser antall saker per modul og måned som modulen ble registrert som levert/fullført.
+Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert/fullført.
 
 ```{python}
 moduler_per_maaned(data_leveranse)
@@ -183,26 +183,32 @@ moduler_per_maaned(data_leveranse)
 
 
 ## Virksomhetsprofil
-
+Her vises profilene av virksomheter vi jobber med nå (Aktive saker), alle virksomheter vi har vurdert og registrert i Fia (Vurderte), og virksomheter som vi vurderte som ikke aktuell (Vurderte ikke aktuell).
+Grafene viser antall unike virksomheter per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
+Gjeldende tidspunkter er nevnt over hver graf.
 
 ::: {.panel-tabset}
 
 ## Aktive saker
-Saker med nåværende status Vurderes, Kontaktes, Kartlegges, eller Vi bistår.
+Saker med nåværende status Vurderes, Kontaktes, Kartlegges, eller Vi bistår.\
+Tidspunkt: siste statusendring.
 ```{python}
 data_input = data_statistikk[data_statistikk.aktiv_sak]
 virksomhetsprofil(data_input)
 ```
 
 ## Vurderte
-Saker som hadde eller har status Vurderes.
+Saker som hadde eller har status Vurderes.\
+Tidspunkt: statusendring fra Ny til Vurderes.
 ```{python}
 data_input = data_statistikk[data_statistikk.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
 
 ## Vurderte ikke aktuell
-Saker som gikk fra status Vurderes til Ikke aktuell.
+Saker som gikk fra status Vurderes til Ikke aktuell.\
+Tidspunkt: statusendring fra Vurderes til Ikke aktuell.
 ```{python}
 data_input = data_statistikk[
     (data_statistikk.status=="IKKE_AKTUELL") &
