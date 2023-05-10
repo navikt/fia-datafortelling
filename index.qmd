@@ -83,12 +83,14 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 
 :::
 
+## Statusflyt
+
 Grafen nedenfor viser antall statusendringer som var registrert i Fia siden starten 10.05.2022.
 Vi beholder status Ny her for å kunne vise hvor mange som står i Vurderes nå.
 ```{python}
 statusflyt(data_statistikk)
 ```
-
+{{< include includes/status-forklaring.qmd >}}
 
 ## Antall saker per status
 Her vises antall saker per sine nåværende status, bortsett fra saker i status Slettet og Ny.
