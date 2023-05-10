@@ -400,7 +400,12 @@ def begrunnelse_ikke_aktuell(data_statistikk):
         "[]"
     ).str.split(",")
     ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
-    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
+    ikke_aktuell.ikkeAktuelBegrunnelse = (
+        ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
+        .str.replace("_", " ")
+        .str.capitalize()
+        .str.replace("bht", "BHT")
+    )
 
     ikke_aktuell_per_begrunnelse = (
         ikke_aktuell.groupby("ikkeAktuelBegrunnelse")
@@ -412,9 +417,7 @@ def begrunnelse_ikke_aktuell(data_statistikk):
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
-            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse.str.replace(
-                "_", " "
-            ).str.capitalize(),
+            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
             x=ikke_aktuell_per_begrunnelse.saksnummer,
             text=ikke_aktuell_per_begrunnelse.saksnummer,
             orientation="h",
