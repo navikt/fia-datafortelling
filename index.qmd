@@ -105,7 +105,7 @@ aktive_saker_per_fylke(data_statistikk)
 
 ## Dager siden siste oppdatering i Fia
 Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
-Vi teller som oppdatering endringer av status, leveranser som blir lagt til eller fullført, og tatt eierskap.
+Vi teller som oppdatering endringer av status, leveranser som blir lagt til eller satt til levert, og tatt eierskap.
 Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke den hendelsen og den respektive slettet/angret hendelsen som oppdateringer.
 Vi viser disse tallene delt på status, siden statusene kan ha ulike typiske varigheter.
 Grafene gir en indikasjon på hvor mange saker ligger urørt i Fia.
@@ -148,7 +148,7 @@ dager_siden_siste_oppdatering(
 
 ## Leveranser
 Når en sak har status "Vi bistår" kan sakseier registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
-En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert/fullført eller er slettet.
+En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
 
 ::: {.panel-tabset}
 
@@ -171,7 +171,7 @@ antall_leveranser_per_sak(data_leveranse)
 ```
 
 ## Per måned
-Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert/fullført.
+Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
 
 ```{python}
 moduler_per_maaned(data_leveranse)
