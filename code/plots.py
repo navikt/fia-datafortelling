@@ -372,12 +372,14 @@ def statusflyt(data_statistikk):
     target_status = status_endringer.index.get_level_values(1).map(status_indexes)
     count_endringer = status_endringer.values
 
+    status_label = [x.capitalize().replace("_", " ") for x in statusordre]
+    status_label = [x if x!="Ny" else "Alle saker" for x in status_label]
     fig = go.Figure()
     fig.add_trace(
         go.Sankey(
             node=dict(
                 pad=200,
-                label=[x.capitalize().replace("_", " ") for x in statusordre],
+                label=status_label,
             ),
             link=dict(
                 source=source_status,
