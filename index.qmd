@@ -45,6 +45,7 @@ from code.plots import (
     statusflyt,
 )
 from code.tables import moduler_per_maaned
+from code.indicators import antall_saker_indicator
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -56,11 +57,11 @@ data_statistikk = preprocess_data_statistikk(data_statistikk)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
 ```
 
+
 ## Antall saker
 
 ```{python}
-print("Totalt antall saker: ", data_statistikk.saksnummer.nunique())
-print("Antall aktive saker: ", data_statistikk[data_statistikk.aktiv_sak].saksnummer.nunique())
+antall_saker_indicator(data_statistikk)
 ```
 
 ::: {.callout-note}
