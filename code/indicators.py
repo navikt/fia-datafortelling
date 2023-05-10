@@ -10,10 +10,12 @@ def antall_saker_indicator(data_statistikk):
             [{"type": "indicator"}, {"type": "indicator"}],
         ],
     )
+
+    forste_sak_dato = data_statistikk.endretTidspunkt.min().strftime("%d.%m.%Y")
     fig.add_trace(
         go.Indicator(
             mode="number",
-            title_text="Totalt antall saker",
+            title_text=f"Totalt antall saker<br><span style='font-size:0.6em;color:gray'>Siden {forste_sak_dato}</span><br>",
             value=data_statistikk.saksnummer.nunique(),
             number={"valueformat": ","},
         ),
@@ -23,7 +25,7 @@ def antall_saker_indicator(data_statistikk):
     fig.add_trace(
         go.Indicator(
             mode="number",
-            title_text="Antall aktive saker",
+            title_text="Antall aktive saker<br><span style='font-size:0.6em;color:gray'>(Vurderes, Kontaktes, Kartlegges og Vi bistår)</span><br>",
             value=data_statistikk[data_statistikk.aktiv_sak].saksnummer.nunique(),
             number={"valueformat": ","},
         ),
@@ -32,6 +34,7 @@ def antall_saker_indicator(data_statistikk):
     )
     fig.update_layout(
         height=230,
-        width=700,
+        width=850,
     )
+
     return fig
