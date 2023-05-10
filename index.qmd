@@ -1,5 +1,11 @@
 ---
 title: "Fia datafortelling"
+subtitle: Statistikk som viser bruk av Fagsystemet for IA (Fia).
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss"
+author: Team Pia
 execute:
     echo: false
     warning: false
@@ -12,10 +18,16 @@ format:
 jupyter: python3
 ---
 
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
+
+Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
+ Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia` ved `nav.no`. 
+
+
 ```{python}
 import os
-from datetime import datetime
-import pytz
 
 from code.helper import (
     load_data,
@@ -36,21 +48,6 @@ from code.plots import (
 from code.tables import moduler_per_maaned
 
 
-tidsstempel = datetime.now(pytz.timezone("Europe/Oslo")).strftime("%d.%m.%Y %H:%M:%S")
-print(f"Denne siden ble generert {tidsstempel}")
-```
-
-Statistikk som viser bruk av Fagsystemet for IA (Fia).
-
-<span style="color:red;">
-NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
-</span>
-
-Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
- Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia` ved `nav.no`. 
-
-
-```{python}
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
 data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
