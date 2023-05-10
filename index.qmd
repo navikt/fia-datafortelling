@@ -12,16 +12,6 @@ format:
 jupyter: python3
 ---
 
-Statistikk som viser bruk av Fagsystemet for IA (Fia).
-
-<span style="color:red;">
-NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
-</span>
-
-Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
- Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia` ved `nav.no`. 
-
-
 ```{python}
 import os
 from datetime import datetime
@@ -45,6 +35,22 @@ from code.plots import (
 )
 from code.tables import moduler_per_maaned
 
+
+tidsstempel = datetime.now(pytz.timezone("Europe/Oslo")).strftime("%d.%m.%Y %H:%M:%S")
+print(f"Denne siden ble generert {tidsstempel}")
+```
+
+Statistikk som viser bruk av Fagsystemet for IA (Fia).
+
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
+
+Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
+ Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia` ved `nav.no`. 
+
+
+```{python}
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
 data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
@@ -209,9 +215,3 @@ data_input = data_statistikk[
 virksomhetsprofil(data_input)
 ```
 :::
-
----
-
-```{python}
-print("Denne siden ble generert {}".format(datetime.now(pytz.timezone("Europe/Oslo")).isoformat()))
-```
