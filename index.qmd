@@ -86,7 +86,7 @@ Vi beholder status Ny her for å kunne vise hvor mange som står i Vurderes nå.
 ```{python}
 statusflyt(data_statistikk)
 ```
-{{< include includes/status-forklaring.qmd >}}
+{{< include includes/saksstatus-forklaring.qmd >}}
 
 ## Antall saker per status
 Her vises antall saker per sine nåværende status, bortsett fra saker i status Slettet og Ny.
@@ -94,8 +94,6 @@ Her vises antall saker per sine nåværende status, bortsett fra saker i status 
 ```{python}
 antall_saker_per_status(data_statistikk[~data_statistikk.siste_status.isin(["SLETTET", "NY"])])
 ```
-{{< include includes/status-forklaring.qmd >}}
-
 
 ## Antall aktive saker per fylke
 
@@ -179,6 +177,7 @@ moduler_per_maaned(data_leveranse)
 
 :::
 
+{{< include includes/leveransestatus-forklaring.qmd >}}
 
 ## Virksomhetsprofil
 Her vises profilen av virksomheter med saker registrert i Fia.

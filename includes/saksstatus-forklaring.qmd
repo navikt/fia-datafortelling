@@ -1,7 +1,5 @@
 ::: {.callout-note collapse="true"}
-## Forklaring av de forskjellige statusene i Fia
-
-# Saksstatuser
+## Forklaring av de forskjellige saksstatusene i Fia
 
 *   Vurderes
 
@@ -24,17 +22,5 @@
 *   Slettet
 
     Saken er feilregistrert og ikke lenger relevant.
-
-# Leveransestatuser
-UNDER_ARBEID, LEVERT, SLETTET
-*   Under arbeid
-
-    Har opprettet en leveranse og planlagt når den kan bli ferdig levert. (frist)
-*   Levert
-
-    Leveransen er ferdig levert.
-*   Slettet
-
-    Leveransen er feilregistrert eller ikke lenger aktuell.
 
 :::
