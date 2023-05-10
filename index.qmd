@@ -43,6 +43,7 @@ from code.plots import (
     antall_leveranser_per_modul,
     virksomhetsprofil,
     statusflyt,
+    begrunnelse_ikke_aktuell,
 )
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
@@ -221,3 +222,9 @@ data_input = data_statistikk[data_statistikk.siste_status=="IKKE_AKTUELL"].drop_
 virksomhetsprofil(data_input)
 ```
 :::
+
+
+## Begrunnelse på ikke aktuell
+```{python}
+begrunnelse_ikke_aktuell(data_statistikk)
+```

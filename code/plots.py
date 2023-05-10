@@ -390,3 +390,43 @@ def statusflyt(data_statistikk):
         )
     )
     return fig
+
+
+def begrunnelse_ikke_aktuell(data_statistikk):
+    ikke_aktuell = data_statistikk[
+        data_statistikk.siste_status == "IKKE_AKTUELL"
+    ].drop_duplicates("saksnummer", keep="last")
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
+        "[]"
+    ).str.split(",")
+    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
+
+    ikke_aktuell_per_begrunnelse = (
+        ikke_aktuell.groupby("ikkeAktuelBegrunnelse")
+        .saksnummer.nunique()
+        .sort_values()
+        .reset_index()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse.str.replace(
+                "_", " "
+            ).str.capitalize(),
+            x=ikke_aktuell_per_begrunnelse.saksnummer,
+            text=ikke_aktuell_per_begrunnelse.saksnummer,
+            orientation="h",
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        plot_bgcolor="rgb(255,255,255)",
+        xaxis_showticklabels=False,
+        xaxis_title="Antall saker med status ikke aktuell",
+        xaxis_title_standoff=80,
+    )
+
+    return fig
