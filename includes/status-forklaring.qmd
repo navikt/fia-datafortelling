@@ -1,22 +1,40 @@
 ::: {.callout-note collapse="true"}
 ## Forklaring av de forskjellige statusene i Fia
 
+# Saksstatuser
+
 *   Vurderes
 
-    Forklaring av Vurderes kommer på ett senere tidspunkt.
+    Vi vurderer å starte et sammarbeid med bedriften.
 *   Kontaktes
 
-    Forklaring av Kontaktes kommer på ett senere tidspunkt.
+    Bedriften kontaktes.
 *   Kartlegges
 
-    Forklaring av Kartlegges kommer på ett senere tidspunkt.
+    Har opprettet kontakt med bedrift og startet kartlegging av behov.
 *   Vi bistår
 
-    Forklaring av Vi bistår kommer på ett senere tidspunkt.
+    Bistand gitt innenfor en tidsavgrenset avtaleperiode.
 *   Fullført
 
-    Forklaring av Fullført kommer på ett senere tidspunkt.
+    Bidstanden er fulført og saken er avsluttet.
 *   Ikke aktuell
 
-    Forklaring av Ikke aktuell kommer på ett senere tidspunkt.
+    Saken er avbrutt med en begrunnelse.
+*   Slettet
+
+    Saken er feilregistrert og ikke lenger relevant.
+
+# Leveransestatuser
+UNDER_ARBEID, LEVERT, SLETTET
+*   Under arbeid
+
+    Har opprettet en leveranse og planlagt når den kan bli ferdig levert. (frist)
+*   Levert
+
+    Leveransen er ferdig levert.
+*   Slettet
+
+    Leveransen er feilregistrert eller ikke lenger aktuell.
+
 :::
