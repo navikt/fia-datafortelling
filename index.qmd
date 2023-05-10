@@ -190,21 +190,21 @@ Gjeldende tidspunkter er nevnt over hver graf.
 
 ## Aktive saker
 Saker med nåværende status "Vurderes", "Kontaktes", "Kartlegges", eller "Vi bistår".\
-Tidspunkt: siste statusendring.
+Tidspunkt: sist statusendring.
 ```{python}
 data_input = data_statistikk[data_statistikk.aktiv_sak]
 virksomhetsprofil(data_input)
 ```
 
-## Vurderte
+## Vurdert
 Saker som hadde eller har status "Vurderes".\
-Tidspunkt: statusendring fra "Ny" til "Vurderes".
+Tidspunkt: når statusen settes til "Vurderes".
 ```{python}
 data_input = data_statistikk[data_statistikk.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
 
-## Vurderte ikke aktuell
+## Vurdert ikke aktuell
 Saker som gikk fra status "Vurderes" til "Ikke aktuell".\
 Tidspunkt: statusendring fra "Vurderes" til "Ikke aktuell".
 ```{python}
@@ -212,6 +212,14 @@ data_input = data_statistikk[
     (data_statistikk.status=="IKKE_AKTUELL") &
     (data_statistikk.forrige_status=="VURDERES")
 ].drop_duplicates("saksnummer", keep="last")
+virksomhetsprofil(data_input)
+```
+
+## Ikke aktuell
+Saker med nåværende status "Ikke aktuell".\
+Tidspunkt: når statusen settes til "Ikke aktuell".
+```{python}
+data_input = data_statistikk[data_statistikk.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
 :::
