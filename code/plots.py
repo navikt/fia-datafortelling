@@ -56,6 +56,7 @@ def aktive_saker_per_fylke(data_statistikk):
         xaxis_title="Antall aktive saker",
         barmode='stack',
         hovermode="y unified",
+        legend_traceorder="reversed",
     )
     return fig
 
