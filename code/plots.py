@@ -54,7 +54,7 @@ def aktive_saker_per_fylke(data_statistikk):
 
     fig.update_layout(
         xaxis_title="Antall aktive saker",
-        barmode='stack',
+        barmode="stack",
         hovermode="y unified",
         legend_traceorder="reversed",
     )
@@ -374,7 +374,7 @@ def statusflyt(data_statistikk):
     count_endringer = status_endringer.values
 
     status_label = [x.capitalize().replace("_", " ") for x in statusordre]
-    status_label = [x if x!="Ny" else "Alle saker" for x in status_label]
+    status_label = [x if x != "Ny" else "Alle saker" for x in status_label]
     fig = go.Figure()
     fig.add_trace(
         go.Sankey(
