@@ -413,11 +413,10 @@ def begrunnelse_ikke_aktuell(data_statistikk):
 
     fig = go.Figure()
     fig.add_trace(
-        go.Bar(
-            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
-            x=ikke_aktuell_per_begrunnelse.saksnummer,
-            text=ikke_aktuell_per_begrunnelse.saksnummer,
-            orientation="h",
+        go.Pie(
+            labels=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
+            values=ikke_aktuell_per_begrunnelse.saksnummer,
+            text=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
         )
     )
     fig.update_layout(
