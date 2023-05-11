@@ -226,6 +226,7 @@ virksomhetsprofil(data_input)
 ```
 :::
 
+{{< include includes/ikke-aktuell-forklaring.qmd >}}
 
 ## Begrunnelse på ikke aktuell
 Her vises andel og antall saker per begrunnelse på ikke aktuell.
