@@ -148,6 +148,7 @@ dager_siden_siste_oppdatering(
 ## Leveranser
 Når en sak har status "Vi bistår" kan sakseier registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
 En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
+Slettet leveranser vises ikke i grafene under.
 
 ::: {.panel-tabset}
 
@@ -162,8 +163,8 @@ antall_leveranser_per_modul(data_leveranse)
 ```
 
 ## Per sak
-Grafen nedenfor viser hvor mange moduler som leveres til virksomheter under bistand.
-Her gjelder alle saker som hadde eller har status Vi bistår og har registrerte leveranser.
+Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
+Her gjelder alle saker som hadde eller har status "Vi bistår" og har registrerte leveranser.
 
 ```{python}
 antall_leveranser_per_sak(data_leveranse)
@@ -227,7 +228,8 @@ virksomhetsprofil(data_input)
 
 
 ## Begrunnelse på ikke aktuell
-Her vises antall saker med nåværende status "Ikke aktuell".
+Her vises andel og antall saker per begrunnelse på ikke aktuell.
+Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
 Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser.
 
 ::: {.panel-tabset}
