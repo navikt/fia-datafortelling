@@ -378,6 +378,9 @@ def statusflyt(data_statistikk):
             node=dict(
                 pad=200,
                 label=status_label,
+                # node position in the open interval (0, 1)
+                x=[0.001, 0.2, 0.4, 0.6, 0.8, 0.999, 0.999, 0.999],
+                y=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.001, 0.999],
             ),
             link=dict(
                 source=source_status,
