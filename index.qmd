@@ -30,7 +30,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 ```{python}
 import os
 
-from code.helper import (
+from code.datahandler import (
     load_data,
     load_data_deduplicate,
     preprocess_data_statistikk,
