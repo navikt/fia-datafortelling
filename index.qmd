@@ -5,10 +5,9 @@ title-block-banner: true
 title-block-banner-color: white
 date: now
 date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
 author: Team Pia
-language: 
-  title-block-published: "Oppdatert"
-  title-block-author-single: "Eier"
+author-title: "Eier"
 execute:
     echo: false
     warning: false
