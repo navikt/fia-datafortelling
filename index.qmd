@@ -227,9 +227,54 @@ virksomhetsprofil(data_input)
 
 
 ## Begrunnelse på ikke aktuell
-Her vises antall saker med nåværende status "Ikke aktuell", per begrunnelse.
+Her vises antall saker med nåværende status "Ikke aktuell".
 Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser.
 
+::: {.panel-tabset}
+
+## Fra alle mulige statuser
 ```{python}
 begrunnelse_ikke_aktuell(data_statistikk)
 ```
+
+## Fra Vurderes
+```{python}
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "VURDERES")
+    ]
+)
+```
+
+## Fra Kontaktes
+```{python}
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "KONTAKTES")
+    ]
+)
+```
+
+## Fra Kartlegges
+```{python}
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "KARTLEGGES")
+    ]
+)
+```
+
+## Fra Vi bistår
+```{python}
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "VI_BISTÅR")
+    ]
+)
+```
+
+:::
