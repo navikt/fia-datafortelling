@@ -2,6 +2,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from datetime import datetime, timezone
 
+from code.helper import annotate_ikke_offisiell_statistikk
 
 statusordre = [
     "NY",
@@ -58,7 +59,7 @@ def aktive_saker_per_fylke(data_statistikk):
         hovermode="y unified",
         legend_traceorder="normal",
     )
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
@@ -105,7 +106,7 @@ def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
         yaxis_title="Antall saker",
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def antall_saker_per_status(data_statistikk):
@@ -134,7 +135,7 @@ def antall_saker_per_status(data_statistikk):
     fig.update_xaxes(visible=False)
     fig.update_layout(plot_bgcolor="rgb(255,255,255)")
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def antall_leveranser_per_sak(data_leveranse):
@@ -149,7 +150,7 @@ def antall_leveranser_per_sak(data_leveranse):
         yaxis_title="Antall saker",
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def antall_leveranser_per_tjeneste(data_leveranse):
@@ -187,7 +188,7 @@ def antall_leveranser_per_tjeneste(data_leveranse):
         legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
 def antall_leveranser_per_modul(data_leveranse):
@@ -225,7 +226,7 @@ def antall_leveranser_per_modul(data_leveranse):
         legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
 def virksomhetsprofil(data_input):
@@ -360,7 +361,7 @@ def virksomhetsprofil(data_input):
         col=2,
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def statusflyt(data_statistikk):
@@ -389,7 +390,7 @@ def statusflyt(data_statistikk):
             ),
         )
     )
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def begrunnelse_ikke_aktuell(data_statistikk):
@@ -431,4 +432,4 @@ def begrunnelse_ikke_aktuell(data_statistikk):
         xaxis_title_standoff=80,
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
