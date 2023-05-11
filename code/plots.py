@@ -278,10 +278,7 @@ def virksomhetsprofil(data_input):
     storrelse_sortering = (
         data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
     )
-    fig.update_layout(
-        xaxis_tickvals=list(range(len(storrelse_sortering))),
-        xaxis_ticktext=list(storrelse_sortering),
-    )
+    fig.update_xaxes(categoryorder='array', categoryarray=storrelse_sortering)
 
     # Sykefraværsprosent
     fig.add_trace(go.Histogram(x=data.sykefraversprosent), row=1, col=2)
