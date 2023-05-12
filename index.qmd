@@ -226,8 +226,6 @@ virksomhetsprofil(data_input)
 ```
 :::
 
-{{< include includes/ikke-aktuell-forklaring.qmd >}}
-
 ## Begrunnelse på ikke aktuell
 Her vises andel og antall saker per begrunnelse på ikke aktuell.
 Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
@@ -281,3 +279,5 @@ begrunnelse_ikke_aktuell(
 ```
 
 :::
+
+{{< include includes/ikke-aktuell-forklaring.qmd >}}
