@@ -1,3 +1,4 @@
+---
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
@@ -5,7 +6,6 @@ metadata:
   namespace: pia
   labels:
     team: pia
-    app: fia-datafortelling
 spec:
   groups:
     - name: fia-datafortelling-alerts
