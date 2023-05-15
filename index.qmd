@@ -1,5 +1,13 @@
 ---
 title: "Fia datafortelling"
+subtitle: Statistikk som viser bruk av Fagsystemet for IA (Fia).
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
+author: Team Pia
+author-title: "Eier"
 execute:
     echo: false
     warning: false
@@ -12,19 +20,19 @@ format:
 jupyter: python3
 ---
 
-Statistikk som viser bruk av Fagsystemet for IA (Fia).
-
 Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
- Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia` ved `nav.no`. 
+Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia` ved `nav.no`.
 
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
 
 ```{python}
 import os
-from datetime import datetime
-import pytz
 
-from code.helper import (
+from code.datahandler import (
     load_data,
+    load_data_deduplicate,
     preprocess_data_statistikk,
     preprocess_data_leveranse,
 )
@@ -37,23 +45,26 @@ from code.plots import (
     antall_leveranser_per_modul,
     virksomhetsprofil,
     statusflyt,
+    begrunnelse_ikke_aktuell,
 )
 from code.tables import moduler_per_maaned
+from code.indicators import antall_saker_indicator
+
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
-data_statistikk = load_data(PROJECT, DATASET, "ia-sak-statistikk-v1")
+data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
 data_statistikk = preprocess_data_statistikk(data_statistikk)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
 ```
 
+
 ## Antall saker
 
 ```{python}
-print("Totalt antall saker: ", data_statistikk.saksnummer.nunique())
-print("Antall aktive saker: ", data_statistikk[data_statistikk.aktiv_sak].saksnummer.nunique())
+antall_saker_indicator(data_statistikk)
 ```
 
 ::: {.callout-note}
@@ -67,23 +78,21 @@ En aktiv sak i Fia er en sak som står i status Vurderes, Kontaktes, Kartlegges 
 En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Fullført.
 :::
 
-## Saksgang i Fia
 
-::: {.panel-tabset}
-## Forenklet saksgang
-![forenklet-saksgang](bilder/forenklet-saksgang.png)
-
-## Komplett saksgang
-![komplett-saksgang](bilder/komplett-saksgang.png)
-
-:::
-
-## Antall saker per status
+## Statusflyt i Fia
+Grafen nedenfor viser antall statusendringer som var registrert i Fia siden starten 10.05.2022.
 
 ```{python}
-antall_saker_per_status(data_statistikk[data_statistikk.siste_status!="SLETTET"])
+statusflyt(data_statistikk)
 ```
-{{< include includes/status-forklaring.qmd >}}
+{{< include includes/saksstatus-forklaring.qmd >}}
+
+
+## Antall saker per nåværende status
+
+```{python}
+antall_saker_per_status(data_statistikk[~data_statistikk.siste_status.isin(["SLETTET", "NY"])])
+```
 
 
 ## Antall aktive saker per fylke
@@ -92,7 +101,13 @@ antall_saker_per_status(data_statistikk[data_statistikk.siste_status!="SLETTET"]
 aktive_saker_per_fylke(data_statistikk)
 ```
 
+
 ## Dager siden siste oppdatering i Fia
+Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
+Vi teller som oppdatering endringer av status, leveranser som blir lagt til eller satt til levert, og tatt eierskap.
+Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke den hendelsen og den respektive slettet/angret hendelsen som oppdateringer.
+Vi viser disse tallene delt på status, siden statusene kan ha ulike typiske varigheter.
+Grafene gir en indikasjon på hvor mange saker ligger urørt i Fia.
 
 ::: {.panel-tabset}
 ## Alle aktive saker
@@ -131,6 +146,9 @@ dager_siden_siste_oppdatering(
 
 
 ## Leveranser
+Når en sak har status "Vi bistår" kan sakseier registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
+En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
+Slettet leveranser vises ikke i grafene under.
 
 ::: {.panel-tabset}
 
@@ -145,52 +163,121 @@ antall_leveranser_per_modul(data_leveranse)
 ```
 
 ## Per sak
+Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
+Her gjelder alle saker som hadde eller har status "Vi bistår" og har registrerte leveranser.
+
 ```{python}
 antall_leveranser_per_sak(data_leveranse)
 ```
 
-## Fullførte per måned
+## Per måned
+Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
+
 ```{python}
 moduler_per_maaned(data_leveranse)
 ```
 
 :::
 
+{{< include includes/leveransestatus-forklaring.qmd >}}
 
-# Virksomhetsprofil
+
+## Virksomhetsprofil
+Her vises profilen av virksomheter med saker registrert i Fia.
+Grafene viser antall unike virksomheter per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
+Gjeldende tidspunkter er nevnt over hver graf.
 
 ::: {.panel-tabset}
 
 ## Aktive saker
+Saker med nåværende status "Vurderes", "Kontaktes", "Kartlegges", eller "Vi bistår".\
+Tidspunkt: sist statusendring.
 ```{python}
 data_input = data_statistikk[data_statistikk.aktiv_sak]
-virksomhetsprofil(data_input, title="Saker med nåværende status Vurderes, Kontaktes, Kartlegges, eller Vi bistår")
+virksomhetsprofil(data_input)
 ```
 
-## Vurderte
+## Vurdert
+Saker som hadde eller har status "Vurderes".\
+Tidspunkt: når statusen settes til "Vurderes".
 ```{python}
 data_input = data_statistikk[data_statistikk.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
-virksomhetsprofil(data_input, title="Saker som hadde eller har status Vurderes")
+virksomhetsprofil(data_input)
 ```
 
-## Vurderte ikke aktuell
+## Vurdert ikke aktuell
+Saker som gikk fra status "Vurderes" til "Ikke aktuell".\
+Tidspunkt: statusendring fra "Vurderes" til "Ikke aktuell".
 ```{python}
 data_input = data_statistikk[
     (data_statistikk.status=="IKKE_AKTUELL") &
     (data_statistikk.forrige_status=="VURDERES")
 ].drop_duplicates("saksnummer", keep="last")
-virksomhetsprofil(data_input, title="Saker som gikk fra status Vurderes til Ikke aktuell")
+virksomhetsprofil(data_input)
+```
+
+## Ikke aktuell
+Saker med nåværende status "Ikke aktuell".\
+Tidspunkt: når statusen settes til "Ikke aktuell".
+```{python}
+data_input = data_statistikk[data_statistikk.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
+virksomhetsprofil(data_input)
 ```
 :::
 
+## Begrunnelse på ikke aktuell
+Her vises andel og antall saker per begrunnelse på ikke aktuell.
+Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
+Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser.
 
-# Statusflyt
+::: {.panel-tabset}
+
+## Fra alle mulige statuser
 ```{python}
-statusflyt(data_statistikk)
+begrunnelse_ikke_aktuell(data_statistikk)
 ```
 
----
-
+## Fra Vurderes
 ```{python}
-print("Denne siden ble generert {}".format(datetime.now(pytz.timezone("Europe/Oslo")).isoformat()))
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "VURDERES")
+    ]
+)
 ```
+
+## Fra Kontaktes
+```{python}
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "KONTAKTES")
+    ]
+)
+```
+
+## Fra Kartlegges
+```{python}
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "KARTLEGGES")
+    ]
+)
+```
+
+## Fra Vi bistår
+```{python}
+begrunnelse_ikke_aktuell(
+    data_statistikk[
+        (data_statistikk.status == "IKKE_AKTUELL")
+        & (data_statistikk.forrige_status == "VI_BISTÅR")
+    ]
+)
+```
+
+:::
+
+{{< include includes/ikke-aktuell-forklaring.qmd >}}

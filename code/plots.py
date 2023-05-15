@@ -2,6 +2,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from datetime import datetime, timezone
 
+from code.helper import annotate_ikke_offisiell_statistikk
 
 statusordre = [
     "NY",
@@ -16,27 +17,49 @@ statusordre = [
 
 
 def aktive_saker_per_fylke(data_statistikk):
-    aktive_saker_per_fylke = (
+    fylkeordre = (
         data_statistikk[data_statistikk.aktiv_sak]
         .groupby("fylkesnavn")
         .saksnummer.nunique()
         .sort_values(ascending=False)
-        .reset_index()
+        .index.tolist()
     )
 
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                x=aktive_saker_per_fylke["fylkesnavn"],
-                y=aktive_saker_per_fylke["saksnummer"],
-            )
+    aktive_saker_per_fylke_og_status = (
+        data_statistikk[data_statistikk.aktiv_sak]
+        .groupby(["fylkesnavn", "siste_status"])
+        .saksnummer.nunique()
+        .reset_index()
+        .sort_values(
+            by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e))
+        )
+        .sort_values(
+            by="fylkesnavn", key=lambda col: -col.map(lambda e: fylkeordre.index(e))
+        )
+    )
+
+    fig = go.Figure()
+
+    for status in aktive_saker_per_fylke_og_status.siste_status.unique():
+        aktive_saker_per_fylke_filtered = aktive_saker_per_fylke_og_status[
+            aktive_saker_per_fylke_og_status.siste_status == status
         ]
-    )
+        fig.add_trace(
+            go.Bar(
+                y=aktive_saker_per_fylke_filtered["fylkesnavn"],
+                x=aktive_saker_per_fylke_filtered["saksnummer"],
+                name=status.capitalize().replace("_", " "),
+                orientation="h",
+            )
+        )
+
     fig.update_layout(
-        xaxis_title="Fylke",
-        yaxis_title="Antall aktive saker",
+        xaxis_title="Antall aktive saker",
+        barmode="stack",
+        hovermode="y unified",
+        legend_traceorder="normal",
     )
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
@@ -83,7 +106,7 @@ def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
         yaxis_title="Antall saker",
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def antall_saker_per_status(data_statistikk):
@@ -112,7 +135,7 @@ def antall_saker_per_status(data_statistikk):
     fig.update_xaxes(visible=False)
     fig.update_layout(plot_bgcolor="rgb(255,255,255)")
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def antall_leveranser_per_sak(data_leveranse):
@@ -123,11 +146,11 @@ def antall_leveranser_per_sak(data_leveranse):
     fig.update_layout(
         height=500,
         width=850,
-        xaxis_title="Antall moduler",
-        yaxis_title="Antall saker (fullførte og under arbeid)",
+        xaxis_title="Antall moduler (leverte og under arbeid)",
+        yaxis_title="Antall saker",
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def antall_leveranser_per_tjeneste(data_leveranse):
@@ -165,7 +188,7 @@ def antall_leveranser_per_tjeneste(data_leveranse):
         legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
 def antall_leveranser_per_modul(data_leveranse):
@@ -197,16 +220,16 @@ def antall_leveranser_per_modul(data_leveranse):
         width=850,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
-        xaxis_title="Antall saker (fullførte og under arbeid)",
+        xaxis_title="Antall saker per modul (levert og under arbeid)",
         xaxis_title_standoff=80,
         yaxis_autorange="reversed",
         legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def virksomhetsprofil(data_input, title):
+def virksomhetsprofil(data_input):
     data = data_input.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
     ).drop_duplicates(["saksnummer"], keep="last")
@@ -222,7 +245,7 @@ def virksomhetsprofil(data_input, title):
         "Sektor",
         "Bransjeprogram",
         "",
-        "Hoved næring",
+        "Hovednæring",
     )
 
     fig = make_subplots(
@@ -236,7 +259,6 @@ def virksomhetsprofil(data_input, title):
     fig.update_layout(
         height=900,
         width=850,
-        title_text=title,
         showlegend=False,
     )
 
@@ -257,10 +279,7 @@ def virksomhetsprofil(data_input, title):
     storrelse_sortering = (
         data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
     )
-    fig.update_layout(
-        xaxis_tickvals=list(range(len(storrelse_sortering))),
-        xaxis_ticktext=list(storrelse_sortering),
-    )
+    fig.update_xaxes(categoryorder='array', categoryarray=storrelse_sortering)
 
     # Sykefraværsprosent
     fig.add_trace(go.Histogram(x=data.sykefraversprosent), row=1, col=2)
@@ -342,7 +361,7 @@ def virksomhetsprofil(data_input, title):
         col=2,
     )
 
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def statusflyt(data_statistikk):
@@ -352,12 +371,17 @@ def statusflyt(data_statistikk):
     target_status = status_endringer.index.get_level_values(1).map(status_indexes)
     count_endringer = status_endringer.values
 
+    status_label = [x.capitalize().replace("_", " ") for x in statusordre]
+    status_label = [x if x != "Ny" else "Alle saker" for x in status_label]
     fig = go.Figure()
     fig.add_trace(
         go.Sankey(
             node=dict(
                 pad=200,
-                label=[x.capitalize().replace("_", " ") for x in statusordre],
+                label=status_label,
+                # node position in the open interval (0, 1)
+                x=[0.001, 0.2, 0.4, 0.6, 0.8, 0.999, 0.999, 0.999],
+                y=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.001, 0.999],
             ),
             link=dict(
                 source=source_status,
@@ -366,4 +390,46 @@ def statusflyt(data_statistikk):
             ),
         )
     )
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def begrunnelse_ikke_aktuell(data_statistikk):
+    ikke_aktuell = data_statistikk[
+        data_statistikk.siste_status == "IKKE_AKTUELL"
+    ].drop_duplicates("saksnummer", keep="last")
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
+        "[]"
+    ).str.split(",")
+    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
+    ikke_aktuell.ikkeAktuelBegrunnelse = (
+        ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
+        .str.replace("_", " ")
+        .str.capitalize()
+        .str.replace("bht", "BHT")
+    )
+
+    ikke_aktuell_per_begrunnelse = (
+        ikke_aktuell.groupby("ikkeAktuelBegrunnelse")
+        .saksnummer.nunique()
+        .sort_values()
+        .reset_index()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Pie(
+            labels=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
+            values=ikke_aktuell_per_begrunnelse.saksnummer,
+            text=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        plot_bgcolor="rgb(255,255,255)",
+        xaxis_showticklabels=False,
+        xaxis_title="Antall saker med status ikke aktuell",
+        xaxis_title_standoff=80,
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)

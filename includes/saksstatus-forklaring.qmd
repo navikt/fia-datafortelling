@@ -1,0 +1,26 @@
+::: {.callout-note collapse="true"}
+## Forklaring av de forskjellige saksstatusene i Fia
+
+*   Vurderes
+
+    Vi vurderer å starte et sammarbeid med bedriften.
+*   Kontaktes
+
+    Bedriften kontaktes.
+*   Kartlegges
+
+    Har opprettet kontakt med bedrift og startet kartlegging av behov.
+*   Vi bistår
+
+    Bistand gitt innenfor en tidsavgrenset avtaleperiode.
+*   Fullført
+
+    Bidstanden er fulført og saken er avsluttet.
+*   Ikke aktuell
+
+    Saken er avbrutt med en begrunnelse.
+*   Slettet
+
+    Saken er feilregistrert og ikke lenger relevant.
+
+:::
