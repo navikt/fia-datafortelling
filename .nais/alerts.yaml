@@ -11,8 +11,8 @@ spec:
     - name: fia-datafortelling-alerts
       rules:
         - alert: NaisjobFeilet
-          expr: kube_job_failed{job_name=~"^fia-datafortelling.*", namespace="pia"} > 0
-          for: 1m
+          expr: count_over_time(kube_job_failed{job_name=~"^fia-datafortelling.*",namespace="pia", condition="true"}[10m]) > 0
+          for: 10m
           annotations:
             consequence: Datafortellingen ble ikke oppdatert
             action: |-
