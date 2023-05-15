@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: fia-datafortelling-alerts
+  namespace: pia
+  labels:
+    team: pia
+    app: fia-datafortelling
+spec:
+  groups:
+    - name: fia-datafortelling-alerts
+      rules:
+        - alert: NaisjobFeilet
+          expr: kube_job_failed{job_name=~"^fia-datafortelling.*", namespace="pia"} > 0
+          for: 10m
+          annotations:
+            consequence: Datafortellingen ble ikke oppdatert
+            action: |-
+              Se logger på https://logs.adeo.no -> søk etter `pod:fia-datafortelling AND namespace:pia`
+          labels:
+            namespace: pia
+            severity: warning
