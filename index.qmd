@@ -182,10 +182,6 @@ moduler_per_maaned(data_leveranse)
 {{< include includes/leveransestatus-forklaring.qmd >}}
 
 
-{{< include includes/denne-finnes-ikke.qmd >}}
-
-
-
 ## Virksomhetsprofil
 Her vises profilen av virksomheter med saker registrert i Fia.
 Grafene viser antall unike virksomheter per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
