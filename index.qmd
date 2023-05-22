@@ -1,6 +1,6 @@
 ---
 title: "Fia datafortelling"
-subtitle: Statistikk som viser bruk av Fagsystemet for IA (Fia).
+subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
 date: now
@@ -71,7 +71,7 @@ antall_saker_indicator(data_statistikk)
 
 ## Forklaring av begrepet "sak" i Fia
 
-En sak i Fia er en tidsbegrenset vurdering, med eventuell bistand, av en virksomhet i IA-samarbeidet.
+En sak i Fia betyr at en bedrift som er en del av IA-samarbeidet får en begrenset periode med evaluering og mulig hjelp.
 
 En aktiv sak i Fia er en sak som står i status Vurderes, Kontaktes, Kartlegges eller Vi bistår.
 
@@ -80,7 +80,7 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 
 
 ## Statusflyt i Fia
-Grafen nedenfor viser antall statusendringer som var registrert i Fia siden starten 10.05.2022.
+Grafen nedenfor viser antall statusendringer som er registrert i Fia siden starten 10.05.2022.
 
 ```{python}
 statusflyt(data_statistikk)
@@ -88,7 +88,7 @@ statusflyt(data_statistikk)
 {{< include includes/saksstatus-forklaring.qmd >}}
 
 
-## Antall saker per nåværende status
+## Antall saker per status
 
 ```{python}
 antall_saker_per_status(data_statistikk[~data_statistikk.siste_status.isin(["SLETTET", "NY"])])
@@ -104,10 +104,10 @@ aktive_saker_per_fylke(data_statistikk)
 
 ## Dager siden siste oppdatering i Fia
 Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
-Vi teller som oppdatering endringer av status, leveranser som blir lagt til eller satt til levert, og tatt eierskap.
-Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke den hendelsen og den respektive slettet/angret hendelsen som oppdateringer.
-Vi viser disse tallene delt på status, siden statusene kan ha ulike typiske varigheter.
-Grafene gir en indikasjon på hvor mange saker ligger urørt i Fia.
+En oppdatering er at noen har tatt eierskap til en sak, en endring av status eller en leveranse som er lagt til eller satt til levert.
+Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke dette som oppdatering.
+Vi viser disse tallene fordelt på status, siden statusene kan ha ulik varighet.
+Grafene gir en indikasjon på hvor mange saker som ligger urørt i Fia.
 
 ::: {.panel-tabset}
 ## Alle aktive saker
@@ -146,7 +146,7 @@ dager_siden_siste_oppdatering(
 
 
 ## Leveranser
-Når en sak har status "Vi bistår" kan sakseier registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
+Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
 En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
 Slettet leveranser vises ikke i grafene under.
 
@@ -183,8 +183,8 @@ moduler_per_maaned(data_leveranse)
 
 
 ## Virksomhetsprofil
-Her vises profilen av virksomheter med saker registrert i Fia.
-Grafene viser antall unike virksomheter per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+Her vises profilen til virksomheter som er registrert i Fia.
+Grafene viser antall virksomheter per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
 Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
 Gjeldende tidspunkter er nevnt over hver graf.
 
@@ -227,7 +227,7 @@ virksomhetsprofil(data_input)
 :::
 
 ## Begrunnelse på ikke aktuell
-Her vises andel og antall saker per begrunnelse på ikke aktuell.
+Her vises andel saker per begrunnelse på ikke aktuell (hvis du holder musepeker over kakestykkene kan du også se antall).
 Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
 Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser.
 

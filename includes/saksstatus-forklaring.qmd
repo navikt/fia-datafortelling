@@ -1,5 +1,5 @@
 ::: {.callout-note collapse="true"}
-## Forklaring av de forskjellige saksstatusene i Fia
+## Forklaring av de forskjellige statusene en sak kan ha i Fia
 
 *   Vurderes
 

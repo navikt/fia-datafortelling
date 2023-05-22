@@ -1,5 +1,5 @@
 ::: {.callout-note collapse="true"}
-## Forklaring av de forskjellige leveransestatusene i Fia
+## Forklaring av de forskjellige statusene en leveranse kan ha i Fia
 
 *   Under arbeid
 
