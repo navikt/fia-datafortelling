@@ -25,7 +25,7 @@ jobs:
   deploy:
     strategy:
       matrix:
-        cluster: [dev, prod]
+        cluster: [prod]
     name: "Deploy naisjob to ${{ matrix.cluster }}"
     needs: build
     if: github.ref == 'refs/heads/main'
