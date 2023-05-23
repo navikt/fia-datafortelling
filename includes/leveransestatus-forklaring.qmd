@@ -3,12 +3,12 @@
 
 *   Under arbeid
 
-    Har opprettet en leveranse og planlagt når den kan bli ferdig levert. (frist)
+    Har opprettet en leveranse og planlagt når den kan bli ferdig levert (frist)
 *   Levert
 
-    Leveransen er ferdig levert.
+    Leveransen er ferdig levert
 *   Slettet
 
-    Leveransen er feilregistrert eller ikke lenger aktuell.
+    Leveransen er feilregistrert eller ikke lenger aktuell
 
 :::

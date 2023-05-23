@@ -4,29 +4,29 @@
 ### NAV har besluttet å ikke starte samarbeid:
 *   Mangler partsgruppe
 
-    Virksomheten mangler partsgruppe.
+    Virksomheten mangler partsgruppe
 *   Ikke tilfredsstillende samarbeid
 
-    Virksomheten har ikke tilfredsstillende samarbeid med partsgruppen.
+    Virksomheten har ikke tilfredsstillende samarbeid med partsgruppen
 *   For lavt sykefravær
 
-    Virksomheten er vurdert til å ha for lavt sykefravær.
+    Virksomheten er vurdert til å ha for lavt sykefravær
 *   Mindre virksomhet
 
-    Virksomheten har et høyt sykefravær, men er en mindre virksomhet (færre ansatte).
+    Virksomheten har et høyt sykefravær, men er en mindre virksomhet (færre ansatte)
 *   Ikke tid
 
-    NAV vurderer at virksomheten ikke ønsker å sette av tilstrekkelig tid til samarbeidet.
+    NAV vurderer at virksomheten ikke ønsker å sette av tilstrekkelig tid til samarbeidet
 
 ### Virksomheten har takket nei:
 *   Har ikke kapasitet
 
-    Virksomheten har ikke tid eller kapasitet nå til å samarbeide med NAV.
+    Virksomheten har ikke tid eller kapasitet nå til å samarbeide med NAV
 *   Gjennomfører tiltak på egenhånd
 
-    Virksomheten vil gjøre tiltak på egen hånd.
+    Virksomheten vil gjøre tiltak på egen hånd
 *   Gjennomfører tiltak med BHT
 
-    Virksomheten vil gjennomføre tiltak sammen med Bedriftshelsetjenesten.
+    Virksomheten vil gjennomføre tiltak sammen med Bedriftshelsetjenesten
 
 :::

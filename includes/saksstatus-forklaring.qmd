@@ -3,24 +3,24 @@
 
 *   Vurderes
 
-    Vi vurderer å starte et sammarbeid med bedriften.
+    Vi vurderer å starte et samarbeid med bedriften
 *   Kontaktes
 
-    Bedriften kontaktes.
+    Bedriften kontaktes
 *   Kartlegges
 
-    Har opprettet kontakt med bedrift og startet kartlegging av behov.
+    Har opprettet kontakt med bedriften og startet kartlegging av behov
 *   Vi bistår
 
-    Bistand gitt innenfor en tidsavgrenset avtaleperiode.
+    Bistand gitt innenfor en tidsavgrenset avtaleperiode
 *   Fullført
 
-    Bidstanden er fulført og saken er avsluttet.
+    Bistanden er fulført og saken er avsluttet
 *   Ikke aktuell
 
-    Saken er avbrutt med en begrunnelse.
+    Saken er avbrutt med en begrunnelse
 *   Slettet
 
-    Saken er feilregistrert og ikke lenger relevant.
+    Saken er feilregistrert og ikke lenger relevant
 
 :::
