@@ -16,9 +16,9 @@ statusordre = [
 ]
 
 
-def aktive_saker_per_fylke(data_statistikk):
+def aktive_saker_per_fylke(data_status):
     fylkeordre = (
-        data_statistikk[data_statistikk.aktiv_sak]
+        data_status[data_status.aktiv_sak]
         .groupby("fylkesnavn")
         .saksnummer.nunique()
         .sort_values(ascending=False)
@@ -26,7 +26,7 @@ def aktive_saker_per_fylke(data_statistikk):
     )
 
     aktive_saker_per_fylke_og_status = (
-        data_statistikk[data_statistikk.aktiv_sak]
+        data_status[data_status.aktiv_sak]
         .groupby(["fylkesnavn", "siste_status"])
         .saksnummer.nunique()
         .reset_index()
@@ -62,29 +62,40 @@ def aktive_saker_per_fylke(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
-    siste_oppdatering_statistikk = (
-        data_statistikk[data_statistikk.aktiv_sak]
+def dager_siden_siste_oppdatering(data_status, data_eierskap, data_leveranse):
+    siste_oppdatering_status = (
+        data_status[data_status.aktiv_sak]
         .groupby("saksnummer")
         .endretTidspunkt.max()
         .reset_index()
+        .rename(columns={"endretTidspunkt": "siste_oppdatering_status"})
+    )
+    siste_oppdatering_eierskap = (
+        data_eierskap.groupby("saksnummer")
+        .endretTidspunkt.max()
+        .reset_index()
+        .rename(columns={"endretTidspunkt": "siste_oppdatering_eierskap"})
     )
     siste_oppdatering_leveranse = (
-        data_leveranse.groupby("saksnummer").sistEndret.max().reset_index()
+        data_leveranse.groupby("saksnummer")
+        .sistEndret.max()
+        .reset_index()
+        .rename(columns={"sistEndret": "siste_oppdatering_leveranse"})
     )
 
-    siste_oppdatering = siste_oppdatering_statistikk.merge(
-        siste_oppdatering_leveranse, on="saksnummer", how="left"
+    siste_oppdatering = siste_oppdatering_status.merge(
+        siste_oppdatering_eierskap, on="saksnummer", how="left"
     )
-    siste_oppdatering = siste_oppdatering.rename(
-        columns={
-            "endretTidspunkt": "siste_oppdatering_statistikk",
-            "sistEndret": "siste_oppdatering_leveranse",
-        }
+    siste_oppdatering = siste_oppdatering.merge(
+        siste_oppdatering_leveranse, on="saksnummer", how="left"
     )
 
     siste_oppdatering["siste_oppdatering"] = siste_oppdatering[
-        ["siste_oppdatering_statistikk", "siste_oppdatering_leveranse"]
+        [
+            "siste_oppdatering_status",
+            "siste_oppdatering_eierskap",
+            "siste_oppdatering_leveranse",
+        ]
     ].max(axis=1, numeric_only=False)
 
     now = datetime.now(timezone.utc)
@@ -109,9 +120,9 @@ def dager_siden_siste_oppdatering(data_statistikk, data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_saker_per_status(data_statistikk):
+def antall_saker_per_status(data_status):
     saker_per_status = (
-        data_statistikk.groupby("siste_status")
+        data_status.groupby("siste_status")
         .saksnummer.nunique()
         .reset_index()
         .sort_values(
@@ -279,7 +290,7 @@ def virksomhetsprofil(data_input):
     storrelse_sortering = (
         data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
     )
-    fig.update_xaxes(categoryorder='array', categoryarray=storrelse_sortering)
+    fig.update_xaxes(categoryorder="array", categoryarray=storrelse_sortering)
 
     # Sykefraværsprosent
     fig.add_trace(go.Histogram(x=data.sykefraversprosent), row=1, col=2)
@@ -364,9 +375,9 @@ def virksomhetsprofil(data_input):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def statusflyt(data_statistikk):
+def statusflyt(data_status):
     status_indexes = dict(zip(statusordre, range(len(statusordre))))
-    status_endringer = data_statistikk.value_counts(["forrige_status", "status"])
+    status_endringer = data_status.value_counts(["forrige_status", "status"])
     source_status = status_endringer.index.get_level_values(0).map(status_indexes)
     target_status = status_endringer.index.get_level_values(1).map(status_indexes)
     count_endringer = status_endringer.values
@@ -393,9 +404,9 @@ def statusflyt(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def begrunnelse_ikke_aktuell(data_statistikk):
-    ikke_aktuell = data_statistikk[
-        data_statistikk.siste_status == "IKKE_AKTUELL"
+def begrunnelse_ikke_aktuell(data_status):
+    ikke_aktuell = data_status[
+        data_status.siste_status == "IKKE_AKTUELL"
     ].drop_duplicates("saksnummer", keep="last")
     ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
         "[]"

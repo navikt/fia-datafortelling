@@ -33,7 +33,8 @@ import os
 from code.datahandler import (
     load_data,
     load_data_deduplicate,
-    preprocess_data_statistikk,
+    split_data_statistikk,
+    preprocess_data_status,
     preprocess_data_leveranse,
 )
 from code.plots import (
@@ -56,7 +57,8 @@ DATASET = os.environ['DATASET']
 data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
 data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
-data_statistikk = preprocess_data_statistikk(data_statistikk)
+data_status, data_eierskap = split_data_statistikk(data_statistikk)
+data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
 ```
 
@@ -64,7 +66,7 @@ data_leveranse = preprocess_data_leveranse(data_leveranse)
 ## Antall saker
 
 ```{python}
-antall_saker_indicator(data_statistikk)
+antall_saker_indicator(data_status)
 ```
 
 ::: {.callout-note}
@@ -83,7 +85,7 @@ En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Full
 Grafen nedenfor viser antall statusendringer som er registrert i Fia siden starten 10.05.2022.
 
 ```{python}
-statusflyt(data_statistikk)
+statusflyt(data_status)
 ```
 {{< include includes/saksstatus-forklaring.qmd >}}
 
@@ -91,14 +93,14 @@ statusflyt(data_statistikk)
 ## Antall saker per status
 
 ```{python}
-antall_saker_per_status(data_statistikk[~data_statistikk.siste_status.isin(["SLETTET", "NY"])])
+antall_saker_per_status(data_status[~data_status.siste_status.isin(["SLETTET", "NY"])])
 ```
 
 
 ## Antall aktive saker per fylke
 
 ```{python}
-aktive_saker_per_fylke(data_statistikk)
+aktive_saker_per_fylke(data_status)
 ```
 
 
@@ -112,33 +114,37 @@ Grafene gir en indikasjon på hvor mange saker som ligger urørt i Fia.
 ::: {.panel-tabset}
 ## Alle aktive saker
 ```{python}
-dager_siden_siste_oppdatering(data_statistikk, data_leveranse)
+dager_siden_siste_oppdatering(data_status, data_eierskap, data_leveranse)
 ```
 ## Vurderes
 ```{python}
 dager_siden_siste_oppdatering(
-    data_statistikk[data_statistikk.siste_status=="VURDERES"],
+    data_status[data_status.siste_status=="VURDERES"],
+    data_eierskap,
     data_leveranse
 )
 ```
 ## Kontaktes
 ```{python}
 dager_siden_siste_oppdatering(
-    data_statistikk[data_statistikk.siste_status=="KONTAKTES"],
+    data_status[data_status.siste_status=="KONTAKTES"],
+    data_eierskap,
     data_leveranse
 )
 ```
 ## Kartlegges
 ```{python}
 dager_siden_siste_oppdatering(
-    data_statistikk[data_statistikk.siste_status=="KARTLEGGES"],
+    data_status[data_status.siste_status=="KARTLEGGES"],
+    data_eierskap,
     data_leveranse
 )
 ```
 ## Vi bistår
 ```{python}
 dager_siden_siste_oppdatering(
-    data_statistikk[data_statistikk.siste_status=="VI_BISTÅR"],
+    data_status[data_status.siste_status=="VI_BISTÅR"],
+    data_eierskap,
     data_leveranse
 )
 ```
@@ -194,7 +200,7 @@ Gjeldende tidspunkter er nevnt over hver graf.
 Saker med nåværende status "Vurderes", "Kontaktes", "Kartlegges", eller "Vi bistår".\
 Tidspunkt: sist statusendring.
 ```{python}
-data_input = data_statistikk[data_statistikk.aktiv_sak]
+data_input = data_status[data_status.aktiv_sak]
 virksomhetsprofil(data_input)
 ```
 
@@ -202,7 +208,7 @@ virksomhetsprofil(data_input)
 Saker som hadde eller har status "Vurderes".\
 Tidspunkt: når statusen settes til "Vurderes".
 ```{python}
-data_input = data_statistikk[data_statistikk.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
+data_input = data_status[data_status.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
 
@@ -210,9 +216,9 @@ virksomhetsprofil(data_input)
 Saker som gikk fra status "Vurderes" til "Ikke aktuell".\
 Tidspunkt: statusendring fra "Vurderes" til "Ikke aktuell".
 ```{python}
-data_input = data_statistikk[
-    (data_statistikk.status=="IKKE_AKTUELL") &
-    (data_statistikk.forrige_status=="VURDERES")
+data_input = data_status[
+    (data_status.status=="IKKE_AKTUELL") &
+    (data_status.forrige_status=="VURDERES")
 ].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
@@ -221,7 +227,7 @@ virksomhetsprofil(data_input)
 Saker med nåværende status "Ikke aktuell".\
 Tidspunkt: når statusen settes til "Ikke aktuell".
 ```{python}
-data_input = data_statistikk[data_statistikk.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
+data_input = data_status[data_status.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
 :::
@@ -235,15 +241,15 @@ Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så
 
 ## Fra alle mulige statuser
 ```{python}
-begrunnelse_ikke_aktuell(data_statistikk)
+begrunnelse_ikke_aktuell(data_status)
 ```
 
 ## Fra Vurderes
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_statistikk[
-        (data_statistikk.status == "IKKE_AKTUELL")
-        & (data_statistikk.forrige_status == "VURDERES")
+    data_status[
+        (data_status.status == "IKKE_AKTUELL")
+        & (data_status.forrige_status == "VURDERES")
     ]
 )
 ```
@@ -251,9 +257,9 @@ begrunnelse_ikke_aktuell(
 ## Fra Kontaktes
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_statistikk[
-        (data_statistikk.status == "IKKE_AKTUELL")
-        & (data_statistikk.forrige_status == "KONTAKTES")
+    data_status[
+        (data_status.status == "IKKE_AKTUELL")
+        & (data_status.forrige_status == "KONTAKTES")
     ]
 )
 ```
@@ -261,9 +267,9 @@ begrunnelse_ikke_aktuell(
 ## Fra Kartlegges
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_statistikk[
-        (data_statistikk.status == "IKKE_AKTUELL")
-        & (data_statistikk.forrige_status == "KARTLEGGES")
+    data_status[
+        (data_status.status == "IKKE_AKTUELL")
+        & (data_status.forrige_status == "KARTLEGGES")
     ]
 )
 ```
@@ -271,9 +277,9 @@ begrunnelse_ikke_aktuell(
 ## Fra Vi bistår
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_statistikk[
-        (data_statistikk.status == "IKKE_AKTUELL")
-        & (data_statistikk.forrige_status == "VI_BISTÅR")
+    data_status[
+        (data_status.status == "IKKE_AKTUELL")
+        & (data_status.forrige_status == "VI_BISTÅR")
     ]
 )
 ```
