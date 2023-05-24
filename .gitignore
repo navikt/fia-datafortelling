@@ -132,15 +132,12 @@ dmypy.json
 .idea/
 
 # Lokalt genererte fortellinger
-/main.html
-/test.html
 /index.html
-/main.ipynb
 /index.ipynb
-/test.ipynb
-main_files/
-test_files/
 index_files/
+/datakvalitet.html
+/datakvalitet.ipynb
+datakvalitet_files/
 
 # OS generated files
 .DS_Store
