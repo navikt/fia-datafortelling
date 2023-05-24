@@ -1,7 +1,7 @@
 from google.cloud.bigquery import Client
 import json
 
-from code.config import fylker
+from code.konstanter import fylker
 
 
 def load_data(project, dataset, table):

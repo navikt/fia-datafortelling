@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 from datetime import datetime, timezone
 
 from code.helper import annotate_ikke_offisiell_statistikk
-from code.config import statusordre
+from code.konstanter import statusordre
 
 
 def aktive_saker_per_fylke(data_status):

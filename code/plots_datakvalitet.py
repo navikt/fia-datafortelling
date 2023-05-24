@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 from code.helper import annotate_ikke_offisiell_statistikk
-from code.config import statusordre, fylker
+from code.konstanter import statusordre, fylker
 
 
 def saker_per_status_over_tid(data_status):
