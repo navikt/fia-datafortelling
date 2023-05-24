@@ -51,7 +51,7 @@ data_leveranse = preprocess_data_leveranse(data_leveranse)
 ```
 
 
-# Antall saker per status over tid
+## Antall saker per status over tid
 ```{python}
 saker_per_status_over_tid(data_status)
 ```
