@@ -27,3 +27,23 @@ Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på
 NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 </span>
 
+```{python}
+import os
+
+from code.datahandler import (
+    load_data,
+    load_data_deduplicate,
+    split_data_statistikk,
+    preprocess_data_status,
+    preprocess_data_leveranse,
+)
+
+PROJECT = os.environ['GCP_PROJECT']
+DATASET = os.environ['DATASET']
+data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
+data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
+
+data_status, data_eierskap = split_data_statistikk(data_statistikk)
+data_status = preprocess_data_status(data_status)
+data_leveranse = preprocess_data_leveranse(data_leveranse)
+```
