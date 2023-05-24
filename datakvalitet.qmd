@@ -37,7 +37,10 @@ from code.datahandler import (
     preprocess_data_status,
     preprocess_data_leveranse,
 )
-from code.plots_datakvalitet import saker_per_status_over_tid
+from code.plots_datakvalitet import (
+    saker_per_status_over_tid,
+    dager_mellom_statusendringer,
+)
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -54,4 +57,18 @@ data_leveranse = preprocess_data_leveranse(data_leveranse)
 ## Antall saker per status over tid
 ```{python}
 saker_per_status_over_tid(data_status)
+```
+
+
+## Dager mellom statusendringer
+```{python}
+status_endringer = (
+    data_status[(data_status.forrige_status != "NY")]
+    .groupby(["forrige_status", "status"])
+    .size()
+    .index
+)
+for forrige_status, status in status_endringer:
+    fig = dager_mellom_statusendringer(data_status, forrige_status, status)
+    fig.show()
 ```

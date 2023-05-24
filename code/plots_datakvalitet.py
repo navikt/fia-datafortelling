@@ -99,3 +99,21 @@ def saker_per_status_over_tid(data_status):
     )
 
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def dager_mellom_statusendringer(data_status, forrige_status, status):
+    data_status["tid_siden_siste_endring"] = (
+        data_status.endretTidspunkt - data_status.forrige_endretTidspunkt
+    )
+    fig = go.Figure()
+    fig.add_trace(
+        go.Histogram(
+            x=data_status[
+                (data_status.forrige_status == forrige_status)
+                & (data_status.status == status)
+            ].tid_siden_siste_endring.dt.days,
+            nbinsx=20,
+        )
+    )
+    fig.update_layout(title=f"{forrige_status} - {status}".title().replace("_", " "))
+    return annotate_ikke_offisiell_statistikk(fig)

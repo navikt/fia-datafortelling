@@ -56,6 +56,12 @@ def preprocess_data_status(data_status):
         "forrige_status",
     ] = data_status.status.shift(1)
 
+    # Forrige endret tidspunkt
+    data_status.loc[
+        data_status.saksnummer == data_status.saksnummer.shift(1),
+        "forrige_endretTidspunkt",
+    ] = data_status.endretTidspunkt.shift(1)
+
     # Siste status
     siste_status = (
         data_status[["saksnummer", "status"]]
