@@ -37,6 +37,8 @@ from code.datahandler import (
     preprocess_data_status,
     preprocess_data_leveranse,
 )
+from code.plots_datakvalitet import saker_per_status_over_tid
+
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
@@ -46,4 +48,10 @@ data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
+```
+
+
+# Antall saker per status over tid
+```{python}
+saker_per_status_over_tid(data_status)
 ```
