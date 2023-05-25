@@ -319,7 +319,7 @@ def virksomhetsprofil(data_input):
         .saksnummer.nunique()
         .sort_values(ascending=True)
         .reset_index()
-        .fillna("Ikke brasjeprogram")
+        .fillna("Ikke bransjeprogram")
     )
     fig.add_trace(
         go.Bar(
