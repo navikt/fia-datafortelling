@@ -115,5 +115,9 @@ def dager_mellom_statusendringer(data_status, forrige_status, status):
             nbinsx=20,
         )
     )
-    fig.update_layout(title=f"{forrige_status} - {status}".title().replace("_", " "))
+    fig.update_layout(
+        title=f"{forrige_status} - {status}".title().replace("_", " "),
+        xaxis_title="Antall dager",
+        yaxis_title="Antall saker",
+    )
     return annotate_ikke_offisiell_statistikk(fig)
