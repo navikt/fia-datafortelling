@@ -59,16 +59,58 @@ data_leveranse = preprocess_data_leveranse(data_leveranse)
 saker_per_status_over_tid(data_status)
 ```
 
-
 ## Dager mellom statusendringer
+::: {.panel-tabset}
+
+## Vurderes
+::: {.panel-tabset}
+## Kontaktes
 ```{python}
-status_endringer = (
-    data_status[(data_status.forrige_status != "NY")]
-    .groupby(["forrige_status", "status"])
-    .size()
-    .index
-)
-for forrige_status, status in status_endringer:
-    fig = dager_mellom_statusendringer(data_status, forrige_status, status)
-    fig.show()
+dager_mellom_statusendringer(data_status, "VURDERES", "KONTAKTES")
 ```
+## Ikke aktuell
+```{python}
+dager_mellom_statusendringer(data_status, "VURDERES", "IKKE_AKTUELL")
+```
+## Slettet
+```{python}
+dager_mellom_statusendringer(data_status, "VURDERES", "SLETTET")
+```
+:::
+
+## Kontaktes
+::: {.panel-tabset}
+## Kartlegges
+```{python}
+dager_mellom_statusendringer(data_status, "KONTAKTES", "KARTLEGGES")
+```
+## Ikke aktuell
+```{python}
+dager_mellom_statusendringer(data_status, "KONTAKTES", "IKKE_AKTUELL")
+```
+:::
+
+## Kartlegges
+::: {.panel-tabset}
+## Vi bistår
+```{python}
+dager_mellom_statusendringer(data_status, "KARTLEGGES", "VI_BISTÅR")
+```
+## Ikke aktuell
+```{python}
+dager_mellom_statusendringer(data_status, "KARTLEGGES", "IKKE_AKTUELL")
+```
+:::
+
+## Vi bistår
+::: {.panel-tabset}
+## Fullført
+```{python}
+dager_mellom_statusendringer(data_status, "VI_BISTÅR", "FULLFØRT")
+```
+## Ikke aktuell
+```{python}
+dager_mellom_statusendringer(data_status, "VI_BISTÅR", "IKKE_AKTUELL")
+```
+:::
+:::
