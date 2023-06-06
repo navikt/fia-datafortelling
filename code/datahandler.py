@@ -109,10 +109,33 @@ def preprocess_data_leveranse(data_leveranse):
     return data_leveranse
 
 
-def beregn_siste_oppdatering(data_status, data_eierskap, data_leveranse):
+def beregn_siste_oppdatering(
+    data_status,
+    data_eierskap,
+    data_leveranse,
+    beregningsdato=datetime.now(timezone.utc),
+):
+    # Filtrere på beregningsdato
+    data_status = data_status[data_status.endretTidspunkt <= beregningsdato]
+    data_eierskap = data_eierskap[data_eierskap.endretTidspunkt <= beregningsdato]
+    data_leveranse = data_leveranse[data_leveranse.sistEndret <= beregningsdato]
+
+    # Status på beregningsdato
+    status_beregningsdato = (
+        data_status[["saksnummer", "status"]]
+        .drop_duplicates("saksnummer", keep="last")
+        .rename(columns={"status": "status_beregningsdato"})
+    )
+    data_status = data_status.merge(status_beregningsdato, on="saksnummer", how="left")
+
+    # Filtrere bort saker med avsluttet status på beregningsdato
+    aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
+    aktiv_sak_beregningsdato = data_status.siste_status.isin(aktive_statuser)
+    data_status = data_status[aktiv_sak_beregningsdato]
+
+    # Beregne siste oppdatering
     siste_oppdatering_status = (
-        data_status[data_status.aktiv_sak]
-        .groupby("saksnummer")
+        data_status.groupby("saksnummer")
         .endretTidspunkt.max()
         .reset_index()
         .rename(columns={"endretTidspunkt": "siste_oppdatering_status"})
@@ -145,9 +168,8 @@ def beregn_siste_oppdatering(data_status, data_eierskap, data_leveranse):
         ]
     ].max(axis=1, numeric_only=False)
 
-    now = datetime.now(timezone.utc)
     siste_oppdatering["dager_siden_siste_oppdatering"] = (
-        now - siste_oppdatering.siste_oppdatering
+        beregningsdato - siste_oppdatering.siste_oppdatering
     ).dt.days
 
     return siste_oppdatering
