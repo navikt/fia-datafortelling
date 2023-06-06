@@ -1,0 +1,128 @@
+---
+title: "Fia datakvalitet"
+subtitle: Statistikk som viser datakvalitet i Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
+author: Team Pia
+author-title: "Eier"
+execute:
+    echo: false
+    warning: false
+format:
+    html:
+        toc: true
+        toc-title: Indeks
+        page-layout: full
+        embed-resources: true
+        code-tools: true
+jupyter: python3
+---
+
+```{python}
+import os
+import pandas as pd
+import plotly.graph_objects as go
+from datetime import datetime
+
+from code.datahandler import (
+    load_data,
+    load_data_deduplicate,
+    split_data_statistikk,
+    preprocess_data_status,
+    preprocess_data_leveranse,
+)
+from code.konstanter import statusordre, fylker
+
+PROJECT = os.environ['GCP_PROJECT']
+DATASET = os.environ['DATASET']
+data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
+data_status, data_eierskap = split_data_statistikk(data_statistikk)
+data_status = preprocess_data_status(data_status)
+
+ojs_define(data_status = data_status)
+```
+
+```{python}
+def saker_per_status_over_tid(data_status):
+    første_dato = data_status.endretTidspunkt.dt.date.min()
+    siste_dato = datetime.now().strftime("%Y-%m-%d")
+    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d")
+    statuser = [status for status in statusordre if status != "NY"]
+
+    def beregn_status_per_dato(data, datoer):
+        status_per_dato = dict(zip(statuser, [[0]] * len(statuser)))
+        for dato in datoer:
+            data_dato = data[data.endretTidspunkt.dt.date == dato.date()]
+            for status in statuser:
+                sist_count = status_per_dato[status][-1]
+                count = (
+                    sist_count
+                    - sum(data_dato.forrige_status == status)
+                    + sum(data_dato.status == status)
+                )
+                status_per_dato[status] = status_per_dato[status] + [count]
+        return status_per_dato
+
+    status_per_dato = beregn_status_per_dato(data_status, alle_datoer)
+    df_status_per_dato = pd.concat([
+        pd.DataFrame({
+            'dato': alle_datoer,
+            'fylke': ["Alle fylker"]*len(alle_datoer),
+            'status': [status]*len(alle_datoer),
+            'antall': status_per_dato[status][1:],
+        }) for status in statuser]
+    )
+    for fylkesnr, fylkesnavn in fylker.items():
+        status_per_dato = beregn_status_per_dato(
+            data_status[data_status.fylkesnummer == fylkesnr], alle_datoer
+        )
+        df_status_per_dato = pd.concat([df_status_per_dato] + [
+            pd.DataFrame({
+                'fylke': [fylkesnavn]*len(alle_datoer),
+                'status': [status]*len(alle_datoer),
+                'dato': alle_datoer,
+                'antall': status_per_dato[status][1:],
+            }) for status in statuser]
+        )
+
+    return df_status_per_dato
+
+df_status_per_dato = saker_per_status_over_tid(data_status)
+ojs_define(df_status_per_dato = df_status_per_dato)
+ojs_define(df_fra_dato = data_status.endretTidspunkt.min().strftime('%Y-%m-%d'))
+ojs_define(df_til_dato = datetime.now().strftime('%Y-%m-%d'))
+ojs_define(fylkesnavn = list(df_status_per_dato.fylke.unique()))
+```
+
+
+```{ojs}
+//| panel: input
+viewof fylke = Inputs.select(
+  fylkesnavn,
+  {label: "Fylke"}
+)
+```
+
+
+```{ojs}
+filtered = transpose(df_status_per_dato).filter(function(df) {
+  return fylke.includes(df.fylke);
+})
+```
+
+
+```{ojs}
+Plot.plot({
+  style: "overflow: visible;",
+  y: {grid: true},
+  x: {type: "utc", domain: [new Date(df_fra_dato), new Date(df_til_dato)], grid: true},
+  marks: [
+    Plot.ruleY([0]),
+    Plot.lineY(filtered, {x: "dato", y: "antall", stroke: "status"}),
+    Plot.text(filtered, Plot.selectLast({x: "dato", y: "antall", z: "status", text: "status", textAnchor: "start", dx: 3})),
+  ]
+})
+```

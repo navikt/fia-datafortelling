@@ -9,10 +9,10 @@ Datafortelling basert på data fra [Fia](https://github.com/navikt/lydia-api).
 
 Installer quarto ved å følge guiden [på quarto sine nettsider](https://quarto.org/docs/get-started/).
 
-Installer [python3](https://www.python.org/downloads/).
+Installer [python3.11](https://www.python.org/downloads/).
 
 Som en god praksis, opprett et virtuelt pythonmiljø i root til prosjektet:\
-`python3 -m venv env`\
+`python3.11 -m venv env`\
 `source env/bin/activate`
 
 Installer requirements `pip3 install -r requirements.txt`.
