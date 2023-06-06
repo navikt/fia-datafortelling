@@ -1,5 +1,6 @@
 from google.cloud.bigquery import Client
 import json
+from datetime import datetime, timezone
 
 from code.konstanter import fylker
 
@@ -106,3 +107,47 @@ def preprocess_data_leveranse(data_leveranse):
     data_leveranse = data_leveranse[data_leveranse.status != "SLETTET"]
 
     return data_leveranse
+
+
+def beregn_siste_oppdatering(data_status, data_eierskap, data_leveranse):
+    siste_oppdatering_status = (
+        data_status[data_status.aktiv_sak]
+        .groupby("saksnummer")
+        .endretTidspunkt.max()
+        .reset_index()
+        .rename(columns={"endretTidspunkt": "siste_oppdatering_status"})
+    )
+    siste_oppdatering_eierskap = (
+        data_eierskap.groupby("saksnummer")
+        .endretTidspunkt.max()
+        .reset_index()
+        .rename(columns={"endretTidspunkt": "siste_oppdatering_eierskap"})
+    )
+    siste_oppdatering_leveranse = (
+        data_leveranse.groupby("saksnummer")
+        .sistEndret.max()
+        .reset_index()
+        .rename(columns={"sistEndret": "siste_oppdatering_leveranse"})
+    )
+
+    siste_oppdatering = siste_oppdatering_status.merge(
+        siste_oppdatering_eierskap, on="saksnummer", how="left"
+    )
+    siste_oppdatering = siste_oppdatering.merge(
+        siste_oppdatering_leveranse, on="saksnummer", how="left"
+    )
+
+    siste_oppdatering["siste_oppdatering"] = siste_oppdatering[
+        [
+            "siste_oppdatering_status",
+            "siste_oppdatering_eierskap",
+            "siste_oppdatering_leveranse",
+        ]
+    ].max(axis=1, numeric_only=False)
+
+    now = datetime.now(timezone.utc)
+    siste_oppdatering["dager_siden_siste_oppdatering"] = (
+        now - siste_oppdatering.siste_oppdatering
+    ).dt.days
+
+    return siste_oppdatering

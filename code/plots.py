@@ -2,6 +2,7 @@ from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 from datetime import datetime, timezone
 
+from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre
 
@@ -53,45 +54,9 @@ def aktive_saker_per_fylke(data_status):
 
 
 def dager_siden_siste_oppdatering(data_status, data_eierskap, data_leveranse):
-    siste_oppdatering_status = (
-        data_status[data_status.aktiv_sak]
-        .groupby("saksnummer")
-        .endretTidspunkt.max()
-        .reset_index()
-        .rename(columns={"endretTidspunkt": "siste_oppdatering_status"})
+    siste_oppdatering = beregn_siste_oppdatering(
+        data_status, data_eierskap, data_leveranse
     )
-    siste_oppdatering_eierskap = (
-        data_eierskap.groupby("saksnummer")
-        .endretTidspunkt.max()
-        .reset_index()
-        .rename(columns={"endretTidspunkt": "siste_oppdatering_eierskap"})
-    )
-    siste_oppdatering_leveranse = (
-        data_leveranse.groupby("saksnummer")
-        .sistEndret.max()
-        .reset_index()
-        .rename(columns={"sistEndret": "siste_oppdatering_leveranse"})
-    )
-
-    siste_oppdatering = siste_oppdatering_status.merge(
-        siste_oppdatering_eierskap, on="saksnummer", how="left"
-    )
-    siste_oppdatering = siste_oppdatering.merge(
-        siste_oppdatering_leveranse, on="saksnummer", how="left"
-    )
-
-    siste_oppdatering["siste_oppdatering"] = siste_oppdatering[
-        [
-            "siste_oppdatering_status",
-            "siste_oppdatering_eierskap",
-            "siste_oppdatering_leveranse",
-        ]
-    ].max(axis=1, numeric_only=False)
-
-    now = datetime.now(timezone.utc)
-    siste_oppdatering["dager_siden_siste_oppdatering"] = (
-        now - siste_oppdatering.siste_oppdatering
-    ).dt.days
 
     fig = go.Figure(
         data=[
