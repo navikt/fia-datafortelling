@@ -1,8 +1,9 @@
 import pandas as pd
 import plotly.graph_objects as go
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 
 
+from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre, fylker
 
@@ -119,4 +120,62 @@ def dager_mellom_statusendringer(data_status, forrige_status, status):
         xaxis_title="Antall dager",
         yaxis_title="Antall saker",
     )
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dager):
+    første_dato = data_status.endretTidspunkt.dt.date.min()
+    siste_dato = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", tz=timezone.utc)
+    aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
+
+    urørt_per_status_og_dato = dict(zip(aktive_statuser, [[]] * len(aktive_statuser)))
+    for beregningsdato in alle_datoer:
+        siste_oppdatering = beregn_siste_oppdatering(
+            data_status,
+            data_eierskap,
+            data_leveranse,
+            beregningsdato + timedelta(days=1),
+        )
+        for status in aktive_statuser:
+            antall_urørt = (
+                siste_oppdatering[
+                    (siste_oppdatering.status_beregningsdato == status)
+                ].dager_siden_siste_oppdatering
+                > antall_dager
+            ).sum()
+            urørt_per_status_og_dato[status] = urørt_per_status_og_dato[status] + [
+                antall_urørt
+            ]
+
+    fig = go.Figure()
+
+    for status in aktive_statuser:
+        fig.add_trace(
+            go.Scatter(
+                x=alle_datoer,
+                y=urørt_per_status_og_dato[status],
+                name=status.capitalize().replace("_", " "),
+            )
+        )
+
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Dato",
+        yaxis_title="Antall saker",
+    )
+
+    # Create slider
+    fig.update_layout(
+        height=600,
+        xaxis=dict(
+            autorange=True,
+            rangeslider=dict(
+                autorange=True,
+                visible=True
+            )
+        )
+    )
+            
     return annotate_ikke_offisiell_statistikk(fig)

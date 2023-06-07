@@ -116,9 +116,15 @@ def beregn_siste_oppdatering(
     beregningsdato=datetime.now(timezone.utc),
 ):
     # Filtrere på beregningsdato
-    data_status = data_status[data_status.endretTidspunkt <= beregningsdato]
-    data_eierskap = data_eierskap[data_eierskap.endretTidspunkt <= beregningsdato]
-    data_leveranse = data_leveranse[data_leveranse.sistEndret <= beregningsdato]
+    data_status = data_status[
+        data_status.endretTidspunkt.dt.tz_convert("UTC") < beregningsdato
+    ]
+    data_eierskap = data_eierskap[
+        data_eierskap.endretTidspunkt.dt.tz_convert("UTC") < beregningsdato
+    ]
+    data_leveranse = data_leveranse[
+        data_leveranse.sistEndret.dt.tz_convert("UTC") < beregningsdato
+    ]
 
     # Status på beregningsdato
     status_beregningsdato = (
@@ -169,7 +175,15 @@ def beregn_siste_oppdatering(
     ].max(axis=1, numeric_only=False)
 
     siste_oppdatering["dager_siden_siste_oppdatering"] = (
-        beregningsdato - siste_oppdatering.siste_oppdatering
+        beregningsdato - siste_oppdatering.siste_oppdatering.dt.tz_convert("UTC")
     ).dt.days
+
+    siste_oppdatering = siste_oppdatering.merge(
+        data_status[["saksnummer", "status_beregningsdato"]].drop_duplicates(
+            "saksnummer"
+        ),
+        on="saksnummer",
+        how="left",
+    )
 
     return siste_oppdatering
