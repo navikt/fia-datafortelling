@@ -103,13 +103,16 @@ def saker_per_status_over_tid(data_status):
 
 
 def dager_mellom_statusendringer(
-    data_status, intervall_sortering, forrige_status=None, status=None
+    data_status: pd.DataFrame,
+    intervall_sortering: list,
+    forrige_status_filter: str = None,
+    status_filter : str = None,
 ):
     filtre = True
-    if forrige_status:
-        filtre = filtre & (data_status.forrige_status == forrige_status)
-    if status:
-        filtre = filtre & (data_status.status == status)
+    if forrige_status_filter:
+        filtre = filtre & (data_status.forrige_status == forrige_status_filter)
+    if status_filter:
+        filtre = filtre & (data_status.status == status_filter)
 
     saker_per_intervall = (
         data_status[filtre]
