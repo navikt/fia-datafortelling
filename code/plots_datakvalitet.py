@@ -102,24 +102,28 @@ def saker_per_status_over_tid(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def dager_mellom_statusendringer(data_status, forrige_status, status):
-    data_status["tid_siden_siste_endring"] = (
-        data_status.endretTidspunkt - data_status.forrige_endretTidspunkt
+def dager_mellom_statusendringer(data_status, forrige_status, status, intervall_sortering):
+    saker_per_intervall = (
+        data_status[
+            (data_status.forrige_status == forrige_status)
+            & (data_status.status == status)
+        ].groupby("intervall_tid_siden_siste_endring").saksnummer.nunique().reset_index()
     )
+    
     fig = go.Figure()
     fig.add_trace(
-        go.Histogram(
-            x=data_status[
-                (data_status.forrige_status == forrige_status)
-                & (data_status.status == status)
-            ].tid_siden_siste_endring.dt.days,
-            nbinsx=20,
+        go.Bar(
+            x=saker_per_intervall.intervall_tid_siden_siste_endring,
+            y=saker_per_intervall.saksnummer,
+            text=saker_per_intervall.saksnummer,
         )
     )
     fig.update_layout(
-        xaxis_title="Antall dager",
+        xaxis_title="Tidsgruppering",
         yaxis_title="Antall saker",
     )
+    fig.update_xaxes(categoryorder="array", categoryarray=intervall_sortering)
+
     return annotate_ikke_offisiell_statistikk(fig)
 
 

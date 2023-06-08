@@ -60,22 +60,45 @@ data_leveranse = preprocess_data_leveranse(data_leveranse)
 saker_per_status_over_tid(data_status)
 ```
 
-## Dager mellom statusendringer
+## Tid mellom statusendringer
 ::: {.panel-tabset}
+
+```{python}
+data_status["tid_siden_siste_endring"] = (
+    data_status.endretTidspunkt - data_status.forrige_endretTidspunkt
+)
+seconds = data_status.tid_siden_siste_endring.dt.seconds
+days = data_status.tid_siden_siste_endring.dt.days
+intervall_sortering = [
+    "1 min", "10 min", "1 time", "24 timer",
+    "10 dager", "30 dager", "100 dager", "365 dager",
+    "over 365 dager"
+]
+data_status.loc[seconds<60, "intervall_tid_siden_siste_endring"] = intervall_sortering[0]
+data_status.loc[seconds.between(60, 60*10), "intervall_tid_siden_siste_endring"] = intervall_sortering[1]
+data_status.loc[seconds.between(60*10, 60*60), "intervall_tid_siden_siste_endring"] = intervall_sortering[2]
+data_status.loc[seconds.between(60*60, 60*60*24), "intervall_tid_siden_siste_endring"] = intervall_sortering[3]
+data_status.loc[days.between(1, 10), "intervall_tid_siden_siste_endring"] = intervall_sortering[4]
+data_status.loc[days.between(10, 30), "intervall_tid_siden_siste_endring"] = intervall_sortering[5]
+data_status.loc[days.between(30, 100), "intervall_tid_siden_siste_endring"] = intervall_sortering[6]
+data_status.loc[days.between(100, 365), "intervall_tid_siden_siste_endring"] = intervall_sortering[7]
+data_status.loc[days>365, "intervall_tid_siden_siste_endring"] = intervall_sortering[8]
+
+```
 
 ## Fra Vurderes
 ::: {.panel-tabset}
 ## Til Kontaktes
 ```{python}
-dager_mellom_statusendringer(data_status, "VURDERES", "KONTAKTES")
+dager_mellom_statusendringer(data_status, "VURDERES", "KONTAKTES", intervall_sortering)
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, "VURDERES", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "VURDERES", "IKKE_AKTUELL", intervall_sortering)
 ```
 ## Til Slettet
 ```{python}
-dager_mellom_statusendringer(data_status, "VURDERES", "SLETTET")
+dager_mellom_statusendringer(data_status, "VURDERES", "SLETTET", intervall_sortering)
 ```
 :::
 
@@ -83,11 +106,11 @@ dager_mellom_statusendringer(data_status, "VURDERES", "SLETTET")
 ::: {.panel-tabset}
 ## Til Kartlegges
 ```{python}
-dager_mellom_statusendringer(data_status, "KONTAKTES", "KARTLEGGES")
+dager_mellom_statusendringer(data_status, "KONTAKTES", "KARTLEGGES", intervall_sortering)
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, "KONTAKTES", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "KONTAKTES", "IKKE_AKTUELL", intervall_sortering)
 ```
 :::
 
@@ -95,11 +118,11 @@ dager_mellom_statusendringer(data_status, "KONTAKTES", "IKKE_AKTUELL")
 ::: {.panel-tabset}
 ## Til Vi bistår
 ```{python}
-dager_mellom_statusendringer(data_status, "KARTLEGGES", "VI_BISTÅR")
+dager_mellom_statusendringer(data_status, "KARTLEGGES", "VI_BISTÅR", intervall_sortering)
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, "KARTLEGGES", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "KARTLEGGES", "IKKE_AKTUELL", intervall_sortering)
 ```
 :::
 
@@ -107,11 +130,11 @@ dager_mellom_statusendringer(data_status, "KARTLEGGES", "IKKE_AKTUELL")
 ::: {.panel-tabset}
 ## Til Fullført
 ```{python}
-dager_mellom_statusendringer(data_status, "VI_BISTÅR", "FULLFØRT")
+dager_mellom_statusendringer(data_status, "VI_BISTÅR", "FULLFØRT", intervall_sortering)
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, "VI_BISTÅR", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "VI_BISTÅR", "IKKE_AKTUELL", intervall_sortering)
 ```
 :::
 :::
