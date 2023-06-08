@@ -61,7 +61,9 @@ saker_per_status_over_tid(data_status)
 ```
 
 ## Tid mellom statusendringer
-::: {.panel-tabset}
+Grafene under viser hvor lenge saker står i en status (før de går over i en annen).
+Vi har valgt å dele intervaller på en ujevn måte for å kunne se om endringer tar kort eller lang tid.
+Hver bar viser tallet opptil verdien på sin tekstnavn unttatt tidligere verdier.
 
 ```{python}
 data_status["tid_siden_siste_endring"] = (
@@ -83,8 +85,9 @@ data_status.loc[days.between(10, 30), "intervall_tid_siden_siste_endring"] = int
 data_status.loc[days.between(30, 100), "intervall_tid_siden_siste_endring"] = intervall_sortering[6]
 data_status.loc[days.between(100, 365), "intervall_tid_siden_siste_endring"] = intervall_sortering[7]
 data_status.loc[days>365, "intervall_tid_siden_siste_endring"] = intervall_sortering[8]
-
 ```
+
+::: {.panel-tabset}
 
 ## Fra Vurderes
 ::: {.panel-tabset}
