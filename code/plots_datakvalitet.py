@@ -102,14 +102,22 @@ def saker_per_status_over_tid(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def dager_mellom_statusendringer(data_status, forrige_status, status, intervall_sortering):
+def dager_mellom_statusendringer(
+    data_status, intervall_sortering, forrige_status=None, status=None
+):
+    filtre = True
+    if forrige_status:
+        filtre = filtre & (data_status.forrige_status == forrige_status)
+    if status:
+        filtre = filtre & (data_status.status == status)
+
     saker_per_intervall = (
-        data_status[
-            (data_status.forrige_status == forrige_status)
-            & (data_status.status == status)
-        ].groupby("intervall_tid_siden_siste_endring").saksnummer.nunique().reset_index()
+        data_status[filtre]
+        .groupby("intervall_tid_siden_siste_endring")
+        .saksnummer.nunique()
+        .reset_index()
     )
-    
+
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
@@ -119,6 +127,8 @@ def dager_mellom_statusendringer(data_status, forrige_status, status, intervall_
         )
     )
     fig.update_layout(
+        height=500,
+        width=850,
         xaxis_title="Tidsgruppering",
         yaxis_title="Antall saker",
     )
