@@ -196,11 +196,19 @@ Gjeldende tidspunkter er nevnt over hver graf.
 
 ::: {.panel-tabset}
 
-## Aktive saker
+## Aktiv
 Saker med nåværende status "Vurderes", "Kontaktes", "Kartlegges", eller "Vi bistår".\
 Tidspunkt: sist statusendring.
 ```{python}
 data_input = data_status[data_status.aktiv_sak]
+virksomhetsprofil(data_input)
+```
+
+## I bistand
+Saker med nåværende status "Vi bistår".\
+Tidspunkt: når statusen settes til "Vi bistår".
+```{python}
+data_input = data_status[data_status.siste_status=="VI_BISTÅR"]
 virksomhetsprofil(data_input)
 ```
 
