@@ -128,7 +128,7 @@ def dager_mellom_statusendringer(
     )
     fig.update_layout(
         height=500,
-        width=850,
+        width=800,
         xaxis_title="Tidsgruppering",
         yaxis_title="Antall saker",
     )
