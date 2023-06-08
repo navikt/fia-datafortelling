@@ -4,7 +4,7 @@ from datetime import datetime, timezone, timedelta
 
 
 from code.datahandler import beregn_siste_oppdatering
-from code.helper import annotate_ikke_offisiell_statistikk
+from code.helper import annotate_ikke_offisiell_statistikk, pretty_time_delta
 from code.konstanter import statusordre, fylker
 
 
@@ -113,6 +113,9 @@ def dager_mellom_statusendringer(
         filtre = filtre & (data_status.forrige_status == forrige_status_filter)
     if status_filter:
         filtre = filtre & (data_status.status == status_filter)
+    
+    median = data_status[filtre].tid_siden_siste_endring.dt.total_seconds().median()
+    gjennomsnitt = data_status[filtre].tid_siden_siste_endring.dt.total_seconds().mean()
 
     saker_per_intervall = (
         data_status[filtre]
@@ -130,6 +133,7 @@ def dager_mellom_statusendringer(
         )
     )
     fig.update_layout(
+        title=f"Median ={pretty_time_delta(median)} <br>Gjennomsnitt ={pretty_time_delta(gjennomsnitt)}",
         height=500,
         width=800,
         xaxis_title="Tidsgruppering",
