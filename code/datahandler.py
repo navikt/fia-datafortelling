@@ -105,6 +105,14 @@ def preprocess_data_leveranse(data_leveranse):
     return data_leveranse
 
 
+def kollaps_leveranse_historikk(data_leveranse):
+    return (
+        data_leveranse
+        .sort_values(["saksnummer", "sistEndret"], ascending=True)
+        .drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
+    )
+
+
 def beregn_siste_oppdatering(
     data_status,
     data_eierskap,

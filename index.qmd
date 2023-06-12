@@ -36,6 +36,7 @@ from code.datahandler import (
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
+    kollaps_leveranse_historikk,
 )
 from code.plots import (
     aktive_saker_per_fylke,
@@ -60,6 +61,7 @@ data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
+data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
 ```
 
 
@@ -160,12 +162,12 @@ Slettet leveranser vises ikke i grafene under.
 
 ## Per tjeneste
 ```{python}
-antall_leveranser_per_tjeneste(data_leveranse)
+antall_leveranser_per_tjeneste(data_siste_leveranse)
 ```
 
 ## Per modul
 ```{python}
-antall_leveranser_per_modul(data_leveranse)
+antall_leveranser_per_modul(data_siste_leveranse)
 ```
 
 ## Per sak
@@ -173,14 +175,14 @@ Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til 
 Her gjelder alle saker som hadde eller har status "Vi bistår" og har registrerte leveranser.
 
 ```{python}
-antall_leveranser_per_sak(data_leveranse)
+antall_leveranser_per_sak(data_siste_leveranse)
 ```
 
 ## Per måned
 Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
 
 ```{python}
-moduler_per_maaned(data_leveranse)
+moduler_per_maaned(data_siste_leveranse)
 ```
 
 :::
