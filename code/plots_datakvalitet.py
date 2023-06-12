@@ -106,14 +106,14 @@ def dager_mellom_statusendringer(
     data_status: pd.DataFrame,
     intervall_sortering: list,
     forrige_status_filter: str = None,
-    status_filter : str = None,
+    status_filter: str = None,
 ):
     filtre = True
     if forrige_status_filter:
         filtre = filtre & (data_status.forrige_status == forrige_status_filter)
     if status_filter:
         filtre = filtre & (data_status.status == status_filter)
-    
+
     median = data_status[filtre].tid_siden_siste_endring.dt.total_seconds().median()
     gjennomsnitt = data_status[filtre].tid_siden_siste_endring.dt.total_seconds().mean()
 
@@ -146,28 +146,57 @@ def dager_mellom_statusendringer(
 
 def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dager):
     første_dato = data_status.endretTidspunkt.dt.date.min()
-    siste_dato = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", tz=timezone.utc)
+    now = datetime.now(timezone.utc)
+    alle_datoer = pd.date_range(
+        første_dato, now.strftime("%Y-%m-%d"), freq="d", tz=timezone.utc
+    )
     aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
 
-    urørt_per_status_og_dato = dict(zip(aktive_statuser, [[]] * len(aktive_statuser)))
-    for beregningsdato in alle_datoer:
-        siste_oppdatering = beregn_siste_oppdatering(
-            data_status,
-            data_eierskap,
-            data_leveranse,
-            beregningsdato + timedelta(days=1),
-        )
-        for status in aktive_statuser:
-            antall_urørt = (
-                siste_oppdatering[
-                    (siste_oppdatering.status_beregningsdato == status)
-                ].dager_siden_siste_oppdatering
-                > antall_dager
-            ).sum()
-            urørt_per_status_og_dato[status] = urørt_per_status_og_dato[status] + [
-                antall_urørt
-            ]
+    data = pd.concat(
+        [
+            data_status[["saksnummer", "status", "endretTidspunkt"]],
+            data_eierskap[["saksnummer", "status", "endretTidspunkt"]],
+            (
+                data_leveranse[["saksnummer", "sistEndret"]]
+                .rename(columns={"sistEndret": "endretTidspunkt"})
+                .assign(status="VI_BISTÅR")
+            ),
+        ]
+    )
+    data = data.sort_values(
+        ["saksnummer", "endretTidspunkt"], ascending=True
+    ).reset_index()
+    data["aktiv_status"] = data.status.isin(aktive_statuser)
+    data.loc[
+        data.saksnummer == data.saksnummer.shift(-1),
+        "neste_endretTidspunkt",
+    ] = data.endretTidspunkt.shift(-1)
+    data.loc[
+        data.neste_endretTidspunkt.astype(str) == "NaT", "neste_endretTidspunkt"
+    ] = now
+    data["antall_dager"] = (data.neste_endretTidspunkt - data.endretTidspunkt).dt.days
+    data["mer_enn_x_dager"] = data.antall_dager > antall_dager
+
+    urørt_per_status_og_dato = dict(
+        zip(aktive_statuser, [[0] * len(alle_datoer)] * len(aktive_statuser))
+    )
+
+    for _, row in data[data.mer_enn_x_dager & data.aktiv_status].iterrows():
+        status = row["status"]
+        endretTidspunkt = row["endretTidspunkt"]
+        neste_endretTidspunkt = row["neste_endretTidspunkt"]
+
+        urørt_intervall = []
+        for dato in alle_datoer:
+            if (dato > endretTidspunkt + timedelta(days=antall_dager)) & (
+                dato < neste_endretTidspunkt
+            ):
+                urørt_intervall.append(1)
+            else:
+                urørt_intervall.append(0)
+        urørt_per_status_og_dato[status] = [
+            sum(x) for x in zip(urørt_per_status_og_dato[status], urørt_intervall)
+        ]
 
     fig = go.Figure()
 
@@ -190,13 +219,7 @@ def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dag
     # Create slider
     fig.update_layout(
         height=600,
-        xaxis=dict(
-            autorange=True,
-            rangeslider=dict(
-                autorange=True,
-                visible=True
-            )
-        )
+        xaxis=dict(autorange=True, rangeslider=dict(autorange=True, visible=True)),
     )
-            
+
     return annotate_ikke_offisiell_statistikk(fig)
