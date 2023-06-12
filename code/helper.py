@@ -26,3 +26,24 @@ def pretty_time_delta(seconds):
         return '%s %d min %d sek' % (sign_string, minutes, seconds)
     else:
         return '%s %d sek' % (sign_string, seconds)
+
+
+def modul_sortering(data_siste_leveranse):
+    tjeneste_sortering = (
+        data_siste_leveranse.groupby("iaTjenesteNavn")
+        .saksnummer.nunique()
+        .sort_values(ascending=False)
+        .index.to_list()
+    )
+    tjeneste_sortering_map = dict(
+        zip(tjeneste_sortering, range(len(tjeneste_sortering)))
+    )
+    modul_sortering = (
+        data_siste_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
+        .saksnummer.nunique()
+        .sort_values(ascending=False)
+        .reset_index()
+        .sort_values("iaTjenesteNavn", key=lambda col: col.map(tjeneste_sortering_map))
+        .iaModulNavn.to_list()
+    )
+    return modul_sortering

@@ -157,11 +157,10 @@ def antall_leveranser_per_tjeneste(data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def antall_leveranser_per_modul(data_leveranse):
+def antall_leveranser_per_modul(data_leveranse, modul_sortering):
     leveranser_per_modul = (
         data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
         .saksnummer.nunique()
-        .sort_values(ascending=False)
         .reset_index()
     )
 
@@ -183,14 +182,15 @@ def antall_leveranser_per_modul(data_leveranse):
 
     fig.update_layout(
         height=500,
-        width=850,
+        width=800,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
-        xaxis_title="Antall saker per modul (levert og under arbeid)",
+        xaxis_title="Antall saker per modul",
         xaxis_title_standoff=80,
         yaxis_autorange="reversed",
-        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
+        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1.1),
     )
+    fig.update_yaxes(categoryorder="array", categoryarray=modul_sortering)
 
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 

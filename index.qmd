@@ -51,6 +51,7 @@ from code.plots import (
 )
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
+from code.helper import modul_sortering
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -167,8 +168,26 @@ antall_leveranser_per_tjeneste(data_siste_leveranse)
 
 ## Per modul
 ```{python}
-antall_leveranser_per_modul(data_siste_leveranse)
+modul_sortering = modul_sortering(data_siste_leveranse)
 ```
+::: {.panel-tabset}
+## Levert
+```{python}
+antall_leveranser_per_modul(
+    data_siste_leveranse[data_siste_leveranse.status=="LEVERT"], modul_sortering
+)
+```
+## Under arbeid
+```{python}
+antall_leveranser_per_modul(
+    data_siste_leveranse[data_siste_leveranse.status == "UNDER_ARBEID"], modul_sortering
+)
+```
+## Levert og under arbeid
+```{python}
+antall_leveranser_per_modul(data_siste_leveranse, modul_sortering)
+```
+:::
 
 ## Per sak
 Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
