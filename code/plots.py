@@ -162,6 +162,7 @@ def antall_leveranser_per_modul(data_leveranse, modul_sortering):
         data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
         .saksnummer.nunique()
         .reset_index()
+        .sort_values("iaModulNavn", key=lambda col: col.map(lambda e: modul_sortering.index(e)))
     )
 
     fig = go.Figure()
