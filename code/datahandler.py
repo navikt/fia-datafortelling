@@ -100,12 +100,8 @@ def preprocess_data_status(data_status):
 
 
 def preprocess_data_leveranse(data_leveranse):
-    data_leveranse = data_leveranse.sort_values(
-        ["saksnummer", "sistEndret"], ascending=True
-    ).drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
-
-    data_leveranse = data_leveranse[data_leveranse.status != "SLETTET"]
-
+    slettet_leveranse_id = data_leveranse[data_leveranse.status=="SLETTET"].id
+    data_leveranse = data_leveranse[~data_leveranse.id.isin(slettet_leveranse_id)]
     return data_leveranse
 
 
