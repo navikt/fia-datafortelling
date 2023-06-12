@@ -136,7 +136,7 @@ def beregn_siste_oppdatering(
 
     # Filtrere bort saker med avsluttet status på beregningsdato
     aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
-    aktiv_sak_beregningsdato = data_status.siste_status.isin(aktive_statuser)
+    aktiv_sak_beregningsdato = data_status.status_beregningsdato.isin(aktive_statuser)
     data_status = data_status[aktiv_sak_beregningsdato]
 
     # Beregne siste oppdatering
