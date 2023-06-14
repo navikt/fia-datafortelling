@@ -114,9 +114,6 @@ def dager_mellom_statusendringer(
     if status_filter:
         filtre = filtre & (data_status.status == status_filter)
 
-    median = data_status[filtre].tid_siden_siste_endring.dt.total_seconds().median()
-    gjennomsnitt = data_status[filtre].tid_siden_siste_endring.dt.total_seconds().mean()
-
     saker_per_intervall = (
         data_status[filtre]
         .groupby("intervall_tid_siden_siste_endring")
@@ -133,7 +130,6 @@ def dager_mellom_statusendringer(
         )
     )
     fig.update_layout(
-        title=f"Median ={pretty_time_delta(median)} <br>Gjennomsnitt ={pretty_time_delta(gjennomsnitt)}",
         height=500,
         width=800,
         xaxis_title="Tidsgruppering",
