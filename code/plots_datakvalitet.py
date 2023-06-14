@@ -132,7 +132,7 @@ def dager_mellom_statusendringer(
     fig.update_layout(
         height=500,
         width=800,
-        xaxis_title="Tidsgruppering",
+        xaxis_title="Tidsgruppering (fra og med, til)",
         yaxis_title="Antall saker",
     )
     fig.update_xaxes(categoryorder="array", categoryarray=intervall_sortering)
