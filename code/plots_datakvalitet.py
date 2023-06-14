@@ -102,19 +102,9 @@ def saker_per_status_over_tid(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def dager_mellom_statusendringer(
-    data_status: pd.DataFrame,
-    forrige_status_filter: str = None,
-    status_filter: str = None,
-):
-    filtre = True
-    if forrige_status_filter:
-        filtre = filtre & (data_status.forrige_status == forrige_status_filter)
-    if status_filter:
-        filtre = filtre & (data_status.status == status_filter)
-
+def dager_mellom_statusendringer(data_status):
     saker_per_intervall = (
-        data_status[filtre]
+        data_status
         .groupby("intervall_tid_siden_siste_endring")
         .saksnummer.nunique()
         .reset_index()
@@ -220,23 +210,13 @@ def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dag
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def median_og_gjennomsnitt_av_tid_mellom_statusendringer(
-        data_status: pd.DataFrame,
-        forrige_status_filter: str = None,
-        status_filter: str = None,
-    ):
-    filtre = True
-    if forrige_status_filter:
-        filtre = filtre & (data_status.forrige_status == forrige_status_filter)
-    if status_filter:
-        filtre = filtre & (data_status.status == status_filter)
-
+def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
     data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime("%Y-%m")
     data_status["dager_siden_siste_endring"] = data_status.tid_siden_siste_endring.dt.total_seconds()/60/60/24
 
-    gjennomsnitt = data_status[filtre].groupby("endretTidspunkt_måned").dager_siden_siste_endring.mean()
-    median = data_status[filtre].groupby("endretTidspunkt_måned").dager_siden_siste_endring.median()
-    antall_saker = data_status[filtre].groupby("endretTidspunkt_måned").dager_siden_siste_endring.count()
+    gjennomsnitt = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.mean()
+    median = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.median()
+    antall_saker = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.count()
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
