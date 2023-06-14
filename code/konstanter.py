@@ -23,3 +23,8 @@ fylker = {
     "50": "Trøndelag",
     "54": "Troms og Finnmark",
 }
+
+intervall_sortering = [
+    "0-1 min", "1-10 min", "10-60 min", "1-8 timer", "8-24 timer", "1-10 dager",
+    "10-30 dager", "30-100 dager", "100-365 dager", "fra 365 dager"
+]

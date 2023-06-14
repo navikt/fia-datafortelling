@@ -1,11 +1,11 @@
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 from datetime import datetime, timezone, timedelta
 
 
-from code.datahandler import beregn_siste_oppdatering
-from code.helper import annotate_ikke_offisiell_statistikk, pretty_time_delta
-from code.konstanter import statusordre, fylker
+from code.helper import annotate_ikke_offisiell_statistikk
+from code.konstanter import statusordre, fylker, intervall_sortering
 
 
 def saker_per_status_over_tid(data_status):
@@ -104,7 +104,6 @@ def saker_per_status_over_tid(data_status):
 
 def dager_mellom_statusendringer(
     data_status: pd.DataFrame,
-    intervall_sortering: list,
     forrige_status_filter: str = None,
     status_filter: str = None,
 ):
@@ -218,4 +217,63 @@ def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dag
         xaxis=dict(autorange=True, rangeslider=dict(autorange=True, visible=True)),
     )
 
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def median_og_gjennomsnitt_av_tid_mellom_statusendringer(
+        data_status: pd.DataFrame,
+        forrige_status_filter: str = None,
+        status_filter: str = None,
+    ):
+    filtre = True
+    if forrige_status_filter:
+        filtre = filtre & (data_status.forrige_status == forrige_status_filter)
+    if status_filter:
+        filtre = filtre & (data_status.status == status_filter)
+
+    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime("%Y-%m")
+    data_status["dager_siden_siste_endring"] = data_status.tid_siden_siste_endring.dt.total_seconds()/60/60/24
+
+    gjennomsnitt = data_status[filtre].groupby("endretTidspunkt_måned").dager_siden_siste_endring.mean()
+    median = data_status[filtre].groupby("endretTidspunkt_måned").dager_siden_siste_endring.median()
+    antall_saker = data_status[filtre].groupby("endretTidspunkt_måned").dager_siden_siste_endring.count()
+
+    fig = make_subplots(specs=[[{"secondary_y": True}]])
+
+    fig.add_trace(
+        go.Scatter(
+            x=gjennomsnitt.index,
+            y=gjennomsnitt.values,
+            name="Gjennomsnitt",
+        ),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=median.index,
+            y=median.values,
+            name="Median",
+        ),
+        secondary_y=False,
+    )
+    fig.add_trace(
+        go.Scatter(
+            x=antall_saker.index,
+            y=antall_saker.values,
+            name="Antall saker",
+            marker_color="black",
+            line_dash='dash',
+            opacity=0.2,
+        ),
+        secondary_y=True,
+    )
+
+    fig.update_layout(
+        height=500,
+        width=800,
+        xaxis_title="Endringstidspunkt",
+        yaxis_title="Antall dager",
+    )
+    fig.update_yaxes(title_text="Antall saker", secondary_y=True)
+    
     return annotate_ikke_offisiell_statistikk(fig)

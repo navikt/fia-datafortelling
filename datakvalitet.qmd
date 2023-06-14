@@ -42,6 +42,7 @@ from code.plots_datakvalitet import (
     saker_per_status_over_tid,
     dager_mellom_statusendringer,
     urørt_saker_over_tid,
+    median_og_gjennomsnitt_av_tid_mellom_statusendringer,
 )
 
 
@@ -76,19 +77,31 @@ data_status = beregn_intervall_tid_siden_siste_endring(data_status)
 ::: {.panel-tabset}
 ## Til Kontaktes
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "VURDERES", "KONTAKTES")
+dager_mellom_statusendringer(data_status, "VURDERES", "KONTAKTES")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "VURDERES", "KONTAKTES")
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "VURDERES", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "VURDERES", "IKKE_AKTUELL")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "VURDERES", "IKKE_AKTUELL")
 ```
 ## Til Slettet
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "VURDERES", "SLETTET")
+dager_mellom_statusendringer(data_status, "VURDERES", "SLETTET")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "VURDERES", "SLETTET")
 ```
 ## Til Kontaktes, Ikke aktuell eller Slettet
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "VURDERES")
+dager_mellom_statusendringer(data_status, "VURDERES")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "VURDERES")
 ```
 :::
 
@@ -96,15 +109,24 @@ dager_mellom_statusendringer(data_status, intervall_sortering, "VURDERES")
 ::: {.panel-tabset}
 ## Til Kartlegges
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "KONTAKTES", "KARTLEGGES")
+dager_mellom_statusendringer(data_status, "KONTAKTES", "KARTLEGGES")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "KONTAKTES", "KARTLEGGES")
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "KONTAKTES", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "KONTAKTES", "IKKE_AKTUELL")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "KONTAKTES", "IKKE_AKTUELL")
 ```
 ## Til Kartlegges eller Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "KONTAKTES")
+dager_mellom_statusendringer(data_status, "KONTAKTES")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "KONTAKTES")
 ```
 :::
 
@@ -112,15 +134,24 @@ dager_mellom_statusendringer(data_status, intervall_sortering, "KONTAKTES")
 ::: {.panel-tabset}
 ## Til Vi bistår
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "KARTLEGGES", "VI_BISTÅR")
+dager_mellom_statusendringer(data_status, "KARTLEGGES", "VI_BISTÅR")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "KARTLEGGES", "VI_BISTÅR")
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "KARTLEGGES", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "KARTLEGGES", "IKKE_AKTUELL")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "KARTLEGGES", "IKKE_AKTUELL")
 ```
 ## Til Vi bistår eller Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "KARTLEGGES")
+dager_mellom_statusendringer(data_status, "KARTLEGGES")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "KARTLEGGES")
 ```
 :::
 
@@ -128,15 +159,24 @@ dager_mellom_statusendringer(data_status, intervall_sortering, "KARTLEGGES")
 ::: {.panel-tabset}
 ## Til Fullført
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "VI_BISTÅR", "FULLFØRT")
+dager_mellom_statusendringer(data_status, "VI_BISTÅR", "FULLFØRT")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "VI_BISTÅR", "FULLFØRT")
 ```
 ## Til Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "VI_BISTÅR", "IKKE_AKTUELL")
+dager_mellom_statusendringer(data_status, "VI_BISTÅR", "IKKE_AKTUELL")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "VI_BISTÅR", "IKKE_AKTUELL")
 ```
 ## Til Fullført eller Ikke aktuell
 ```{python}
-dager_mellom_statusendringer(data_status, intervall_sortering, "VI_BISTÅR")
+dager_mellom_statusendringer(data_status, "VI_BISTÅR")
+```
+```{python}
+median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status, "VI_BISTÅR")
 ```
 :::
 :::

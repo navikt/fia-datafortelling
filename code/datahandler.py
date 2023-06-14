@@ -2,7 +2,7 @@ from google.cloud.bigquery import Client
 import json
 from datetime import datetime, timezone
 
-from code.konstanter import fylker
+from code.konstanter import fylker, intervall_sortering
 
 
 def load_data(project, dataset, table):
@@ -199,10 +199,7 @@ def beregn_intervall_tid_siden_siste_endring(data_status):
     )
     seconds = data_status.tid_siden_siste_endring.dt.seconds
     days = data_status.tid_siden_siste_endring.dt.days
-    intervall_sortering = [
-        "0-1 min", "1-10 min", "10-60 min", "1-8 timer", "8-24 timer", "1-10 dager",
-        "10-30 dager", "30-100 dager", "100-365 dager", "fra 365 dager"
-    ]
+    
     data_status.loc[seconds<60, "intervall_tid_siden_siste_endring"] = intervall_sortering[0]
     data_status.loc[seconds.between(60, 60*10), "intervall_tid_siden_siste_endring"] = intervall_sortering[1]
     data_status.loc[seconds.between(60*10, 60*60), "intervall_tid_siden_siste_endring"] = intervall_sortering[2]
