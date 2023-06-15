@@ -259,7 +259,26 @@ Tidspunkt: når statusen settes til "Ikke aktuell".
 data_input = data_status[data_status.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
+
+## Fullført
+Saker med nåværende status "Fullført".\
+Tidspunkt: når statusen settes til "Fullført".
+```{python}
+data_input = data_status[data_status.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
+virksomhetsprofil(data_input)
+```
+
+## Bistått
+Saker med nåværende status "Vi bistår" eller "Fullført".\
+Tidspunkt: når statusen settes til "Vi bistår" eller "Fullført".
+```{python}
+data_input = data_status[
+    (data_status.siste_status=="VI_BISTÅR") | (data_status.siste_status=="FULLFØRT")
+].drop_duplicates("saksnummer", keep="last")
+virksomhetsprofil(data_input)
+```
 :::
+
 
 ## Begrunnelse på ikke aktuell
 Her vises andel saker per begrunnelse på ikke aktuell (hvis du holder musepeker over kakestykkene kan du også se antall).
