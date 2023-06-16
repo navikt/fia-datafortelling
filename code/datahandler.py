@@ -240,3 +240,15 @@ def beregn_intervall_tid_siden_siste_endring(data_status):
     ] = intervall_sortering[9]
 
     return data_status
+
+
+def explode_ikke_aktuell_begrunnelse(data_status):
+    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
+        "saksnummer", keep="last"
+    )
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
+        "[]"
+    ).str.split(",")
+    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
+
+    return ikke_aktuell

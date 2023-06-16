@@ -4,6 +4,7 @@ from plotly.subplots import make_subplots
 from datetime import datetime, timezone, timedelta
 
 
+from code.datahandler import explode_ikke_aktuell_begrunnelse
 from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
 
@@ -314,16 +315,8 @@ def for_lavt_sykefravær(data_status):
         annotation_yshift=-20,
     )
 
-    # Preprosessering av ikke aktuell begrunnelser
-    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
-        "saksnummer", keep="last"
-    )
-    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
-        "[]"
-    ).str.split(",")
-    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
-
     # For lavt sykefravær
+    ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
     data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "FOR_LAVT_SYKEFRAVÆR"]
     fig.add_trace(
         go.Histogram(
@@ -385,16 +378,8 @@ def mindre_virksomhet(data_status):
         annotation_yshift=-20,
     )
 
-    # Preprosessering av ikke aktuell begrunnelser
-    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
-        "saksnummer", keep="last"
-    )
-    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
-        "[]"
-    ).str.split(",")
-    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
-
     # Mindre virksomhet
+    ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
     data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "MINDRE_VIRKSOMHET"]
     fig.add_trace(
         go.Histogram(

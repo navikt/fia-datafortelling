@@ -2,7 +2,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-from code.datahandler import beregn_siste_oppdatering
+from code.datahandler import beregn_siste_oppdatering, explode_ikke_aktuell_begrunnelse
 from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre, plotly_colors
 
@@ -395,15 +395,12 @@ def statusflyt(data_status):
 
 
 def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
-    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
-        "saksnummer", keep="last"
+    antall_saker_ikke_aktuell = (
+        data_status[data_status.status == "IKKE_AKTUELL"]
+        .drop_duplicates("saksnummer", keep="last")
+        .shape[0]
     )
-    antall_saker_ikke_aktuell = ikke_aktuell.shape[0]
-
-    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
-        "[]"
-    ).str.split(",")
-    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
+    ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
     ikke_aktuell.ikkeAktuelBegrunnelse = (
         ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
         .str.replace("_", " ")
