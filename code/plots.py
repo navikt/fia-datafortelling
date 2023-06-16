@@ -1,3 +1,4 @@
+import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
@@ -103,11 +104,34 @@ def antall_saker_per_status(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_leveranser_per_sak(data_leveranse):
+def antall_leveranser_per_sak(data_status, data_leveranse):
+    # saker som har leveranser registrert
     leveranser_per_sak = data_leveranse.groupby("saksnummer").iaModulId.nunique()
 
-    fig = go.Figure(data=[go.Histogram(x=leveranser_per_sak)])
+    # saker som ikke har leveranser registrert men kunne har hatt
+    første_registrert_leveranse_dato = data_leveranse.sistEndret.min()
+    saker_med_leveranser = data_leveranse.saksnummer.unique().tolist()
+    # saker fullført etter det ble mulig å registrere leveranser
+    saker_uten_leveranser = data_status[
+        (data_status.status=="FULLFØRT") &
+        (data_status.endretTidspunkt>=første_registrert_leveranse_dato) &
+        ~data_status.saksnummer.isin(saker_med_leveranser)
+    ].saksnummer.unique().tolist()
+    # saker i bistand nå
+    saker_uten_leveranser.extend(data_status[
+        (data_status.siste_status=="VI_BISTÅR") &
+        (data_status.status=="VI_BISTÅR") &
+        ~data_status.saksnummer.isin(saker_med_leveranser) &
+        ~data_status.saksnummer.isin(saker_uten_leveranser)
+    ].saksnummer.unique())
 
+    # samlet series med saker med og uten leveranser
+    leveranser_per_sak = pd.concat([
+        leveranser_per_sak,
+        pd.Series(data=0, index=saker_uten_leveranser),
+    ], axis=0)
+
+    fig = go.Figure(data=[go.Histogram(x=leveranser_per_sak)])
     fig.update_layout(
         height=500,
         width=850,

@@ -197,7 +197,7 @@ Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til 
 Her gjelder alle saker som hadde eller har status "Vi bistår" og har registrerte leveranser.
 
 ```{python}
-antall_leveranser_per_sak(data_siste_leveranse)
+antall_leveranser_per_sak(data_status, data_siste_leveranse)
 ```
 
 ## Per måned
