@@ -1,10 +1,9 @@
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-from datetime import datetime, timezone
 
 from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk
-from code.konstanter import statusordre
+from code.konstanter import statusordre, plotly_colors
 
 
 def aktive_saker_per_fylke(data_status):
@@ -162,7 +161,9 @@ def antall_leveranser_per_modul(data_leveranse, modul_sortering):
         data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
         .saksnummer.nunique()
         .reset_index()
-        .sort_values("iaModulNavn", key=lambda col: col.map(lambda e: modul_sortering.index(e)))
+        .sort_values(
+            "iaModulNavn", key=lambda col: col.map(lambda e: modul_sortering.index(e))
+        )
     )
 
     fig = go.Figure()
@@ -360,10 +361,12 @@ def statusflyt(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def begrunnelse_ikke_aktuell(data_status):
+def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
     ikke_aktuell = data_status[
-        data_status.siste_status == "IKKE_AKTUELL"
+        data_status.status == "IKKE_AKTUELL"
     ].drop_duplicates("saksnummer", keep="last")
+    antall_saker_ikke_aktuell = ikke_aktuell.shape[0]
+
     ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
         "[]"
     ).str.split(",")
@@ -378,16 +381,28 @@ def begrunnelse_ikke_aktuell(data_status):
     ikke_aktuell_per_begrunnelse = (
         ikke_aktuell.groupby("ikkeAktuelBegrunnelse")
         .saksnummer.nunique()
-        .sort_values()
+        .reset_index()
+        .sort_values(
+            "ikkeAktuelBegrunnelse",
+            key=lambda col: col.map(lambda e: begrunnelse_sortering.index(e)),
+        )
         .reset_index()
     )
+    andel = [
+        x*100/antall_saker_ikke_aktuell
+        for x in ikke_aktuell_per_begrunnelse.saksnummer
+    ]
 
     fig = go.Figure()
     fig.add_trace(
-        go.Pie(
-            labels=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
-            values=ikke_aktuell_per_begrunnelse.saksnummer,
-            text=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
+        go.Bar(
+            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
+            x=andel,
+            text=[
+                f"{andel[i]:.2f}%, {ikke_aktuell_per_begrunnelse.saksnummer[i]}" for i in range(len(andel))
+            ],
+            marker_color=plotly_colors,
+            orientation="h",
         )
     )
     fig.update_layout(
@@ -395,8 +410,10 @@ def begrunnelse_ikke_aktuell(data_status):
         width=850,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
-        xaxis_title="Antall saker med status ikke aktuell",
+        xaxis_title="Andel og antall saker med status ikke aktuell",
         xaxis_title_standoff=80,
+        yaxis_autorange="reversed",
+        xaxis_range=[0,60],
     )
 
-    return annotate_ikke_offisiell_statistikk(fig)
+    return annotate_ikke_offisiell_statistikk(fig, y=1.2)

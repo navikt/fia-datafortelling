@@ -51,7 +51,10 @@ from code.plots import (
 )
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
-from code.helper import modul_sortering
+from code.helper import (
+    modul_sortering,
+    ikke_aktuell_begrunnelse_sortering,
+)
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -281,15 +284,20 @@ virksomhetsprofil(data_input)
 
 
 ## Begrunnelse på ikke aktuell
-Her vises andel saker per begrunnelse på ikke aktuell (hvis du holder musepeker over kakestykkene kan du også se antall).
+Her vises andel og antall saker per begrunnelse på ikke aktuell.
 Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
-Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser.
+Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser,
+og derfor kan andelssummen være større enn 100%.
+
+```{python}
+begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(data_status)
+```
 
 ::: {.panel-tabset}
 
 ## Fra alle mulige statuser
 ```{python}
-begrunnelse_ikke_aktuell(data_status)
+begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering)
 ```
 
 ## Fra Vurderes
@@ -298,7 +306,8 @@ begrunnelse_ikke_aktuell(
     data_status[
         (data_status.status == "IKKE_AKTUELL")
         & (data_status.forrige_status == "VURDERES")
-    ]
+    ],
+    begrunnelse_sortering,
 )
 ```
 
@@ -308,7 +317,8 @@ begrunnelse_ikke_aktuell(
     data_status[
         (data_status.status == "IKKE_AKTUELL")
         & (data_status.forrige_status == "KONTAKTES")
-    ]
+    ],
+    begrunnelse_sortering,
 )
 ```
 
@@ -318,7 +328,8 @@ begrunnelse_ikke_aktuell(
     data_status[
         (data_status.status == "IKKE_AKTUELL")
         & (data_status.forrige_status == "KARTLEGGES")
-    ]
+    ],
+    begrunnelse_sortering,
 )
 ```
 
@@ -328,7 +339,8 @@ begrunnelse_ikke_aktuell(
     data_status[
         (data_status.status == "IKKE_AKTUELL")
         & (data_status.forrige_status == "VI_BISTÅR")
-    ]
+    ],
+    begrunnelse_sortering,
 )
 ```
 
