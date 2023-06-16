@@ -354,3 +354,61 @@ def for_lavt_sykefravær(data_status):
     fig.update_traces(opacity=0.75)
 
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def mindre_virksomhet(data_status):
+    fig = go.Figure()
+
+    # Sammenlignesgrunnlag
+    data = data_status[
+        data_status.siste_status.isin(["VI_BISTÅR", "FULLFØRT"])
+    ].drop_duplicates("saksnummer", keep="last")
+    antall_saker = data.shape[0]
+    saker_per_storrelsesgruppe = (
+        data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
+    )
+    fig.add_trace(
+        go.Bar(
+            x=saker_per_storrelsesgruppe.antallPersoner_gruppe,
+            y=saker_per_storrelsesgruppe.saksnummer / antall_saker * 100,
+            name="Bistått",
+        ),
+    )
+
+    # Preprosessering av ikke aktuell begrunnelser
+    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
+        "saksnummer", keep="last"
+    )
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
+        "[]"
+    ).str.split(",")
+    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
+
+    # Mindre virksomhet
+    data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "MINDRE_VIRKSOMHET"]
+    antall_saker = data.shape[0]
+    saker_per_storrelsesgruppe = (
+        data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
+    )
+    fig.add_trace(
+        go.Bar(
+            x=saker_per_storrelsesgruppe.antallPersoner_gruppe,
+            y=saker_per_storrelsesgruppe.saksnummer / antall_saker * 100,
+            name="Mindre virksomhet",
+        ),
+    )
+
+    # Sortere xaxis
+    storrelse_sortering = (
+        data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
+    )
+    fig.update_xaxes(categoryorder="array", categoryarray=storrelse_sortering)
+
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Antall ansatte",
+        yaxis_title="Andel saker (%)",
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)

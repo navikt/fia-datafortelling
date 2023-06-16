@@ -45,6 +45,7 @@ from code.plots_datakvalitet import (
     median_og_gjennomsnitt_av_tid_mellom_statusendringer,
     antall_saker_per_eier,
     for_lavt_sykefravær,
+    mindre_virksomhet,
 )
 
 
@@ -259,4 +260,9 @@ antall_saker_per_eier(data_status)
 ### For lavt sykefravær
 ```{python}
 for_lavt_sykefravær(data_status)
+```
+
+### Mindre virksomhet
+```{python}
+mindre_virksomhet(data_status)
 ```
