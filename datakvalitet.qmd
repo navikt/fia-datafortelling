@@ -256,13 +256,17 @@ antall_saker_per_eier(data_status)
 
 
 ## Stemmer begrunnelse på ikke aktuell med virksomhetsprofil?
+Biståtte saker er de i status "Vi bistår" eller "Fullført".
 
 ### For lavt sykefravær
+Sammenligner saker i status ikke aktuell og begrunnelse "For lavt sykefravær", med biståtte saker.
 ```{python}
 for_lavt_sykefravær(data_status)
 ```
 
 ### Mindre virksomhet
+Sammenligner saker i status ikke aktuell og begrunnelse "Mindre virksomher", med biståtte saker.
+Alle saker med over 150 ansatte havner i den siste søylen.
 ```{python}
 mindre_virksomhet(data_status)
 ```
