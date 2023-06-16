@@ -44,6 +44,7 @@ from code.plots_datakvalitet import (
     urørt_saker_over_tid,
     median_og_gjennomsnitt_av_tid_mellom_statusendringer,
     antall_saker_per_eier,
+    for_lavt_sykefravær,
 )
 
 
@@ -250,4 +251,12 @@ Vise antall saker i status "Vi bistår" eller "Fullført" per eier. Gjelder bare
 
 ```{python}
 antall_saker_per_eier(data_status)
+```
+
+
+## Stemmer begrunnelse på ikke aktuell med virksomhetsprofil?
+
+### For lavt sykefravær
+```{python}
+for_lavt_sykefravær(data_status)
 ```

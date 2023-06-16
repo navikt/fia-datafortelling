@@ -5,7 +5,7 @@ from datetime import datetime, timezone, timedelta
 
 
 from code.helper import annotate_ikke_offisiell_statistikk
-from code.konstanter import statusordre, fylker, intervall_sortering
+from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
 
 
 def saker_per_status_over_tid(data_status):
@@ -283,5 +283,74 @@ def antall_saker_per_eier(data_status):
         xaxis_title="Antall saker",
         yaxis_title="Antall eiere",
     )
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def for_lavt_sykefravær(data_status):
+    fig = go.Figure()
+
+    # Sammenlignesgrunnlag
+    data = data_status[
+        data_status.siste_status.isin(["VI_BISTÅR", "FULLFØRT"])
+    ].drop_duplicates("saksnummer", keep="last")
+    fig.add_trace(
+        go.Histogram(
+            x=data.sykefraversprosent,
+            histnorm="percent",
+            nbinsx=100,
+            name="Bistått saker",
+        )
+    )
+    gjennomsnitt = data.sykefraversprosent.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[0],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.3}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[0],
+        annotation_yshift=-20,
+    )
+
+    # Preprosessering av ikke aktuell begrunnelser
+    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
+        "saksnummer", keep="last"
+    )
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
+        "[]"
+    ).str.split(",")
+    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
+
+    # For lavt sykefravær
+    data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "FOR_LAVT_SYKEFRAVÆR"]
+    fig.add_trace(
+        go.Histogram(
+            x=data.sykefraversprosent,
+            histnorm="percent",
+            nbinsx=100,
+            name="For lavt sykefravær",
+        )
+    )
+    gjennomsnitt = data.sykefraversprosent.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[1],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.3}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[1],
+    )
+
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Sykefravær (%)",
+        yaxis_title="Andel saker (%)",
+        barmode="overlay",
+    )
+    fig.update_traces(opacity=0.75)
 
     return annotate_ikke_offisiell_statistikk(fig)
