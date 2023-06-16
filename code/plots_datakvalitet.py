@@ -266,3 +266,22 @@ def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
     fig.update_yaxes(title_text="Antall saker", secondary_y=True)
 
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def antall_saker_per_eier(data_status):
+    saker_per_eier = (
+        data_status[data_status.siste_status.isin(["VI_BISTÅR", "FULLFØRT"])]
+        .drop_duplicates("saksnummer", keep="last")
+        .groupby("eierAvSak")
+        .saksnummer.nunique()
+    )
+
+    fig = go.Figure(data=[go.Histogram(x=saker_per_eier)])
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Antall saker",
+        yaxis_title="Antall eiere",
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)

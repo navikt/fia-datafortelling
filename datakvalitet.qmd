@@ -43,6 +43,7 @@ from code.plots_datakvalitet import (
     dager_mellom_statusendringer,
     urørt_saker_over_tid,
     median_og_gjennomsnitt_av_tid_mellom_statusendringer,
+    antall_saker_per_eier,
 )
 
 
@@ -241,4 +242,12 @@ Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveran
 
 ```{python}
 urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dager=90)
+```
+
+
+## Antall saker per eier
+Vise antall saker i status "Vi bistår" eller "Fullført" per eier. Gjelder bare siste eier per sak.
+
+```{python}
+antall_saker_per_eier(data_status)
 ```
