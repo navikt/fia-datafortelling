@@ -46,6 +46,7 @@ from code.plots_datakvalitet import (
     antall_saker_per_eier,
     for_lavt_sykefravær,
     mindre_virksomhet,
+    fullført_per_måned,
 )
 
 
@@ -269,4 +270,10 @@ Sammenligner saker i status ikke aktuell og begrunnelse "Mindre virksomher", med
 Alle saker med over 150 ansatte havner i den siste søylen.
 ```{python}
 mindre_virksomhet(data_status)
+```
+
+
+## Antall fullførte saker per måned
+```{python}
+fullført_per_måned(data_status)
 ```

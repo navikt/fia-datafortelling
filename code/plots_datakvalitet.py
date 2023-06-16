@@ -365,7 +365,9 @@ def mindre_virksomhet(data_status):
     ].drop_duplicates("saksnummer", keep="last")
     fig.add_trace(
         go.Histogram(
-            x=data[~data.antallPersoner.isna()].antallPersoner.apply(lambda x: 150 if x>150 else x),
+            x=data[~data.antallPersoner.isna()].antallPersoner.apply(
+                lambda x: 150 if x > 150 else x
+            ),
             histnorm="percent",
             nbinsx=100,
             name="Biståtte saker",
@@ -396,11 +398,12 @@ def mindre_virksomhet(data_status):
     data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "MINDRE_VIRKSOMHET"]
     fig.add_trace(
         go.Histogram(
-            x=data[~data.antallPersoner.isna()].antallPersoner.apply(lambda x: 150 if x>150 else x),
+            x=data[~data.antallPersoner.isna()].antallPersoner.apply(
+                lambda x: 150 if x > 150 else x
+            ),
             histnorm="percent",
             nbinsx=100,
             name="Mindre virksomhet",
-            
         )
     )
     gjennomsnitt = data.antallPersoner.mean()
@@ -423,4 +426,31 @@ def mindre_virksomhet(data_status):
     )
     fig.update_traces(opacity=0.75)
 
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def fullført_per_måned(data_status):
+    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
+        "%Y-%m"
+    )
+    fullført_per_måned = (
+        data_status.loc[data_status.status == "FULLFØRT"]
+        .endretTidspunkt_måned.value_counts()
+        .sort_index()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=fullført_per_måned.index,
+            y=fullført_per_måned.values,
+        )
+    )
+
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Fullført måned",
+        yaxis_title="Antall fullførte saker",
+    )
     return annotate_ikke_offisiell_statistikk(fig)
