@@ -299,7 +299,7 @@ def for_lavt_sykefravær(data_status):
             x=data.sykefraversprosent,
             histnorm="percent",
             nbinsx=100,
-            name="Bistått saker",
+            name="Biståtte saker",
         )
     )
     gjennomsnitt = data.sykefraversprosent.mean()
@@ -363,16 +363,24 @@ def mindre_virksomhet(data_status):
     data = data_status[
         data_status.siste_status.isin(["VI_BISTÅR", "FULLFØRT"])
     ].drop_duplicates("saksnummer", keep="last")
-    antall_saker = data.shape[0]
-    saker_per_storrelsesgruppe = (
-        data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
-    )
     fig.add_trace(
-        go.Bar(
-            x=saker_per_storrelsesgruppe.antallPersoner_gruppe,
-            y=saker_per_storrelsesgruppe.saksnummer / antall_saker * 100,
-            name="Bistått",
-        ),
+        go.Histogram(
+            x=data[~data.antallPersoner.isna()].antallPersoner.apply(lambda x: 150 if x>150 else x),
+            histnorm="percent",
+            nbinsx=100,
+            name="Biståtte saker",
+        )
+    )
+    gjennomsnitt = data.antallPersoner.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[0],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.2f}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[0],
+        annotation_yshift=-20,
     )
 
     # Preprosessering av ikke aktuell begrunnelser
@@ -386,29 +394,33 @@ def mindre_virksomhet(data_status):
 
     # Mindre virksomhet
     data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "MINDRE_VIRKSOMHET"]
-    antall_saker = data.shape[0]
-    saker_per_storrelsesgruppe = (
-        data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
-    )
     fig.add_trace(
-        go.Bar(
-            x=saker_per_storrelsesgruppe.antallPersoner_gruppe,
-            y=saker_per_storrelsesgruppe.saksnummer / antall_saker * 100,
+        go.Histogram(
+            x=data[~data.antallPersoner.isna()].antallPersoner.apply(lambda x: 150 if x>150 else x),
+            histnorm="percent",
+            nbinsx=100,
             name="Mindre virksomhet",
-        ),
+            
+        )
     )
-
-    # Sortere xaxis
-    storrelse_sortering = (
-        data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
+    gjennomsnitt = data.antallPersoner.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[1],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.2f}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[1],
     )
-    fig.update_xaxes(categoryorder="array", categoryarray=storrelse_sortering)
 
     fig.update_layout(
         height=500,
         width=850,
-        xaxis_title="Antall ansatte",
+        xaxis_title="Antall ansatte (%)",
         yaxis_title="Andel saker (%)",
+        barmode="overlay",
     )
+    fig.update_traces(opacity=0.75)
 
     return annotate_ikke_offisiell_statistikk(fig)
