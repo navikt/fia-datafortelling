@@ -104,8 +104,7 @@ def saker_per_status_over_tid(data_status):
 
 def dager_mellom_statusendringer(data_status):
     saker_per_intervall = (
-        data_status
-        .groupby("intervall_tid_siden_siste_endring")
+        data_status.groupby("intervall_tid_siden_siste_endring")
         .saksnummer.nunique()
         .reset_index()
     )
@@ -211,12 +210,22 @@ def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dag
 
 
 def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
-    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime("%Y-%m")
-    data_status["dager_siden_siste_endring"] = data_status.tid_siden_siste_endring.dt.total_seconds()/60/60/24
+    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
+        "%Y-%m"
+    )
+    data_status["dager_siden_siste_endring"] = (
+        data_status.tid_siden_siste_endring.dt.total_seconds() / 60 / 60 / 24
+    )
 
-    gjennomsnitt = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.mean()
-    median = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.median()
-    antall_saker = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.count()
+    gjennomsnitt = data_status.groupby(
+        "endretTidspunkt_måned"
+    ).dager_siden_siste_endring.mean()
+    median = data_status.groupby(
+        "endretTidspunkt_måned"
+    ).dager_siden_siste_endring.median()
+    antall_saker = data_status.groupby(
+        "endretTidspunkt_måned"
+    ).dager_siden_siste_endring.count()
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -242,7 +251,7 @@ def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
             y=antall_saker.values,
             name="Antall saker",
             marker_color="black",
-            line_dash='dash',
+            line_dash="dash",
             opacity=0.2,
         ),
         secondary_y=True,
@@ -255,5 +264,5 @@ def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
         yaxis_title="Antall dager",
     )
     fig.update_yaxes(title_text="Antall saker", secondary_y=True)
-    
+
     return annotate_ikke_offisiell_statistikk(fig)

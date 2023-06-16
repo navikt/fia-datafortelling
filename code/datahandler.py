@@ -89,28 +89,36 @@ def preprocess_data_status(data_status):
 
     # Gruppering av virksomheter per antall ansatte
     data_status.loc[data_status.antallPersoner == 0, "antallPersoner_gruppe"] = "0"
-    data_status.loc[data_status.antallPersoner.between(1, 4), "antallPersoner_gruppe"] = "1-4"
-    data_status.loc[data_status.antallPersoner.between(5, 19), "antallPersoner_gruppe"] = "5-19"
-    data_status.loc[data_status.antallPersoner.between(20, 49), "antallPersoner_gruppe"] = "20-49"
-    data_status.loc[data_status.antallPersoner.between(50, 99), "antallPersoner_gruppe"] = "50-99"
+    data_status.loc[
+        data_status.antallPersoner.between(1, 4), "antallPersoner_gruppe"
+    ] = "1-4"
+    data_status.loc[
+        data_status.antallPersoner.between(5, 19), "antallPersoner_gruppe"
+    ] = "5-19"
+    data_status.loc[
+        data_status.antallPersoner.between(20, 49), "antallPersoner_gruppe"
+    ] = "20-49"
+    data_status.loc[
+        data_status.antallPersoner.between(50, 99), "antallPersoner_gruppe"
+    ] = "50-99"
     data_status.loc[data_status.antallPersoner >= 100, "antallPersoner_gruppe"] = "100+"
-    data_status.loc[data_status.antallPersoner.isna(), "antallPersoner_gruppe"] = "Ukjent"
+    data_status.loc[
+        data_status.antallPersoner.isna(), "antallPersoner_gruppe"
+    ] = "Ukjent"
 
     return data_status
 
 
 def preprocess_data_leveranse(data_leveranse):
-    slettet_leveranse_id = data_leveranse[data_leveranse.status=="SLETTET"].id
+    slettet_leveranse_id = data_leveranse[data_leveranse.status == "SLETTET"].id
     data_leveranse = data_leveranse[~data_leveranse.id.isin(slettet_leveranse_id)]
     return data_leveranse
 
 
 def kollaps_leveranse_historikk(data_leveranse):
-    return (
-        data_leveranse
-        .sort_values(["saksnummer", "sistEndret"], ascending=True)
-        .drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
-    )
+    return data_leveranse.sort_values(
+        ["saksnummer", "sistEndret"], ascending=True
+    ).drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
 
 
 def beregn_siste_oppdatering(
@@ -199,16 +207,36 @@ def beregn_intervall_tid_siden_siste_endring(data_status):
     )
     seconds = data_status.tid_siden_siste_endring.dt.seconds
     days = data_status.tid_siden_siste_endring.dt.days
-    
-    data_status.loc[seconds<60, "intervall_tid_siden_siste_endring"] = intervall_sortering[0]
-    data_status.loc[seconds.between(60, 60*10), "intervall_tid_siden_siste_endring"] = intervall_sortering[1]
-    data_status.loc[seconds.between(60*10, 60*60), "intervall_tid_siden_siste_endring"] = intervall_sortering[2]
-    data_status.loc[seconds.between(60*60, 60*60*8), "intervall_tid_siden_siste_endring"] = intervall_sortering[3]
-    data_status.loc[seconds.between(60*60*8, 60*60*24), "intervall_tid_siden_siste_endring"] = intervall_sortering[4]
-    data_status.loc[days.between(1, 10), "intervall_tid_siden_siste_endring"] = intervall_sortering[5]
-    data_status.loc[days.between(10, 30), "intervall_tid_siden_siste_endring"] = intervall_sortering[6]
-    data_status.loc[days.between(30, 100), "intervall_tid_siden_siste_endring"] = intervall_sortering[7]
-    data_status.loc[days.between(100, 365), "intervall_tid_siden_siste_endring"] = intervall_sortering[8]
-    data_status.loc[days>=365, "intervall_tid_siden_siste_endring"] = intervall_sortering[9]
+
+    data_status.loc[
+        seconds < 60, "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[0]
+    data_status.loc[
+        seconds.between(60, 60 * 10), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[1]
+    data_status.loc[
+        seconds.between(60 * 10, 60 * 60), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[2]
+    data_status.loc[
+        seconds.between(60 * 60, 60 * 60 * 8), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[3]
+    data_status.loc[
+        seconds.between(60 * 60 * 8, 60 * 60 * 24), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[4]
+    data_status.loc[
+        days.between(1, 10), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[5]
+    data_status.loc[
+        days.between(10, 30), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[6]
+    data_status.loc[
+        days.between(30, 100), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[7]
+    data_status.loc[
+        days.between(100, 365), "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[8]
+    data_status.loc[
+        days >= 365, "intervall_tid_siden_siste_endring"
+    ] = intervall_sortering[9]
 
     return data_status

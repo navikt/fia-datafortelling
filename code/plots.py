@@ -362,9 +362,9 @@ def statusflyt(data_status):
 
 
 def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
-    ikke_aktuell = data_status[
-        data_status.status == "IKKE_AKTUELL"
-    ].drop_duplicates("saksnummer", keep="last")
+    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
+        "saksnummer", keep="last"
+    )
     antall_saker_ikke_aktuell = ikke_aktuell.shape[0]
 
     ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
@@ -389,7 +389,7 @@ def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
         .reset_index()
     )
     andel = [
-        x*100/antall_saker_ikke_aktuell
+        x * 100 / antall_saker_ikke_aktuell
         for x in ikke_aktuell_per_begrunnelse.saksnummer
     ]
 
@@ -399,7 +399,8 @@ def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
             y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
             x=andel,
             text=[
-                f"{andel[i]:.2f}%, {ikke_aktuell_per_begrunnelse.saksnummer[i]}" for i in range(len(andel))
+                f"{andel[i]:.2f}%, {ikke_aktuell_per_begrunnelse.saksnummer[i]}"
+                for i in range(len(andel))
             ],
             marker_color=plotly_colors,
             orientation="h",
@@ -413,7 +414,7 @@ def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
         xaxis_title="Andel og antall saker med status ikke aktuell",
         xaxis_title_standoff=80,
         yaxis_autorange="reversed",
-        xaxis_range=[0,60],
+        xaxis_range=[0, 60],
     )
 
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
