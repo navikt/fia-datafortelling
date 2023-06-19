@@ -4,7 +4,6 @@ from plotly.subplots import make_subplots
 from datetime import datetime, timezone, timedelta
 
 
-from code.datahandler import explode_ikke_aktuell_begrunnelse
 from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
 
@@ -288,7 +287,7 @@ def antall_saker_per_eier(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def for_lavt_sykefravær(data_status):
+def for_lavt_sykefravær(data_status, ikke_aktuell):
     fig = go.Figure()
 
     # Sammenlignesgrunnlag
@@ -316,7 +315,6 @@ def for_lavt_sykefravær(data_status):
     )
 
     # For lavt sykefravær
-    ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
     data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "FOR_LAVT_SYKEFRAVÆR"]
     fig.add_trace(
         go.Histogram(
@@ -349,7 +347,7 @@ def for_lavt_sykefravær(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def mindre_virksomhet(data_status):
+def mindre_virksomhet(data_status, ikke_aktuell):
     fig = go.Figure()
 
     # Sammenlignesgrunnlag
@@ -379,7 +377,6 @@ def mindre_virksomhet(data_status):
     )
 
     # Mindre virksomhet
-    ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
     data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "MINDRE_VIRKSOMHET"]
     fig.add_trace(
         go.Histogram(

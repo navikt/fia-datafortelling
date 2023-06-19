@@ -251,5 +251,11 @@ def explode_ikke_aktuell_begrunnelse(data_status):
     ).str.split(",")
     ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
     ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
+    ikke_aktuell["ikkeAktuelBegrunnelse_lesbar"] = (
+        ikke_aktuell.ikkeAktuelBegrunnelse
+        .str.replace("_", " ")
+        .str.capitalize()
+        .str.replace("bht", "BHT")
+    )
 
     return ikke_aktuell

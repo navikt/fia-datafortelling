@@ -37,6 +37,7 @@ from code.datahandler import (
     preprocess_data_status,
     preprocess_data_leveranse,
     beregn_intervall_tid_siden_siste_endring,
+    explode_ikke_aktuell_begrunnelse,
 )
 from code.plots_datakvalitet import (
     saker_per_status_over_tid,
@@ -58,6 +59,7 @@ data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
 
@@ -262,14 +264,14 @@ Biståtte saker er de i status "Vi bistår" eller "Fullført".
 ### For lavt sykefravær
 Sammenligner saker i status ikke aktuell og begrunnelse "For lavt sykefravær", med biståtte saker.
 ```{python}
-for_lavt_sykefravær(data_status)
+for_lavt_sykefravær(data_status, ikke_aktuell)
 ```
 
 ### Mindre virksomhet
 Sammenligner saker i status ikke aktuell og begrunnelse "Mindre virksomher", med biståtte saker.
 Alle saker med over 150 ansatte havner i den siste søylen.
 ```{python}
-mindre_virksomhet(data_status)
+mindre_virksomhet(data_status, ikke_aktuell)
 ```
 
 

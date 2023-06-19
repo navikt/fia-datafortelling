@@ -37,6 +37,7 @@ from code.datahandler import (
     preprocess_data_status,
     preprocess_data_leveranse,
     kollaps_leveranse_historikk,
+    explode_ikke_aktuell_begrunnelse,
 )
 from code.plots import (
     aktive_saker_per_fylke,
@@ -66,6 +67,7 @@ data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
 data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
 
@@ -297,16 +299,13 @@ begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(data_status)
 
 ## Fra alle mulige statuser
 ```{python}
-begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering)
+begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering)
 ```
 
 ## Fra Vurderes
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_status[
-        (data_status.status == "IKKE_AKTUELL")
-        & (data_status.forrige_status == "VURDERES")
-    ],
+    ikke_aktuell[ikke_aktuell.forrige_status == "VURDERES"],
     begrunnelse_sortering,
 )
 ```
@@ -314,10 +313,7 @@ begrunnelse_ikke_aktuell(
 ## Fra Kontaktes
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_status[
-        (data_status.status == "IKKE_AKTUELL")
-        & (data_status.forrige_status == "KONTAKTES")
-    ],
+    ikke_aktuell[ikke_aktuell.forrige_status == "KONTAKTES"],
     begrunnelse_sortering,
 )
 ```
@@ -325,10 +321,7 @@ begrunnelse_ikke_aktuell(
 ## Fra Kartlegges
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_status[
-        (data_status.status == "IKKE_AKTUELL")
-        & (data_status.forrige_status == "KARTLEGGES")
-    ],
+    ikke_aktuell[ikke_aktuell.forrige_status == "KARTLEGGES"],
     begrunnelse_sortering,
 )
 ```
@@ -336,10 +329,7 @@ begrunnelse_ikke_aktuell(
 ## Fra Vi bistår
 ```{python}
 begrunnelse_ikke_aktuell(
-    data_status[
-        (data_status.status == "IKKE_AKTUELL")
-        & (data_status.forrige_status == "VI_BISTÅR")
-    ],
+    ikke_aktuell[ikke_aktuell.forrige_status == "VI_BISTÅR"],
     begrunnelse_sortering,
 )
 ```

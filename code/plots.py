@@ -2,7 +2,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
 
-from code.datahandler import beregn_siste_oppdatering, explode_ikke_aktuell_begrunnelse
+from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre, plotly_colors
 
@@ -394,25 +394,18 @@ def statusflyt(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
+def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
     antall_saker_ikke_aktuell = (
-        data_status[data_status.status == "IKKE_AKTUELL"]
-        .drop_duplicates("saksnummer", keep="last")
+        ikke_aktuell.drop_duplicates("saksnummer", keep="last")
         .shape[0]
-    )
-    ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
-    ikke_aktuell.ikkeAktuelBegrunnelse = (
-        ikke_aktuell.ikkeAktuelBegrunnelse.str.replace("_", " ")
-        .str.capitalize()
-        .str.replace("bht", "BHT")
     )
 
     ikke_aktuell_per_begrunnelse = (
-        ikke_aktuell.groupby("ikkeAktuelBegrunnelse")
+        ikke_aktuell.groupby("ikkeAktuelBegrunnelse_lesbar")
         .saksnummer.nunique()
         .reset_index()
         .sort_values(
-            "ikkeAktuelBegrunnelse",
+            "ikkeAktuelBegrunnelse_lesbar",
             key=lambda col: col.map(lambda e: begrunnelse_sortering.index(e)),
         )
         .reset_index()
@@ -425,7 +418,7 @@ def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
-            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse,
+            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar,
             x=andel,
             text=[
                 f"{andel[i]:.2f}%, {ikke_aktuell_per_begrunnelse.saksnummer[i]}"

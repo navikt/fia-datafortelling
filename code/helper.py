@@ -55,23 +55,9 @@ def modul_sortering(data_siste_leveranse):
     return modul_sortering
 
 
-def ikke_aktuell_begrunnelse_sortering(data_status):
-    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
-        "saksnummer", keep="last"
-    )
-    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
-        "[]"
-    ).str.split(",")
-    ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
-    ikke_aktuell.ikkeAktuelBegrunnelse = (
-        ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
-        .str.replace("_", " ")
-        .str.capitalize()
-        .str.replace("bht", "BHT")
-    )
-
+def ikke_aktuell_begrunnelse_sortering(ikke_aktuell):
     begrunnelse_sortering = (
-        ikke_aktuell.groupby("ikkeAktuelBegrunnelse")
+        ikke_aktuell.groupby("ikkeAktuelBegrunnelse_lesbar")
         .saksnummer.nunique()
         .sort_values(ascending=False)
         .index.tolist()
