@@ -49,6 +49,7 @@ from code.plots import (
     virksomhetsprofil,
     statusflyt,
     begrunnelse_ikke_aktuell,
+    hovedbegrunnelse_ikke_aktuell,
 )
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
@@ -292,17 +293,23 @@ Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så
 og derfor kan andelssummen være større enn 100%.
 
 ```{python}
-begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(data_status)
+begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
 ```
 
 ::: {.panel-tabset}
 
 ## Fra alle mulige statuser
 ```{python}
+hovedbegrunnelse_ikke_aktuell(ikke_aktuell)
+```
+```{python}
 begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering)
 ```
 
 ## Fra Vurderes
+```{python}
+hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "VURDERES"])
+```
 ```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[ikke_aktuell.forrige_status == "VURDERES"],
@@ -312,6 +319,9 @@ begrunnelse_ikke_aktuell(
 
 ## Fra Kontaktes
 ```{python}
+hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "KONTAKTES"])
+```
+```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[ikke_aktuell.forrige_status == "KONTAKTES"],
     begrunnelse_sortering,
@@ -320,6 +330,9 @@ begrunnelse_ikke_aktuell(
 
 ## Fra Kartlegges
 ```{python}
+hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "KARTLEGGES"])
+```
+```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[ikke_aktuell.forrige_status == "KARTLEGGES"],
     begrunnelse_sortering,
@@ -327,6 +340,9 @@ begrunnelse_ikke_aktuell(
 ```
 
 ## Fra Vi bistår
+```{python}
+hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "VI_BISTÅR"])
+```
 ```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[ikke_aktuell.forrige_status == "VI_BISTÅR"],

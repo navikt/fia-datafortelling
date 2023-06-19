@@ -49,3 +49,16 @@ plotly_colors = [
     "#FF97FF",
     "#FECB52",
 ]
+
+ikkeaktuell_hovedgrunn = {
+    # NAV
+    "FOR_LAVT_SYKEFRAVÆR": "NAV",
+    "IKKE_TID": "NAV",
+    "MINDRE_VIRKSOMHET": "NAV",
+    "MANGLER_PARTSGRUPPE": "NAV",
+    "IKKE_TILFREDSSTILLENDE_SAMARBEID": "NAV",
+    # Virksomhet
+    "GJENNOMFØRER_TILTAK_MED_BHT": "Virksomhet",
+    "GJENNOMFØRER_TILTAK_PÅ_EGENHÅND": "Virksomhet",
+    "HAR_IKKE_KAPASITET": "Virksomhet",
+}
