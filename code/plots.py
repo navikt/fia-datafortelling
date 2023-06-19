@@ -402,8 +402,7 @@ def begrunnelse_ikke_aktuell(data_status, begrunnelse_sortering):
     )
     ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
     ikke_aktuell.ikkeAktuelBegrunnelse = (
-        ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
-        .str.replace("_", " ")
+        ikke_aktuell.ikkeAktuelBegrunnelse.str.replace("_", " ")
         .str.capitalize()
         .str.replace("bht", "BHT")
     )

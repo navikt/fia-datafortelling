@@ -250,5 +250,6 @@ def explode_ikke_aktuell_begrunnelse(data_status):
         "[]"
     ).str.split(",")
     ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
 
     return ikke_aktuell
