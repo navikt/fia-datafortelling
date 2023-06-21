@@ -197,7 +197,7 @@ antall_leveranser_per_modul(data_siste_leveranse, modul_sortering)
 
 ## Per sak
 Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
-Her gjelder alle saker som hadde eller har status "Vi bistår" og har registrerte leveranser.
+Her gjelder alle saker som har leveranser registert eller kunne ha hatt det, i.e., saker fullført etter det ble mulig å registrere leveranser (mars 2023), og saker i bistand nå.
 
 ```{python}
 antall_leveranser_per_sak(data_status, data_siste_leveranse)

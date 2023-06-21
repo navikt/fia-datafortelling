@@ -108,7 +108,7 @@ def antall_leveranser_per_sak(data_status, data_leveranse):
     # saker som har leveranser registrert
     leveranser_per_sak = data_leveranse.groupby("saksnummer").iaModulId.nunique()
 
-    # saker som ikke har leveranser registrert men kunne har hatt
+    # saker som ikke har leveranser registrert men kunne ha hatt
     første_registrert_leveranse_dato = data_leveranse.sistEndret.min()
     saker_med_leveranser = data_leveranse.saksnummer.unique().tolist()
     # saker fullført etter det ble mulig å registrere leveranser
@@ -140,12 +140,21 @@ def antall_leveranser_per_sak(data_status, data_leveranse):
         axis=0,
     )
 
-    fig = go.Figure(data=[go.Histogram(x=leveranser_per_sak)])
+    summert_leveranser_per_sak = leveranser_per_sak.value_counts().sort_index()
+    fig = go.Figure(
+        go.Sunburst(
+            labels=["Alle", ">0"] + summert_leveranser_per_sak.index.tolist(),
+            parents=["", "Alle", "Alle"] + [">0"] * len(summert_leveranser_per_sak),
+            values=[
+                summert_leveranser_per_sak.sum(),
+                summert_leveranser_per_sak[summert_leveranser_per_sak.index > 0].sum(),
+            ]
+            + summert_leveranser_per_sak.values.tolist(),
+            branchvalues="total",
+        )
+    )
     fig.update_layout(
-        height=500,
-        width=850,
-        xaxis_title="Antall moduler (leverte og under arbeid)",
-        yaxis_title="Antall saker",
+        height=500, width=850, margin=go.layout.Margin(t=0, l=0, r=0, b=0)
     )
 
     return annotate_ikke_offisiell_statistikk(fig)
