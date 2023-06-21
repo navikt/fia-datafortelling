@@ -48,8 +48,8 @@ Dette er definert i [run.sh](run.sh).
 # Oppdater avhengigheter
 
 - Oppdater python:
-    - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/)
-    - Dersom kom ny versjon, lag et lokal virtual miljø på nytt
+    - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/).
+    - Dersom kom ny versjon, lag et lokalt virtual miljø på nytt.
 - Oppdater python pakker:
     - `pip3 install --upgrade pip`
     - `pip3 install --upgrade <pakke>`
