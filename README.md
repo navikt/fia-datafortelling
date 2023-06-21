@@ -51,10 +51,10 @@ Dette er definert i [run.sh](run.sh).
     - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/)
     - Dersom kom ny versjon, lag et lokal virtual miljø på nytt
 - Oppdater python pakker:
-    - pip3 install --upgrade pip
-    - pip3 install <pakke>
-    - pip3 freeze > requirements.txt
-    - rydd opp i requirements.txt
+    - `pip3 install --upgrade pip`
+    - `pip3 install --upgrade <pakke>`
+    - `pip3 freeze > requirements.txt`
+    - rydd opp i `requirements.txt`
     - kjør datafortellingene lokalt på nytt og sammenlign med prod
 
 ---
