@@ -436,3 +436,43 @@ def fullført_per_måned(data_status):
         yaxis_title="Antall fullførte saker",
     )
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def forskjell_frist_fullfort(data_leveranse):
+    fullfort_leveranser = data_leveranse[data_leveranse.status == "LEVERT"]
+    fullfort_leveranser.frist = pd.to_datetime(
+        pd.to_datetime(fullfort_leveranser.frist).dt.strftime("%Y-%m-%d")
+    )
+    fullfort_leveranser.fullfort = pd.to_datetime(
+        pd.to_datetime(fullfort_leveranser.fullfort).dt.strftime("%Y-%m-%d")
+    )
+    forskjell_frist_fullfort = (
+        fullfort_leveranser.fullfort - fullfort_leveranser.frist
+    ).dt.days
+
+    min_ = forskjell_frist_fullfort.min()
+    max_ = forskjell_frist_fullfort.max()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Histogram(
+            x=forskjell_frist_fullfort,
+            xbins={
+                "start": min_,
+                "end": max_,
+                "size": 1,
+            },
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        yaxis_title="Antall fullførte moduler",
+        xaxis=dict(
+            title="Antall dager",
+            rangeslider=dict(visible=True),
+            range=[max(min_, -100), min(max_, 100)],
+        ),
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)

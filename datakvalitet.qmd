@@ -36,6 +36,7 @@ from code.datahandler import (
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
+    kollaps_leveranse_historikk,
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
@@ -48,6 +49,7 @@ from code.plots_datakvalitet import (
     for_lavt_sykefravær,
     mindre_virksomhet,
     fullført_per_måned,
+    forskjell_frist_fullfort,
 )
 
 
@@ -59,6 +61,7 @@ data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(data_leveranse)
+data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
@@ -278,4 +281,10 @@ mindre_virksomhet(data_status, ikke_aktuell)
 ## Antall fullførte saker per måned
 ```{python}
 fullført_per_måned(data_status)
+```
+
+
+## Forskjellen mellom frist og fullført dato
+```{python}
+forskjell_frist_fullfort(data_siste_leveranse)
 ```
