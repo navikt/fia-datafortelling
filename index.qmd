@@ -50,6 +50,7 @@ from code.plots import (
     statusflyt,
     begrunnelse_ikke_aktuell,
     hovedbegrunnelse_ikke_aktuell,
+    leveranse_tjeneste_per_maaned,
 )
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
@@ -204,8 +205,13 @@ antall_leveranser_per_sak(data_status, data_siste_leveranse)
 ```
 
 ## Per måned
-Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
+PS: En sak kan ha flere leveranser.
+```{python}
+leveranse_tjeneste_per_maaned(data_siste_leveranse)
+```
 
+## Detaljer
+Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
 ```{python}
 moduler_per_maaned(data_siste_leveranse)
 ```
