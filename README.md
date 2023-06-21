@@ -45,6 +45,18 @@ Jobben kjører i intervaller som er definert i cron-utrykket `spec.schedule` i [
 Naisjobben spinner opp quarto (render html) og oppdaterer datafortellingen.
 Dette er definert i [run.sh](run.sh).
 
+# Oppdater avhengigheter
+
+- Oppdater python:
+    - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/)
+    - Dersom kom ny versjon, lag et lokal virtual miljø på nytt
+- Oppdater python pakker:
+    - pip3 install --upgrade pip
+    - pip3 install <pakke>
+    - pip3 freeze > requirements.txt
+    - rydd opp i requirements.txt
+    - kjør datafortellingene lokalt på nytt og sammenlign med prod
+
 ---
 
 # Henvendelser
