@@ -416,7 +416,7 @@ def fullført_per_måned(data_status):
         "%Y-%m"
     )
     fullført_per_måned = (
-        data_status.loc[data_status.status == "FULLFØRT"]
+        data_status[data_status.status == "FULLFØRT"]
         .endretTidspunkt_måned.value_counts()
         .sort_index()
     )
@@ -434,7 +434,105 @@ def fullført_per_måned(data_status):
         width=850,
         xaxis_title="Fullført måned",
         yaxis_title="Antall fullførte saker",
+        xaxis={"type": "category"},
     )
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
+    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
+        "%Y-%m"
+    )
+    første_dato = data_leveranse.sistEndret.dt.date.min()
+    fullført_per_måned = (
+        data_status[
+            (data_status.status == "FULLFØRT")
+            & (data_status.endretTidspunkt >= første_dato.strftime("%Y-%m-%d"))
+        ]
+        .endretTidspunkt_måned.value_counts()
+        .sort_index()
+    )
+
+    saker_med_leveranser = data_leveranse.saksnummer.unique()
+    data_status["med_leveranse"] = False
+    data_status.loc[
+        data_status.saksnummer.isin(saker_med_leveranser), "med_leveranse"
+    ] = True
+    fullført_per_måned_med_leveranse = (
+        data_status[(data_status.status == "FULLFØRT") & data_status.med_leveranse]
+        .endretTidspunkt_måned.value_counts()
+        .sort_index()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=fullført_per_måned.index,
+            y=(fullført_per_måned_med_leveranse / fullført_per_måned).values,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Fullført måned",
+        yaxis_title="Andel fullførte saker med leveranse",
+        xaxis={"type": "category"},
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse):
+    saker_med_leveranser = data_leveranse.saksnummer.unique()
+    data_status["med_leveranse"] = False
+    data_status.loc[
+        data_status.saksnummer.isin(saker_med_leveranser), "med_leveranse"
+    ] = True
+
+    første_dato = data_leveranse.sistEndret.dt.date.min()
+    now = datetime.now(timezone.utc)
+    alle_datoer = pd.date_range(
+        første_dato, now.strftime("%Y-%m-%d"), freq="d", tz=timezone.utc
+    )
+
+    fullførte_saker_over_tid = []
+    saker_med_leveranser_over_tid = []
+
+    data = data_status[data_status.status == "FULLFØRT"]
+    for dato in alle_datoer:
+        fullførte_saker_over_tid.append(
+            data[
+                (data.endretTidspunkt >= første_dato.strftime("%Y-%m-%d"))
+                & (data.endretTidspunkt < dato)
+            ].saksnummer.nunique()
+        )
+        saker_med_leveranser_over_tid.append(
+            data[
+                (data.endretTidspunkt < dato) & data.med_leveranse
+            ].saksnummer.nunique()
+        )
+
+    andel_saker_med_leveranser = [
+        saker_med_leveranser_over_tid[i] / fullførte_saker_over_tid[i]
+        if fullførte_saker_over_tid[i] > 0
+        else 0
+        for i in range(len(alle_datoer))
+    ]
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=alle_datoer,
+            y=andel_saker_med_leveranser,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Dato",
+        yaxis_title="Akumulert andel fullførte saker med leveranse",
+    )
+
     return annotate_ikke_offisiell_statistikk(fig)
 
 
