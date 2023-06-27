@@ -9,9 +9,9 @@ from code.konstanter import statusordre, fylker, intervall_sortering, plotly_col
 
 
 def saker_per_status_over_tid(data_status):
-    første_dato = data_status.endretTidspunkt.dt.date.min()
-    siste_dato = datetime.now().strftime("%Y-%m-%d")
-    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d")
+    første_dato = data_status.endretTidspunkt.min()
+    siste_dato = datetime.now()
+    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
     statuser = [status for status in statusordre if status != "NY"]
 
     def beregn_status_per_dato(data, datoer):
@@ -129,11 +129,9 @@ def dager_mellom_statusendringer(data_status):
 
 
 def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dager):
-    første_dato = data_status.endretTidspunkt.dt.date.min()
-    now = datetime.now(timezone.utc)
-    alle_datoer = pd.date_range(
-        første_dato, now.strftime("%Y-%m-%d"), freq="d", tz=timezone.utc
-    )
+    første_dato = data_status.endretTidspunkt.min()
+    now = datetime.now()
+    alle_datoer = pd.date_range(første_dato, now, freq="d", normalize=True)
     aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
 
     data = pd.concat(
@@ -443,7 +441,7 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
         "%Y-%m"
     )
-    første_dato = data_leveranse.sistEndret.dt.date.min()
+    første_dato = data_leveranse.sistEndret.min()
     fullført_per_måned = (
         data_status[
             (data_status.status == "FULLFØRT")
@@ -489,11 +487,9 @@ def andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse):
         data_status.saksnummer.isin(saker_med_leveranser), "med_leveranse"
     ] = True
 
-    første_dato = data_leveranse.sistEndret.dt.date.min()
-    now = datetime.now(timezone.utc)
-    alle_datoer = pd.date_range(
-        første_dato, now.strftime("%Y-%m-%d"), freq="d", tz=timezone.utc
-    )
+    første_dato = data_leveranse.sistEndret.min()
+    now = datetime.now()
+    alle_datoer = pd.date_range(første_dato, now, freq="d", normalize=True)
 
     fullførte_saker_over_tid = []
     saker_med_leveranser_over_tid = []
@@ -538,14 +534,8 @@ def andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse):
 
 def forskjell_frist_fullfort(data_leveranse):
     fullfort_leveranser = data_leveranse[data_leveranse.status == "LEVERT"]
-    fullfort_leveranser.frist = pd.to_datetime(
-        pd.to_datetime(fullfort_leveranser.frist).dt.strftime("%Y-%m-%d")
-    )
-    fullfort_leveranser.fullfort = pd.to_datetime(
-        pd.to_datetime(fullfort_leveranser.fullfort).dt.strftime("%Y-%m-%d")
-    )
     forskjell_frist_fullfort = (
-        fullfort_leveranser.fullfort - fullfort_leveranser.frist
+        fullfort_leveranser.fullfort.dt.normalize() - fullfort_leveranser.frist
     ).dt.days
 
     min_ = forskjell_frist_fullfort.min()

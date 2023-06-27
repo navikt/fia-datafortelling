@@ -1,5 +1,6 @@
 from google.cloud.bigquery import Client
 import json
+import pandas as pd
 from datetime import datetime, timezone
 
 from code.konstanter import fylker, intervall_sortering
@@ -28,10 +29,22 @@ def load_data_deduplicate(project, dataset, table):
     return data
 
 
+def fjern_tidssone(data):
+    date_columns = data.select_dtypes(include=["datetimetz"]).columns.tolist()
+    for col in date_columns:
+        data[col] = data[col].dt.tz_localize(None)
+    return data
+
+
 def split_data_statistikk(data_statistikk):
+    # Fjern tidssone fra datoene, alt i utc
+    data_statistikk = fjern_tidssone(data_statistikk)
+
+    # Split data_statistikk inn i data_status og data_eierskap
     eierskap = data_statistikk.hendelse == "TA_EIERSKAP_I_SAK"
     data_status = data_statistikk[~eierskap].reset_index(drop=True)
     data_eierskap = data_statistikk[eierskap].reset_index(drop=True)
+
     return data_status, data_eierskap
 
 
@@ -112,6 +125,13 @@ def preprocess_data_status(data_status):
 def preprocess_data_leveranse(data_leveranse):
     slettet_leveranse_id = data_leveranse[data_leveranse.status == "SLETTET"].id
     data_leveranse = data_leveranse[~data_leveranse.id.isin(slettet_leveranse_id)]
+
+    # Frist fra dbdate til datetime
+    data_leveranse.frist = pd.to_datetime(data_leveranse.frist)
+
+    # Fjern tidssone fra datoene, alt i utc
+    data_leveranse = fjern_tidssone(data_leveranse)
+
     return data_leveranse
 
 
@@ -125,18 +145,12 @@ def beregn_siste_oppdatering(
     data_status,
     data_eierskap,
     data_leveranse,
-    beregningsdato=datetime.now(timezone.utc),
+    beregningsdato=datetime.now(),
 ):
     # Filtrere på beregningsdato
-    data_status = data_status[
-        data_status.endretTidspunkt.dt.tz_convert("UTC") < beregningsdato
-    ]
-    data_eierskap = data_eierskap[
-        data_eierskap.endretTidspunkt.dt.tz_convert("UTC") < beregningsdato
-    ]
-    data_leveranse = data_leveranse[
-        data_leveranse.sistEndret.dt.tz_convert("UTC") < beregningsdato
-    ]
+    data_status = data_status[data_status.endretTidspunkt < beregningsdato]
+    data_eierskap = data_eierskap[data_eierskap.endretTidspunkt < beregningsdato]
+    data_leveranse = data_leveranse[data_leveranse.sistEndret < beregningsdato]
 
     # Status på beregningsdato
     status_beregningsdato = (
@@ -187,7 +201,7 @@ def beregn_siste_oppdatering(
     ].max(axis=1, numeric_only=False)
 
     siste_oppdatering["dager_siden_siste_oppdatering"] = (
-        beregningsdato - siste_oppdatering.siste_oppdatering.dt.tz_convert("UTC")
+        beregningsdato - siste_oppdatering.siste_oppdatering
     ).dt.days
 
     siste_oppdatering = siste_oppdatering.merge(
