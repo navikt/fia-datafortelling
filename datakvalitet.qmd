@@ -61,6 +61,7 @@ from code.plots_datakvalitet import (
     antall_brukere_per_fylke_og_nav_enhet,
     andel_superbrukere,
     andel_statusendringer_gjort_av_superbrukere,
+    andel_leveranseregistreringer_gjort_av_superbrukere,
 )
 
 
@@ -346,8 +347,14 @@ antall_brukere_per_fylke_og_nav_enhet(data_statistikk)
 ```{python}
 andel_superbrukere(data_statistikk)
 ```
-## Andel statusendringer gjort av superbrukere
+## Andel statusendringer
+Andel statusendringer gjort av superbrukere.
 ```{python}
 andel_statusendringer_gjort_av_superbrukere(data_statistikk)
+```
+## Andel leveranser
+Andel leveranser satt til fullført av superbrukere.
+```{python}
+andel_leveranseregistreringer_gjort_av_superbrukere(data_leveranse)
 ```
 :::

@@ -721,6 +721,46 @@ def andel_statusendringer_gjort_av_superbrukere(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
+def andel_leveranseregistreringer_gjort_av_superbrukere(data_leveranse):
+    data_leveranse["sistEndret_måned"] = data_leveranse.sistEndret.dt.strftime("%Y-%m")
+
+    antall_registreringer_superbrukere_per_måned = (
+        data_leveranse[
+            (data_leveranse.status == "LEVERT")
+            & (data_leveranse.sistEndretAvRolle == "SUPERBRUKER")
+        ]
+        .groupby("sistEndret_måned")
+        .sistEndretAv.size()
+    )
+
+    antall_registreringer_per_måned = (
+        data_leveranse[data_leveranse.status == "LEVERT"]
+        .groupby("sistEndret_måned")
+        .sistEndretAv.size()
+    )
+
+    andel_registreringer_superbrukere_per_måned = (
+        antall_registreringer_superbrukere_per_måned / antall_registreringer_per_måned
+    ).dropna()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=andel_registreringer_superbrukere_per_måned.index,
+            y=andel_registreringer_superbrukere_per_måned.values * 100,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Måned",
+        yaxis_title="Andel registreringer (%)",
+        xaxis={"type": "category"},
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
 def andel_superbrukere(data_statistikk):
     antall_superbrukere_per_måned = (
         data_statistikk[data_statistikk.endretAvRolle == "SUPERBRUKER"]
