@@ -55,6 +55,8 @@ from code.plots_datakvalitet import (
     andel_fullforte_saker_med_leveranse_per_måned,
     andel_fullforte_saker_med_leveranse_over_tid,
     forskjell_frist_fullfort,
+    antall_brukere_per_fylke,
+    antall_brukere_per_fylke_og_nav_enhet,
 )
 
 
@@ -303,3 +305,21 @@ andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse)
 ```{python}
 forskjell_frist_fullfort(data_siste_leveranse)
 ```
+
+
+## Antall brukere per fylke/NAV-enhet
+Antall unike brukere som har gjort noe som fører til en statusendring.
+
+::: {.panel-tabset}
+## Per fylke
+En bruker kan telles i flere fylker.
+```{python}
+antall_brukere_per_fylke(data_statistikk)
+```
+## Delt per NAV-enhet
+En bruker kan telles i flere fylker, men bare i den siste NAV-enheten bruker er registrert med.
+NAV-enhet begynte å bli registrert i databasen 2023-05-05.
+```{python}
+antall_brukere_per_fylke_og_nav_enhet(data_statistikk)
+```
+:::

@@ -564,3 +564,69 @@ def forskjell_frist_fullfort(data_leveranse):
     )
 
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def antall_brukere_per_fylke(data_statistikk):
+    bruker_per_fylke = (
+        data_statistikk.groupby("fylkesnavn").endretAv.nunique().sort_values()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Bar(
+            x=bruker_per_fylke.values,
+            y=bruker_per_fylke.index,
+            orientation="h",
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Antall brukere",
+        yaxis_title="Virksomhetsfylke",
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
+    data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
+    fylkeordre = data_statistikk.groupby("fylkesnavn").endretAv.nunique().sort_values().index.tolist()
+    enhetsordre = data_statistikk.groupby("enhetsnavn").endretAv.nunique().sort_values(ascending=False).index.tolist()
+
+    bruker_per_navenhet = (
+        data_statistikk.groupby(["fylkesnavn", "enhetsnavn"])
+        .endretAv.nunique()
+        .reset_index()
+    )
+
+    fig = go.Figure()
+
+    for fylke in fylkeordre:
+        for enhet in enhetsordre:
+            filtert = bruker_per_navenhet[
+                (bruker_per_navenhet.fylkesnavn == fylke) &
+                (bruker_per_navenhet.enhetsnavn == enhet)
+            ]
+            fig.add_trace(
+                go.Bar(
+                    y=filtert.fylkesnavn,
+                    x=filtert.endretAv,
+                    text=enhet,
+                    textposition = "none",
+                    orientation="h",
+                    hoverinfo="text+x",
+                )
+            )
+
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Antall brukere",
+        yaxis_title="Virksomhetsfylke",
+        barmode="stack",
+        showlegend=False,
+        hovermode="y unified",
+    )
+    
+    return annotate_ikke_offisiell_statistikk(fig)
