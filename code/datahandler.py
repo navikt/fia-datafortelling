@@ -36,6 +36,50 @@ def fjern_tidssone(data):
     return data
 
 
+def preprocess_data_statistikk(data_statistikk):
+    # Sorter basert på endrettidspunkt
+    data_statistikk = data_statistikk.sort_values(
+        "endretTidspunkt", ascending=True
+    ).reset_index(drop=True)
+
+    # Fylkesnavn
+    data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
+
+    # Hoved næring
+    data_statistikk["hoved_nering"] = data_statistikk.neringer.apply(
+        lambda x: json.loads(x)[0]["navn"]
+    )
+    data_statistikk["hoved_nering_truncated"] = data_statistikk.hoved_nering
+    data_statistikk.loc[
+        data_statistikk.hoved_nering.str.len() > 50, "hoved_nering_truncated"
+    ] = (data_statistikk.hoved_nering.str[:47] + "...")
+
+    # Gruppering av virksomheter per antall ansatte
+    data_statistikk.loc[
+        data_statistikk.antallPersoner == 0, "antallPersoner_gruppe"
+    ] = "0"
+    data_statistikk.loc[
+        data_statistikk.antallPersoner.between(1, 4), "antallPersoner_gruppe"
+    ] = "1-4"
+    data_statistikk.loc[
+        data_statistikk.antallPersoner.between(5, 19), "antallPersoner_gruppe"
+    ] = "5-19"
+    data_statistikk.loc[
+        data_statistikk.antallPersoner.between(20, 49), "antallPersoner_gruppe"
+    ] = "20-49"
+    data_statistikk.loc[
+        data_statistikk.antallPersoner.between(50, 99), "antallPersoner_gruppe"
+    ] = "50-99"
+    data_statistikk.loc[
+        data_statistikk.antallPersoner >= 100, "antallPersoner_gruppe"
+    ] = "100+"
+    data_statistikk.loc[
+        data_statistikk.antallPersoner.isna(), "antallPersoner_gruppe"
+    ] = "Ukjent"
+
+    return data_statistikk
+
+
 def split_data_statistikk(data_statistikk):
     # Fjern tidssone fra datoene, alt i utc
     data_statistikk = fjern_tidssone(data_statistikk)
@@ -87,37 +131,6 @@ def preprocess_data_status(data_status):
     # Aktive saker
     aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
     data_status["aktiv_sak"] = data_status.siste_status.isin(aktive_statuser)
-
-    # Fylkesnavn
-    data_status["fylkesnavn"] = data_status.fylkesnummer.map(fylker)
-
-    # Hoved næring
-    data_status["hoved_nering"] = data_status.neringer.apply(
-        lambda x: json.loads(x)[0]["navn"]
-    )
-    data_status["hoved_nering_truncated"] = data_status.hoved_nering
-    data_status.loc[
-        data_status.hoved_nering.str.len() > 50, "hoved_nering_truncated"
-    ] = (data_status.hoved_nering.str[:47] + "...")
-
-    # Gruppering av virksomheter per antall ansatte
-    data_status.loc[data_status.antallPersoner == 0, "antallPersoner_gruppe"] = "0"
-    data_status.loc[
-        data_status.antallPersoner.between(1, 4), "antallPersoner_gruppe"
-    ] = "1-4"
-    data_status.loc[
-        data_status.antallPersoner.between(5, 19), "antallPersoner_gruppe"
-    ] = "5-19"
-    data_status.loc[
-        data_status.antallPersoner.between(20, 49), "antallPersoner_gruppe"
-    ] = "20-49"
-    data_status.loc[
-        data_status.antallPersoner.between(50, 99), "antallPersoner_gruppe"
-    ] = "50-99"
-    data_status.loc[data_status.antallPersoner >= 100, "antallPersoner_gruppe"] = "100+"
-    data_status.loc[
-        data_status.antallPersoner.isna(), "antallPersoner_gruppe"
-    ] = "Ukjent"
 
     return data_status
 

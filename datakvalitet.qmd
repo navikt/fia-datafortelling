@@ -35,6 +35,7 @@ import os
 from code.datahandler import (
     load_data,
     load_data_deduplicate,
+    preprocess_data_statistikk,
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
@@ -59,12 +60,13 @@ from code.plots_datakvalitet import (
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
-data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
-data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
+raw_data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
-data_leveranse = preprocess_data_leveranse(data_leveranse)
+data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
 data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
