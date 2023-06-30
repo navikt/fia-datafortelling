@@ -410,9 +410,6 @@ def mindre_virksomhet(data_status, ikke_aktuell):
 
 
 def fullført_per_måned(data_status):
-    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
-        "%Y-%m"
-    )
     fullført_per_måned = (
         data_status[data_status.status == "FULLFØRT"]
         .endretTidspunkt_måned.value_counts()
@@ -438,9 +435,6 @@ def fullført_per_måned(data_status):
 
 
 def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
-    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
-        "%Y-%m"
-    )
     første_dato = data_leveranse.sistEndret.min()
     fullført_per_måned = (
         data_status[
@@ -591,8 +585,18 @@ def antall_brukere_per_fylke(data_statistikk):
 
 def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
     data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
-    fylkeordre = data_statistikk.groupby("fylkesnavn").endretAv.nunique().sort_values().index.tolist()
-    enhetsordre = data_statistikk.groupby("enhetsnavn").endretAv.nunique().sort_values(ascending=False).index.tolist()
+    fylkeordre = (
+        data_statistikk.groupby("fylkesnavn")
+        .endretAv.nunique()
+        .sort_values()
+        .index.tolist()
+    )
+    enhetsordre = (
+        data_statistikk.groupby("enhetsnavn")
+        .endretAv.nunique()
+        .sort_values(ascending=False)
+        .index.tolist()
+    )
 
     bruker_per_navenhet = (
         data_statistikk.groupby(["fylkesnavn", "enhetsnavn"])
@@ -605,15 +609,15 @@ def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
     for fylke in fylkeordre:
         for enhet in enhetsordre:
             filtert = bruker_per_navenhet[
-                (bruker_per_navenhet.fylkesnavn == fylke) &
-                (bruker_per_navenhet.enhetsnavn == enhet)
+                (bruker_per_navenhet.fylkesnavn == fylke)
+                & (bruker_per_navenhet.enhetsnavn == enhet)
             ]
             fig.add_trace(
                 go.Bar(
                     y=filtert.fylkesnavn,
                     x=filtert.endretAv,
                     text=enhet,
-                    textposition = "none",
+                    textposition="none",
                     orientation="h",
                     hoverinfo="text+x",
                 )
@@ -628,17 +632,20 @@ def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
         showlegend=False,
         hovermode="y unified",
     )
-    
+
     return annotate_ikke_offisiell_statistikk(fig)
 
 
 def antall_brukere_akkumulert_over_tid(data_statistikk):
     antall_brukere_akkumulert_over_tid = (
         data_statistikk[["endretTidspunkt", "endretAv"]]
-        .assign(endretTidspunkt_date = data_statistikk.endretTidspunkt.dt.date.astype(str))
+        .assign(
+            endretTidspunkt_date=data_statistikk.endretTidspunkt.dt.date.astype(str)
+        )
         .sort_values("endretTidspunkt", ascending=True)
         .drop_duplicates("endretAv", keep="first")
-        .groupby("endretTidspunkt_date").endretAv.nunique()
+        .groupby("endretTidspunkt_date")
+        .endretAv.nunique()
         .cumsum()
     )
 
@@ -660,12 +667,9 @@ def antall_brukere_akkumulert_over_tid(data_statistikk):
 
 
 def antall_brukere_per_måned(data_statistikk):
-    antall_brukere_per_måned = (
-        data_statistikk[["endretTidspunkt", "endretAv"]]
-        .assign(endretTidspunkt_måned = data_statistikk.endretTidspunkt.dt.strftime("%Y-%m"))
-        .sort_values("endretTidspunkt", ascending=True)
-        .groupby("endretTidspunkt_måned").endretAv.nunique()
-    )
+    antall_brukere_per_måned = data_statistikk.groupby(
+        "endretTidspunkt_måned"
+    ).endretAv.nunique()
 
     fig = go.Figure()
     fig.add_trace(
@@ -679,6 +683,72 @@ def antall_brukere_per_måned(data_statistikk):
         width=850,
         xaxis_title="Måned",
         yaxis_title="Antall brukere",
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def andel_statusendringer_gjort_av_superbrukere(data_statistikk):
+    antall_endringer_superbrukere_per_måned = (
+        data_statistikk[data_statistikk.endretAvRolle == "SUPERBRUKER"]
+        .groupby("endretTidspunkt_måned")
+        .endretAv.size()
+    )
+
+    antall_endringer_per_måned = data_statistikk.groupby(
+        "endretTidspunkt_måned"
+    ).endretAv.size()
+
+    andel_endringer_superbrukere_per_måned = (
+        antall_endringer_superbrukere_per_måned / antall_endringer_per_måned
+    ).dropna()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=andel_endringer_superbrukere_per_måned.index,
+            y=andel_endringer_superbrukere_per_måned.values * 100,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Måned",
+        yaxis_title="Andel statusendring (%)",
+        xaxis={"type": "category"},
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def andel_superbrukere(data_statistikk):
+    antall_superbrukere_per_måned = (
+        data_statistikk[data_statistikk.endretAvRolle == "SUPERBRUKER"]
+        .groupby("endretTidspunkt_måned")
+        .endretAv.nunique()
+    )
+
+    antall_brukere_per_måned = data_statistikk.groupby(
+        "endretTidspunkt_måned"
+    ).endretAv.nunique()
+
+    andel_superbrukere_per_måned = (
+        antall_superbrukere_per_måned / antall_brukere_per_måned
+    ).dropna()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=andel_superbrukere_per_måned.index,
+            y=andel_superbrukere_per_måned.values * 100,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Måned",
+        yaxis_title="Andel superbrukere (%)",
+        xaxis={"type": "category"},
     )
 
     return annotate_ikke_offisiell_statistikk(fig)

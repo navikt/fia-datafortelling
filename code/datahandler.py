@@ -42,6 +42,11 @@ def preprocess_data_statistikk(data_statistikk):
         "endretTidspunkt", ascending=True
     ).reset_index(drop=True)
 
+    # Måned til endrettidspunkt
+    data_statistikk[
+        "endretTidspunkt_måned"
+    ] = data_statistikk.endretTidspunkt.dt.strftime("%Y-%m")
+
     # Fylkesnavn
     data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
 

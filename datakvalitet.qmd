@@ -59,6 +59,8 @@ from code.plots_datakvalitet import (
     antall_brukere_per_måned,
     antall_brukere_per_fylke,
     antall_brukere_per_fylke_og_nav_enhet,
+    andel_superbrukere,
+    andel_statusendringer_gjort_av_superbrukere,
 )
 
 
@@ -334,5 +336,18 @@ En bruker kan telles i flere fylker, men bare i den siste NAV-enheten bruker er 
 NAV-enhet begynte å bli registrert i databasen 2023-05-05.
 ```{python}
 antall_brukere_per_fylke_og_nav_enhet(data_statistikk)
+```
+:::
+
+
+## Brukerrolle
+::: {.panel-tabset}
+## Andel superbrukere
+```{python}
+andel_superbrukere(data_statistikk)
+```
+## Andel statusendringer gjort av superbrukere
+```{python}
+andel_statusendringer_gjort_av_superbrukere(data_statistikk)
 ```
 :::
