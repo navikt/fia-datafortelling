@@ -630,3 +630,55 @@ def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
     )
     
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def antall_brukere_akkumulert_over_tid(data_statistikk):
+    antall_brukere_akkumulert_over_tid = (
+        data_statistikk[["endretTidspunkt", "endretAv"]]
+        .assign(endretTidspunkt_date = data_statistikk.endretTidspunkt.dt.date.astype(str))
+        .sort_values("endretTidspunkt", ascending=True)
+        .drop_duplicates("endretAv", keep="first")
+        .groupby("endretTidspunkt_date").endretAv.nunique()
+        .cumsum()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=antall_brukere_akkumulert_over_tid.index,
+            y=antall_brukere_akkumulert_over_tid.values,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Dato",
+        yaxis_title="Antall brukere",
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def antall_brukere_per_måned(data_statistikk):
+    antall_brukere_per_måned = (
+        data_statistikk[["endretTidspunkt", "endretAv"]]
+        .assign(endretTidspunkt_måned = data_statistikk.endretTidspunkt.dt.strftime("%Y-%m"))
+        .sort_values("endretTidspunkt", ascending=True)
+        .groupby("endretTidspunkt_måned").endretAv.nunique()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=antall_brukere_per_måned.index,
+            y=antall_brukere_per_måned.values,
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Måned",
+        yaxis_title="Antall brukere",
+    )
+
+    return annotate_ikke_offisiell_statistikk(fig)
