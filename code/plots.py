@@ -4,7 +4,12 @@ import plotly.graph_objects as go
 
 from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk
-from code.konstanter import statusordre, plotly_colors, ikkeaktuell_hovedgrunn
+from code.konstanter import (
+    statusordre,
+    plotly_colors,
+    ikkeaktuell_hovedgrunn,
+    gamle_ikkeaktuell_hovedgrunn,
+)
 
 
 def aktive_saker_per_fylke(data_status):
@@ -438,14 +443,13 @@ def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
     )
     fig.update_layout(
         height=500,
-        width=850,
+        width=800,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
         xaxis_title="Andel og antall saker med status ikke aktuell",
         xaxis_title_standoff=80,
         yaxis_autorange="reversed",
         xaxis_range=[0, 60],
-        title_text="Detaljert begrunnelse",
     )
 
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
@@ -453,7 +457,7 @@ def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
 
 def hovedbegrunnelse_ikke_aktuell(ikke_aktuell):
     ikke_aktuell["hovedgrunn"] = ikke_aktuell.ikkeAktuelBegrunnelse.map(
-        ikkeaktuell_hovedgrunn
+        ikkeaktuell_hovedgrunn | gamle_ikkeaktuell_hovedgrunn
     )
     antall_hovedgrunn = ikke_aktuell.hovedgrunn.value_counts().sort_values(
         ascending=True
@@ -471,7 +475,6 @@ def hovedbegrunnelse_ikke_aktuell(ikke_aktuell):
     fig.update_layout(
         height=400,
         width=850,
-        title_text="Hovedbegrunnelse",
     )
 
     return annotate_ikke_offisiell_statistikk(fig)

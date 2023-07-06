@@ -61,6 +61,10 @@ from code.helper import (
     modul_sortering,
     ikke_aktuell_begrunnelse_sortering,
 )
+from code.konstanter import (
+    ikkeaktuell_hovedgrunn,
+    gamle_ikkeaktuell_hovedgrunn,
+)
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -312,53 +316,130 @@ begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
 ```{python}
 hovedbegrunnelse_ikke_aktuell(ikke_aktuell)
 ```
+::: {.panel-tabset}
+## Detaljert begrunnelse
 ```{python}
-begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering)
+begrunnelse_ikke_aktuell(
+    ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
+    begrunnelse_sortering,
+)
 ```
+## Gamle begrunnelser
+```{python}
+begrunnelse_ikke_aktuell(
+    ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse.isin(gamle_ikkeaktuell_hovedgrunn.keys())],
+    begrunnelse_sortering,
+)
+```
+:::
 
 ## Fra Vurderes
 ```{python}
 hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "VURDERES"])
 ```
+::: {.panel-tabset}
+## Detaljert begrunnelse
 ```{python}
 begrunnelse_ikke_aktuell(
-    ikke_aktuell[ikke_aktuell.forrige_status == "VURDERES"],
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "VURDERES")
+    ],
     begrunnelse_sortering,
 )
 ```
+## Gamle begrunnelser
+```{python}
+begrunnelse_ikke_aktuell(
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(gamle_ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "VURDERES")
+    ],
+    begrunnelse_sortering,
+)
+```
+:::
 
 ## Fra Kontaktes
 ```{python}
 hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "KONTAKTES"])
 ```
+::: {.panel-tabset}
+## Detaljert begrunnelse
 ```{python}
 begrunnelse_ikke_aktuell(
-    ikke_aktuell[ikke_aktuell.forrige_status == "KONTAKTES"],
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "KONTAKTES")
+    ],
     begrunnelse_sortering,
 )
 ```
+## Gamle begrunnelser
+```{python}
+begrunnelse_ikke_aktuell(
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(gamle_ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "KONTAKTES")
+    ],
+    begrunnelse_sortering,
+)
+```
+:::
 
 ## Fra Kartlegges
 ```{python}
 hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "KARTLEGGES"])
 ```
+::: {.panel-tabset}
+## Detaljert begrunnelse
 ```{python}
 begrunnelse_ikke_aktuell(
-    ikke_aktuell[ikke_aktuell.forrige_status == "KARTLEGGES"],
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "KARTLEGGES")
+    ],
     begrunnelse_sortering,
 )
 ```
+## Gamle begrunnelser
+```{python}
+begrunnelse_ikke_aktuell(
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(gamle_ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "KARTLEGGES")
+    ],
+    begrunnelse_sortering,
+)
+```
+:::
 
 ## Fra Vi bistår
 ```{python}
 hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "VI_BISTÅR"])
 ```
+::: {.panel-tabset}
+## Detaljert begrunnelse
 ```{python}
 begrunnelse_ikke_aktuell(
-    ikke_aktuell[ikke_aktuell.forrige_status == "VI_BISTÅR"],
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "VI_BISTÅR")
+    ],
     begrunnelse_sortering,
 )
 ```
+## Gamle begrunnelser
+```{python}
+begrunnelse_ikke_aktuell(
+    ikke_aktuell[
+        ikke_aktuell.ikkeAktuelBegrunnelse.isin(gamle_ikkeaktuell_hovedgrunn.keys()) &
+        (ikke_aktuell.forrige_status == "VI_BISTÅR")
+    ],
+    begrunnelse_sortering,
+)
+```
+:::
 
 :::
 

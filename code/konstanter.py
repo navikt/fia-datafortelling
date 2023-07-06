@@ -52,6 +52,16 @@ plotly_colors = [
 
 ikkeaktuell_hovedgrunn = {
     # NAV
+    "IKKE_DIALOG_MELLOM_PARTENE": "NAV",
+    "FOR_FÅ_TAPTE_DAGSVERK": "NAV",
+    # Virksomhet
+    "VIRKSOMHETEN_ØNSKER_IKKE_SAMARBEID": "Virksomhet",
+    "VIRKSOMHETEN_HAR_IKKE_RESPONDERT": "Virksomhet",
+}
+
+# Gamle begrunnelser, fra før 30-06-2023
+gamle_ikkeaktuell_hovedgrunn = {
+    # NAV
     "FOR_LAVT_SYKEFRAVÆR": "NAV",
     "IKKE_TID": "NAV",
     "MINDRE_VIRKSOMHET": "NAV",
