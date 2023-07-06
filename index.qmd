@@ -363,3 +363,4 @@ begrunnelse_ikke_aktuell(
 :::
 
 {{< include includes/ikke-aktuell-forklaring.qmd >}}
+{{< include includes/ikke-aktuell-forklaring-før-2023-06-30.qmd >}}

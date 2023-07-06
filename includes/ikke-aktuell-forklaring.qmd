@@ -2,31 +2,19 @@
 ## Forklaring av ikke aktuell begrunnelser brukt i Fia
 
 ### NAV har besluttet å ikke starte samarbeid:
-*   Mangler partsgruppe
+*   Ikke dialog mellom partene
 
-    Virksomheten mangler partsgruppe
-*   Ikke tilfredsstillende samarbeid
+    Det er ikke dokumentert dialog mellom partene på arbeidsplassen
+*   For få tapte dagsverk
 
-    Virksomheten har ikke tilfredsstillende samarbeid med partsgruppen
-*   For lavt sykefravær
-
-    Virksomheten er vurdert til å ha for lavt sykefravær
-*   Mindre virksomhet
-
-    Virksomheten har et høyt sykefravær, men er en mindre virksomhet (færre ansatte)
-*   Ikke tid
-
-    NAV vurderer at virksomheten ikke ønsker å sette av tilstrekkelig tid til samarbeidet
+    Virksomheten har for få tapte dagsverk
 
 ### Virksomheten har takket nei:
-*   Har ikke kapasitet
+*   Virksomheten ønsker ikke samarbeid
 
-    Virksomheten har ikke tid eller kapasitet nå til å samarbeide med NAV
-*   Gjennomfører tiltak på egenhånd
+    Virksomheten ønsker ikke forpliktende samarbeid med NAV om IA
+*   Virksomheten har ikke respondert
 
-    Virksomheten vil gjøre tiltak på egen hånd
-*   Gjennomfører tiltak med BHT
-
-    Virksomheten vil gjennomføre tiltak sammen med Bedriftshelsetjenesten
+    Virksomheten har ikke respondert på forespørsel om forpliktende samarbeid
 
 :::
