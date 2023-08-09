@@ -53,9 +53,8 @@ Dette er definert i [run.sh](run.sh).
 - Oppdater python pakker:
     - `pip3 install --upgrade pip`
     - `pip3 install --upgrade <pakke>`
-    - `pip3 freeze > requirements.txt`
-    - rydd opp i `requirements.txt`
-    - kjør datafortellingene lokalt på nytt og sammenlign med prod
+    - Oppdater `requirements.txt` manuelt (eller bruk `pip3 freeze > requirements.txt`)
+    - Kjør datafortellingene lokalt på nytt og sammenlign med prod
 
 ---
 
