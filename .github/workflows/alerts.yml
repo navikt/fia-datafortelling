@@ -6,6 +6,9 @@ on:
     paths:
       - '.nais/alerts.yaml'
       - '.github/workflows/alerts.yml'
+
+permissions: {}
+
 jobs:
   apply-alerts:
     name: Apply alerts to cluster
