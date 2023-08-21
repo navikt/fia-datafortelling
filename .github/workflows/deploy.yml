@@ -8,6 +8,8 @@ env:
 
 jobs:
   build:
+    permissions:
+      packages: write
     name: Build and push Docker container
     runs-on: ubuntu-latest
     steps:
@@ -23,6 +25,7 @@ jobs:
           push: true
           tags: ${{ env.IMAGE }}
   deploy:
+    permissions: {}
     strategy:
       matrix:
         cluster: [prod]
