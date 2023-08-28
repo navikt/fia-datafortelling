@@ -20,6 +20,8 @@ format:
 jupyter: python3
 ---
 
+**Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen i [Porten](https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362).**
+
 Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
 Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
 
