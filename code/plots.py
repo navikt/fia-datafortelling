@@ -380,13 +380,17 @@ def virksomhetsprofil(data_input):
 
 
 def statusflyt(data_status):
-    status_indexes = dict(zip(statusordre, range(len(statusordre))))
-    status_endringer = data_status.value_counts(["forrige_status", "status"])
+    # Fjern slettede saker
+    data_status_uslettet = data_status[data_status.siste_status != "SLETTET"]
+    statusordre_uslettet = statusordre[:-1]
+
+    status_indexes = dict(zip(statusordre_uslettet, range(len(statusordre_uslettet))))
+    status_endringer = data_status_uslettet.value_counts(["forrige_status", "status"])
     source_status = status_endringer.index.get_level_values(0).map(status_indexes)
     target_status = status_endringer.index.get_level_values(1).map(status_indexes)
     count_endringer = status_endringer.values
 
-    status_label = [x.capitalize().replace("_", " ") for x in statusordre]
+    status_label = [x.capitalize().replace("_", " ") for x in statusordre_uslettet]
     status_label = [x if x != "Ny" else "Alle saker" for x in status_label]
     fig = go.Figure()
     fig.add_trace(
@@ -395,8 +399,8 @@ def statusflyt(data_status):
                 pad=200,
                 label=status_label,
                 # node position in the open interval (0, 1)
-                x=[0.001, 0.2, 0.4, 0.6, 0.8, 0.999, 0.999, 0.999],
-                y=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.001, 0.999],
+                x=[0.001, 0.2, 0.4, 0.6, 0.8, 0.999, 0.999],
+                y=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.001],
             ),
             link=dict(
                 source=source_status,
