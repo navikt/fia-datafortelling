@@ -598,8 +598,12 @@ def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
         .index.tolist()
     )
 
+    første_register_navenhet = data_statistikk[
+        (data_statistikk.enhetsnavn != "Ukjent") & (~data_statistikk.enhetsnavn.isna())
+    ].endretTidspunkt.min()
     bruker_per_navenhet = (
-        data_statistikk.groupby(["fylkesnavn", "enhetsnavn"])
+        data_statistikk[data_statistikk.endretTidspunkt >= første_register_navenhet]
+        .groupby(["fylkesnavn", "enhetsnavn"])
         .endretAv.nunique()
         .reset_index()
     )
