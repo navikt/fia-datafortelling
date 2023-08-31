@@ -93,11 +93,13 @@ antall_saker_indicator(data_status)
 
 ## Forklaring av begrepet "sak" i Fia
 
-En sak i Fia betyr at en bedrift som er en del av IA-samarbeidet får en begrenset periode med evaluering og mulig hjelp.
+En sak i Fia betyr at en virksomhet som er en del av IA-samarbeidet får en begrenset periode med evaluering og mulig hjelp.
 
 En aktiv sak i Fia er en sak som står i status Vurderes, Kontaktes, Kartlegges eller Vi bistår.
 
 En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Fullført.
+
+En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
 :::
 
 
@@ -233,9 +235,11 @@ moduler_per_maaned(data_siste_leveranse)
 
 ## Virksomhetsprofil
 Her vises profilen til virksomheter som er registrert i Fia.
-Grafene viser antall virksomheter per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+Grafene viser antall saker per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
 Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
 Gjeldende tidspunkter er nevnt over hver graf.
+
+Obs.: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
 
 ::: {.panel-tabset}
 
