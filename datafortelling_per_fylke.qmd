@@ -1,0 +1,197 @@
+---
+title: "Fia datafortelling"
+subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
+author: Team Pia
+author-title: "Eier"
+execute:
+    echo: false
+    warning: false
+format:
+    html:
+        toc: true
+        toc-title: Indeks
+        page-layout: full
+        embed-resources: true
+jupyter: python3
+---
+
+**Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen i [Porten](https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362).**
+
+Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
+Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
+
+Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
+
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
+
+```{python}
+import os
+
+from code.datahandler import (
+    load_data,
+    load_data_deduplicate,
+    preprocess_data_statistikk,
+    split_data_statistikk,
+    preprocess_data_status,
+    preprocess_data_leveranse,
+    kollaps_leveranse_historikk,
+    explode_ikke_aktuell_begrunnelse,
+)
+from code.plots import (
+    aktive_saker_per_fylke,
+    dager_siden_siste_oppdatering,
+    antall_saker_per_status,
+    antall_leveranser_per_sak,
+    antall_leveranser_per_tjeneste,
+    antall_leveranser_per_modul,
+    virksomhetsprofil,
+    statusflyt,
+    begrunnelse_ikke_aktuell,
+    hovedbegrunnelse_ikke_aktuell,
+    leveranse_tjeneste_per_maaned,
+)
+from code.plots_datakvalitet import saker_per_status_over_tid
+from code.tables import moduler_per_maaned
+from code.indicators import antall_saker_indicator
+from code.helper import (
+    modul_sortering,
+    ikke_aktuell_begrunnelse_sortering,
+)
+from code.konstanter import (
+    ikkeaktuell_hovedgrunn,
+    gamle_ikkeaktuell_hovedgrunn,
+)
+
+
+PROJECT = os.environ['GCP_PROJECT']
+DATASET = os.environ['DATASET']
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
+raw_data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
+
+fylkesnr = "50"
+raw_data_leveranse = raw_data_leveranse.merge(raw_data_statistikk[["saksnummer", "fylkesnummer"]], how='left', on='saksnummer')
+
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+data_status, data_eierskap = split_data_statistikk(data_statistikk)
+data_status = preprocess_data_status(data_status)
+data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
+data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
+
+data_statistikk_fylke = data_statistikk[data_statistikk.fylkesnummer == fylkesnr]
+data_status_fylke = data_status[data_status.fylkesnummer == fylkesnr]
+data_eierskap_fylke = data_eierskap[data_eierskap.fylkesnummer == fylkesnr]
+data_leveranse_fylke = data_leveranse[data_leveranse.fylkesnummer == fylkesnr]
+data_siste_leveranse_fylke = data_siste_leveranse[data_siste_leveranse.fylkesnummer == fylkesnr]
+ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.fylkesnummer == fylkesnr]
+```
+
+
+## Antall saker
+
+```{python}
+antall_saker_indicator(data_status_fylke)
+```
+
+::: {.callout-note}
+
+## Forklaring av begrepet "sak" i Fia
+
+En sak i Fia betyr at en virksomhet som er en del av IA-samarbeidet får en begrenset periode med evaluering og mulig hjelp.
+
+En aktiv sak i Fia er en sak som står i status Vurderes, Kontaktes, Kartlegges eller Vi bistår.
+
+En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Fullført.
+
+En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
+:::
+
+
+## Statusflyt i Fia
+Grafen nedenfor viser antall statusendringer som er registrert i Fia siden starten 10.05.2022.
+Gjelder ikke slettede saker og angret statusendringer.
+
+```{python}
+statusflyt(data_status_fylke)
+```
+{{< include includes/saksstatus-forklaring.qmd >}}
+
+
+## Antall saker per status
+
+```{python}
+antall_saker_per_status(data_status_fylke[~data_status_fylke.siste_status.isin(["SLETTET", "NY"])])
+```
+
+
+## Leveranser
+Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
+En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
+Slettet leveranser vises ikke i grafene under.
+
+::: {.panel-tabset}
+
+## Per tjeneste
+```{python}
+antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
+```
+
+## Per modul
+```{python}
+modul_sortering = modul_sortering(data_siste_leveranse_fylke)
+```
+::: {.panel-tabset}
+## Levert
+```{python}
+antall_leveranser_per_modul(
+    data_siste_leveranse_fylke[data_siste_leveranse_fylke.status=="LEVERT"], modul_sortering
+)
+```
+## Under arbeid
+```{python}
+antall_leveranser_per_modul(
+    data_siste_leveranse_fylke[data_siste_leveranse_fylke.status == "UNDER_ARBEID"], modul_sortering
+)
+```
+## Levert og under arbeid
+```{python}
+antall_leveranser_per_modul(data_siste_leveranse_fylke, modul_sortering)
+```
+:::
+
+## Per sak
+Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
+Her gjelder alle saker som har leveranser registert eller kunne ha hatt det, i.e., saker fullført etter det ble mulig å registrere leveranser (mars 2023), og saker i bistand nå.
+
+```{python}
+antall_leveranser_per_sak(data_status_fylke, data_siste_leveranse_fylke)
+```
+
+## Per måned
+PS: En sak kan ha flere leveranser.
+```{python}
+leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
+```
+
+## Detaljer
+Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
+```{python}
+moduler_per_maaned(data_siste_leveranse_fylke)
+```
+
+:::
+
+{{< include includes/leveransestatus-forklaring.qmd >}}
+
+
+## Antall saker per status over tid
+```{python}
+saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
+```
