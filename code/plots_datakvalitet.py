@@ -8,7 +8,7 @@ from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
 
 
-def saker_per_status_over_tid(data_status):
+def saker_per_status_over_tid(data_status, valgte_fylker=None):
     første_dato = data_status.endretTidspunkt.min()
     siste_dato = datetime.now()
     alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
@@ -42,8 +42,11 @@ def saker_per_status_over_tid(data_status):
             )
         )
 
+    if not valgte_fylker:
+        valgte_fylker = fylker.keys()
+    
     # En strek for hver kombinasjon av fylke og status
-    for fylkesnr in fylker.keys():
+    for fylkesnr in valgte_fylker:
         status_per_dato = beregn_status_per_dato(
             data_status[data_status.fylkesnummer == fylkesnr], alle_datoer
         )
@@ -63,7 +66,7 @@ def saker_per_status_over_tid(data_status):
     # som velger hvilke strekker som vises med hver knapp.
     # Hvis vi hadde 3 fylker og 2 statuser, det ville være:
     # [1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 1]
-    knapper_navn = ["Alle fylker"] + list(fylker.values())
+    knapper_navn = ["Alle fylker"] + [fylker[valgt_fylke] for valgt_fylke in valgte_fylker]
     knapper = [
         dict(
             args=[
