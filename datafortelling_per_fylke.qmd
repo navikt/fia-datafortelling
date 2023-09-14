@@ -57,7 +57,10 @@ from code.plots import (
     hovedbegrunnelse_ikke_aktuell,
     leveranse_tjeneste_per_maaned,
 )
-from code.plots_datakvalitet import saker_per_status_over_tid
+from code.plots_datakvalitet import (
+    saker_per_status_over_tid,
+    antall_saker_per_eier,
+)
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
 from code.helper import (
@@ -194,4 +197,10 @@ moduler_per_maaned(data_siste_leveranse_fylke)
 ## Antall saker per status over tid
 ```{python}
 saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
+```
+
+
+## Antall saker per eier
+```{python}
+antall_saker_per_eier(data_status_fylke)
 ```
