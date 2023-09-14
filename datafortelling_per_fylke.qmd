@@ -79,7 +79,11 @@ raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk
 raw_data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
 fylkesnr = "50"
-raw_data_leveranse = raw_data_leveranse.merge(raw_data_statistikk[["saksnummer", "fylkesnummer"]], how='left', on='saksnummer')
+raw_data_leveranse = raw_data_leveranse.merge(
+    raw_data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram"]], 
+    how='left', 
+    on='saksnummer',
+)
 
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
@@ -148,7 +152,7 @@ antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
 
 ## Per modul
 ```{python}
-modul_sortering = modul_sortering(data_siste_leveranse_fylke)
+modul_sortering = modul_sortering(data_siste_leveranse)
 ```
 ::: {.panel-tabset}
 ## Levert
@@ -192,6 +196,87 @@ moduler_per_maaned(data_siste_leveranse_fylke)
 :::
 
 {{< include includes/leveransestatus-forklaring.qmd >}}
+
+## Leveranseprofil per bransje
+::: {.panel-tabset}
+# Barnehager
+```{python}
+data = data_siste_leveranse_fylke[
+    data_siste_leveranse_fylke.bransjeprogram=="BARNEHAGER"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_modul(
+        data, modul_sortering
+    ).show()
+```
+
+# Sykehjem
+```{python}
+data = data_siste_leveranse_fylke[
+    data_siste_leveranse_fylke.bransjeprogram=="SYKEHJEM"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_modul(
+        data, modul_sortering
+    ).show()
+```
+
+# Sykehus
+```{python}
+data = data_siste_leveranse_fylke[
+    data_siste_leveranse_fylke.bransjeprogram=="SYKEHUS"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_modul(
+        data, modul_sortering
+    ).show()
+```
+
+# Næringsmiddelindustri
+```{python}
+data = data_siste_leveranse_fylke[
+    data_siste_leveranse_fylke.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_modul(
+        data, modul_sortering
+    ).show()
+```
+
+# Bygg og anlegg
+```{python}
+data = data_siste_leveranse_fylke[
+    data_siste_leveranse_fylke.bransjeprogram.isin(["BYGG", "ANLEGG"])
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_modul(
+        data, modul_sortering
+    ).show()
+```
+
+# Transport
+```{python}
+data = data_siste_leveranse_fylke[
+    data_siste_leveranse_fylke.bransjeprogram=="TRANSPORT"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_modul(
+        data, modul_sortering
+    ).show()
+```
+:::
 
 
 ## Antall saker per status over tid
