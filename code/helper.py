@@ -50,8 +50,8 @@ def modul_sortering(data_siste_leveranse):
         .sort_values(ascending=False)
         .reset_index()
         .sort_values("iaTjenesteNavn", key=lambda col: col.map(tjeneste_sortering_map))
-        .iaModulNavn.to_list()
-    )
+        .reset_index()
+    )[["iaTjenesteNavn", "iaModulNavn"]]
     return modul_sortering
 
 

@@ -208,10 +208,12 @@ def antall_leveranser_per_modul(data_leveranse, modul_sortering):
         data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
         .saksnummer.nunique()
         .reset_index()
-        .sort_values(
-            "iaModulNavn", key=lambda col: col.map(lambda e: modul_sortering.index(e))
-        )
     )
+    # Inkluder alle moduler i dataframen ved å fylle med null der modulene mangler
+    # og sorterer tjenester/moduler basert på modul_sortering
+    leveranser_per_modul = modul_sortering.merge(
+        leveranser_per_modul, how="left", on=["iaTjenesteNavn", "iaModulNavn"]
+    ).fillna(0)
 
     fig = go.Figure()
 
