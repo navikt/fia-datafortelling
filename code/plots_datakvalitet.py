@@ -271,7 +271,7 @@ def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
 
 def antall_saker_per_eier(data_status):
     saker_per_eier = (
-        data_status[data_status.siste_status.isin(["VI_BISTÅR", "FULLFØRT"])]
+        data_status[data_status.siste_status.isin(["VI_BISTÅR"])]
         .drop_duplicates("saksnummer", keep="last")
         .groupby("eierAvSak")
         .saksnummer.nunique()
