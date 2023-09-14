@@ -277,7 +277,25 @@ def antall_saker_per_eier(data_status):
         .saksnummer.nunique()
     )
 
-    fig = go.Figure(data=[go.Histogram(x=saker_per_eier)])
+    fig = go.Figure(
+        data=[
+            go.Histogram(
+                x=saker_per_eier, xbins=dict(start=1, end=saker_per_eier.max())
+            )
+        ]
+    )
+
+    gjennomsnitt = saker_per_eier.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[1],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.3}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[1],
+    )
+
     fig.update_layout(
         height=500,
         width=850,
