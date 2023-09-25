@@ -138,6 +138,53 @@ antall_saker_per_status(data_status_fylke[~data_status_fylke.siste_status.isin([
 ```
 
 
+## Dager siden siste oppdatering i Fia
+Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
+En oppdatering er at noen har tatt eierskap til en sak, en endring av status eller en leveranse som er lagt til eller satt til levert.
+Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke dette som oppdatering.
+Vi viser disse tallene fordelt på status, siden statusene kan ha ulik varighet.
+Grafene gir en indikasjon på hvor mange saker som ligger urørt i Fia.
+
+::: {.panel-tabset}
+## Alle aktive saker
+```{python}
+dager_siden_siste_oppdatering(data_status_fylke, data_eierskap_fylke, data_leveranse_fylke)
+```
+## Vurderes
+```{python}
+dager_siden_siste_oppdatering(
+    data_status_fylke[data_status_fylke.siste_status=="VURDERES"],
+    data_eierskap_fylke,
+    data_leveranse_fylke
+)
+```
+## Kontaktes
+```{python}
+dager_siden_siste_oppdatering(
+    data_status_fylke[data_status_fylke.siste_status=="KONTAKTES"],
+    data_eierskap_fylke,
+    data_leveranse_fylke
+)
+```
+## Kartlegges
+```{python}
+dager_siden_siste_oppdatering(
+    data_status_fylke[data_status_fylke.siste_status=="KARTLEGGES"],
+    data_eierskap_fylke,
+    data_leveranse_fylke
+)
+```
+## Vi bistår
+```{python}
+dager_siden_siste_oppdatering(
+    data_status_fylke[data_status_fylke.siste_status=="VI_BISTÅR"],
+    data_eierskap_fylke,
+    data_leveranse_fylke
+)
+```
+:::
+
+
 ## Leveranser
 Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
 En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
