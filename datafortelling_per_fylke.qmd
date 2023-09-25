@@ -366,6 +366,29 @@ virksomhetsprofil(data_input)
 :::
 
 
+## Begrunnelse på ikke aktuell
+Her vises andel og antall saker per begrunnelse på ikke aktuell.
+Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
+Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser,
+og derfor kan andelssummen være større enn 100%.
+
+```{python}
+begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
+```
+
+```{python}
+hovedbegrunnelse_ikke_aktuell(ikke_aktuell_fylke)
+```
+
+Detaljert begrunnelse
+```{python}
+begrunnelse_ikke_aktuell(
+    ikke_aktuell_fylke[ikke_aktuell_fylke.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
+    begrunnelse_sortering,
+)
+```
+
+
 ## Antall saker per status over tid
 ```{python}
 saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
