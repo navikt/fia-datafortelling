@@ -238,50 +238,27 @@ moduler_per_maaned(data_siste_leveranse)
 Her vises profilen til virksomheter som er registrert i Fia.
 Grafene viser antall saker per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
 Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
-Gjeldende tidspunkter er nevnt over hver graf.
 
 Obs.: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
 
 ::: {.panel-tabset}
 
-## Aktiv
-Saker med nåværende status "Vurderes", "Kontaktes", "Kartlegges", eller "Vi bistår".\
-Tidspunkt: sist statusendring.
+## Før bistand
+Saker med nåværende status "Vurderes", "Kontaktes" eller "Kartlegges".\
 ```{python}
-data_input = data_status[data_status.aktiv_sak]
+data_input = data_status[data_status.siste_status.isin(["VURDERES", "KONTAKTES", "KARTLEGGES"])]
 virksomhetsprofil(data_input)
 ```
 
 ## I bistand
 Saker med nåværende status "Vi bistår".\
-Tidspunkt: når statusen settes til "Vi bistår".
 ```{python}
 data_input = data_status[data_status.siste_status=="VI_BISTÅR"]
 virksomhetsprofil(data_input)
 ```
 
-## Vurdert
-Saker som hadde eller har status "Vurderes".\
-Tidspunkt: når statusen settes til "Vurderes".
-```{python}
-data_input = data_status[data_status.status=="VURDERES"].drop_duplicates("saksnummer", keep="last")
-virksomhetsprofil(data_input)
-```
-
-## Vurdert ikke aktuell
-Saker som gikk fra status "Vurderes" til "Ikke aktuell".\
-Tidspunkt: statusendring fra "Vurderes" til "Ikke aktuell".
-```{python}
-data_input = data_status[
-    (data_status.status=="IKKE_AKTUELL") &
-    (data_status.forrige_status=="VURDERES")
-].drop_duplicates("saksnummer", keep="last")
-virksomhetsprofil(data_input)
-```
-
 ## Ikke aktuell
 Saker med nåværende status "Ikke aktuell".\
-Tidspunkt: når statusen settes til "Ikke aktuell".
 ```{python}
 data_input = data_status[data_status.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
@@ -289,21 +266,11 @@ virksomhetsprofil(data_input)
 
 ## Fullført
 Saker med nåværende status "Fullført".\
-Tidspunkt: når statusen settes til "Fullført".
 ```{python}
 data_input = data_status[data_status.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
 virksomhetsprofil(data_input)
 ```
 
-## Bistått
-Saker med nåværende status "Vi bistår" eller "Fullført".\
-Tidspunkt: når statusen settes til "Vi bistår" eller "Fullført".
-```{python}
-data_input = data_status[
-    (data_status.siste_status=="VI_BISTÅR") | (data_status.siste_status=="FULLFØRT")
-].drop_duplicates("saksnummer", keep="last")
-virksomhetsprofil(data_input)
-```
 :::
 
 
