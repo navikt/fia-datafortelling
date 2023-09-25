@@ -188,20 +188,27 @@ Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjene
 En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
 Slettet leveranser vises ikke i grafene under.
 
-#### Antall saker per tjeneste og status
-```{python}
-antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
-```
-{{< include includes/leveransestatus-forklaring.qmd >}}
-
-#### Antall fullførte leveranser per måned
+::: {.panel-tabset}
+# Antall fullførte leveranser
 PS: En sak kan ha flere leveranser.
 ```{python}
 leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
 ```
 
-#### Leveranser per bransje og tjeneste
+# Andel fullførte saker med leveranse registrert
+```{python}
+andel_fullforte_saker_med_leveranse_per_måned(data_status_fylke, data_leveranse_fylke)
+```
+:::
 
+
+::: {.panel-tabset}
+# Alle saker
+```{python}
+antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
+```
+
+# Per bransje
 ::: {.panel-tabset}
 # Barnehager
 ```{python}
@@ -269,6 +276,8 @@ else:
     antall_leveranser_per_tjeneste(data).show()
 ```
 :::
+:::
+{{< include includes/leveransestatus-forklaring.qmd >}}
 
 
 ## Virksomhetsprofil
@@ -337,12 +346,6 @@ begrunnelse_ikke_aktuell(
 ## Antall saker per status over tid
 ```{python}
 saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
-```
-
-
-## Andel fullførte saker med leveranse registrert
-```{python}
-andel_fullforte_saker_med_leveranse_per_måned(data_status_fylke, data_leveranse_fylke)
 ```
 
 
