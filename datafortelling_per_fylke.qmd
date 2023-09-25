@@ -132,9 +132,17 @@ statusflyt(data_status_fylke)
 
 ## Antall saker per status
 
+::: {.panel-tabset}
+# Nåsituasjon
 ```{python}
 antall_saker_per_status(data_status_fylke[~data_status_fylke.siste_status.isin(["SLETTET", "NY"])])
 ```
+
+# Historikk
+```{python}
+saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
+```
+:::
 
 
 ## Dager siden siste oppdatering i Fia
@@ -349,12 +357,6 @@ begrunnelse_ikke_aktuell(
     ikke_aktuell_fylke[ikke_aktuell_fylke.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
     begrunnelse_sortering,
 )
-```
-
-
-## Antall saker per status over tid
-```{python}
-saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
 ```
 
 
