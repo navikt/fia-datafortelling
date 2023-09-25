@@ -64,10 +64,7 @@ from code.plots_datakvalitet import (
 )
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
-from code.helper import (
-    modul_sortering,
-    ikke_aktuell_begrunnelse_sortering,
-)
+from code.helper import ikke_aktuell_begrunnelse_sortering
 from code.konstanter import (
     ikkeaktuell_hovedgrunn,
     gamle_ikkeaktuell_hovedgrunn,
@@ -191,61 +188,20 @@ Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjene
 En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
 Slettet leveranser vises ikke i grafene under.
 
-::: {.panel-tabset}
-
-## Per tjeneste
+#### Antall saker per tjeneste og status
 ```{python}
 antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
 ```
+{{< include includes/leveransestatus-forklaring.qmd >}}
 
-## Per modul
-```{python}
-modul_sortering = modul_sortering(data_siste_leveranse)
-```
-::: {.panel-tabset}
-## Levert
-```{python}
-antall_leveranser_per_modul(
-    data_siste_leveranse_fylke[data_siste_leveranse_fylke.status=="LEVERT"], modul_sortering
-)
-```
-## Under arbeid
-```{python}
-antall_leveranser_per_modul(
-    data_siste_leveranse_fylke[data_siste_leveranse_fylke.status == "UNDER_ARBEID"], modul_sortering
-)
-```
-## Levert og under arbeid
-```{python}
-antall_leveranser_per_modul(data_siste_leveranse_fylke, modul_sortering)
-```
-:::
-
-## Per sak
-Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
-Her gjelder alle saker som har leveranser registert eller kunne ha hatt det, i.e., saker fullført etter det ble mulig å registrere leveranser (mars 2023), og saker i bistand nå.
-
-```{python}
-antall_leveranser_per_sak(data_status_fylke, data_siste_leveranse_fylke)
-```
-
-## Per måned
+#### Antall fullførte leveranser per måned
 PS: En sak kan ha flere leveranser.
 ```{python}
 leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
 ```
 
-## Detaljer
-Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
-```{python}
-moduler_per_maaned(data_siste_leveranse_fylke)
-```
+#### Leveranser per bransje og tjeneste
 
-:::
-
-{{< include includes/leveransestatus-forklaring.qmd >}}
-
-## Leveranseprofil per bransje
 ::: {.panel-tabset}
 # Barnehager
 ```{python}
@@ -255,9 +211,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_modul(
-        data, modul_sortering
-    ).show()
+    antall_leveranser_per_tjeneste(data).show()
 ```
 
 # Sykehjem
@@ -268,9 +222,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_modul(
-        data, modul_sortering
-    ).show()
+    antall_leveranser_per_tjeneste(data).show()
 ```
 
 # Sykehus
@@ -281,9 +233,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_modul(
-        data, modul_sortering
-    ).show()
+    antall_leveranser_per_tjeneste(data).show()
 ```
 
 # Næringsmiddelindustri
@@ -294,9 +244,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_modul(
-        data, modul_sortering
-    ).show()
+    antall_leveranser_per_tjeneste(data).show()
 ```
 
 # Bygg og anlegg
@@ -307,9 +255,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_modul(
-        data, modul_sortering
-    ).show()
+    antall_leveranser_per_tjeneste(data).show()
 ```
 
 # Transport
@@ -320,9 +266,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_modul(
-        data, modul_sortering
-    ).show()
+    antall_leveranser_per_tjeneste(data).show()
 ```
 :::
 
