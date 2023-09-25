@@ -486,6 +486,33 @@ def hovedbegrunnelse_ikke_aktuell(ikke_aktuell):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
+def leveranse_per_maaned(data_leveranse):
+    data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
+    saker_per_måned = (
+        data_leveranse[data_leveranse.status == "LEVERT"]
+        .groupby("fullfort_yearmonth")
+        .saksnummer.size()
+        .reset_index()
+    )
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=saker_per_måned.fullfort_yearmonth,
+            y=saker_per_måned.saksnummer,
+        )
+    )
+
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Fullført måned",
+        yaxis_title="Antall fullførte leveranser",
+        xaxis={"type": "category"},
+    )
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
 def leveranse_tjeneste_per_maaned(data_leveranse):
     data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
     saker_per_tjeneste_og_måned = (

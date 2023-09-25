@@ -55,6 +55,7 @@ from code.plots import (
     statusflyt,
     begrunnelse_ikke_aktuell,
     hovedbegrunnelse_ikke_aktuell,
+    leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
 from code.plots_datakvalitet import (
@@ -191,9 +192,17 @@ Slettet leveranser vises ikke i grafene under.
 ::: {.panel-tabset}
 # Antall fullførte leveranser
 PS: En sak kan ha flere leveranser.
+
+::: {.panel-tabset}
+# Totalt
+```{python}
+leveranse_per_maaned(data_siste_leveranse_fylke)
+```
+# Per tjeneste
 ```{python}
 leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
 ```
+:::
 
 # Andel fullførte saker med leveranse registrert
 ```{python}
