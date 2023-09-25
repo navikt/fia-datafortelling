@@ -279,6 +279,46 @@ else:
 :::
 
 
+## Virksomhetsprofil
+Her vises profilen til virksomheter som er registrert i Fia.
+Grafene viser antall saker per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
+
+Obs.: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
+
+::: {.panel-tabset}
+
+## Før bistand
+Saker med nåværende status "Vurderes", "Kontaktes" eller "Kartlegges".\
+```{python}
+data_input = data_status_fylke[data_status_fylke.siste_status.isin(["VURDERES", "KONTAKTES", "KARTLEGGES"])]
+virksomhetsprofil(data_input)
+```
+
+## I bistand
+Saker med nåværende status "Vi bistår".\
+```{python}
+data_input = data_status_fylke[data_status_fylke.siste_status=="VI_BISTÅR"]
+virksomhetsprofil(data_input)
+```
+
+## Ikke aktuell
+Saker med nåværende status "Ikke aktuell".\
+```{python}
+data_input = data_status_fylke[data_status_fylke.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
+virksomhetsprofil(data_input)
+```
+
+## Fullført
+Saker med nåværende status "Fullført".\
+```{python}
+data_input = data_status_fylke[data_status_fylke.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
+virksomhetsprofil(data_input)
+```
+
+:::
+
+
 ## Antall saker per status over tid
 ```{python}
 saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
