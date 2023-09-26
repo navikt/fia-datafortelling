@@ -120,16 +120,6 @@ En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
 :::
 
 
-## Statusflyt i Fia
-Grafen nedenfor viser antall statusendringer som er registrert i Fia siden starten 10.05.2022.
-Gjelder ikke slettede saker og angret statusendringer.
-
-```{python}
-statusflyt(data_status_fylke)
-```
-{{< include includes/saksstatus-forklaring.qmd >}}
-
-
 ## Antall saker per status
 
 ::: {.panel-tabset}
@@ -143,7 +133,7 @@ antall_saker_per_status(data_status_fylke[~data_status_fylke.siste_status.isin([
 saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
 ```
 :::
-
+{{< include includes/saksstatus-forklaring.qmd >}}
 
 ## Dager siden siste oppdatering i Fia
 Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
