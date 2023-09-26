@@ -1,5 +1,5 @@
 ---
-title: "Fia datafortelling"
+title: "Fia datafortelling for {{< env FYLKESNAVN >}}"
 subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
@@ -71,6 +71,7 @@ from code.konstanter import (
     ikkeaktuell_hovedgrunn,
     gamle_ikkeaktuell_hovedgrunn,
 )
+from code.konstanter import fylker
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -78,7 +79,11 @@ DATASET = os.environ['DATASET']
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
 raw_data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
 
-fylkesnr = "50"
+fylkesnavn = os.environ['FYLKESNAVN']
+for nr, navn in fylker.items():
+    if navn == fylkesnavn:
+        fylkesnr = nr
+
 raw_data_leveranse = raw_data_leveranse.merge(
     raw_data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram"]], 
     how='left', 
