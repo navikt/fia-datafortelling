@@ -132,19 +132,11 @@ dmypy.json
 .idea/
 
 # Lokalt genererte fortellinger
-/index.html
-/index.ipynb
-index_files/
-/datakvalitet.html
-/datakvalitet.ipynb
-datakvalitet_files/
-/datafortelling_per_fylke.html
-/datafortelling_per_fylke.ipynb
-datafortelling_per_fylke_files/
+*.html
+*.ipynb
 
 # OS generated files
 .DS_Store
 
 # Local files
 local-files/
-test.ipynb
