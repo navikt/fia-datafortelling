@@ -8,6 +8,45 @@ from code.helper import annotate_ikke_offisiell_statistikk
 from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
 
 
+def saker_per_status_per_måned(data_status):
+    første_dato = data_status.endretTidspunkt.min()
+    siste_dato = datetime.now()
+    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
+    alle_måneder = alle_datoer.strftime("%Y-%m").drop_duplicates()
+    statuser = [status for status in statusordre if status != "NY"]
+
+    status_per_måned = dict(zip(statuser, [[0]] * len(statuser)))
+    for måned in alle_måneder:
+        data_måned = data_status[data_status.endretTidspunkt.dt.strftime("%Y-%m") == måned]
+        for status in statuser:
+            sist_count = status_per_måned[status][-1]
+            count = (
+                sist_count
+                - sum(data_måned.forrige_status == status)
+                + sum(data_måned.status == status)
+            )
+            status_per_måned[status] = status_per_måned[status] + [count]
+
+    fig = go.Figure()
+    for status in statuser:
+        fig.add_trace(
+            go.Scatter(
+                x=alle_måneder,
+                y=status_per_måned[status][:-1],
+                name=status.capitalize().replace("_", " "),
+            )
+        )
+
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Dato",
+        yaxis_title="Antall saker",
+        hovermode="x unified",
+    )
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
 def saker_per_status_over_tid(data_status, valgte_fylker=None):
     første_dato = data_status.endretTidspunkt.min()
     siste_dato = datetime.now()

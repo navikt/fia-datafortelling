@@ -60,7 +60,7 @@ from code.plots import (
     gjennomstrømmingstall,
 )
 from code.plots_datakvalitet import (
-    saker_per_status_over_tid,
+    saker_per_status_per_måned,
     antall_saker_per_eier,
     andel_fullforte_saker_med_leveranse_per_måned,
 )
@@ -131,7 +131,7 @@ antall_saker_per_status(data_status_fylke[~data_status_fylke.siste_status.isin([
 
 # Historikk
 ```{python}
-saker_per_status_over_tid(data_status, valgte_fylker=[fylkesnr])
+saker_per_status_per_måned(data_status)
 ```
 
 # Gjennomstrømmingstall
