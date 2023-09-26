@@ -1,6 +1,7 @@
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+from datetime import datetime
 
 from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk
@@ -542,5 +543,36 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
         xaxis_title="Fullført måned",
         yaxis_title="Antall fullførte leveranser",
         xaxis={"type": "category"},
+    )
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
+    mnd = pd.date_range(
+        start=data_status.endretTidspunkt.min(), end=datetime.now(), freq="M"
+    ).strftime("%Y-%m")
+    inn = (
+        data_status[data_status.status == status]
+        .endretTidspunkt.dt.strftime("%Y-%m")
+        .value_counts()
+        .sort_index()
+        .reindex(mnd, fill_value=0)
+    )
+    ut = (
+        data_status[data_status.forrige_status == status]
+        .endretTidspunkt.dt.strftime("%Y-%m")
+        .value_counts()
+        .sort_index()
+        .reindex(mnd, fill_value=0)
+    )
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=inn.index, y=inn.values, name="inn"))
+    fig.add_trace(go.Scatter(x=ut.index, y=ut.values, name="ut"))
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Måned",
+        yaxis_title="Antall saker",
     )
     return annotate_ikke_offisiell_statistikk(fig)
