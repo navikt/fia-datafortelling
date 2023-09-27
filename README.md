@@ -45,6 +45,16 @@ Jobben kjører i intervaller som er definert i cron-utrykket `spec.schedule` i [
 Naisjobben spinner opp quarto (render html) og oppdaterer datafortellingen.
 Dette er definert i [run.sh](run.sh).
 
+# Ad hoc kjøring
+
+For å regenerere datafortellingen manuelt, gjør følgende:
+
+* Logg inn i gcp med `gcloud auth login --update-adc`
+* Gå til cluster prod-gcp i kubectl `kubectx prod-gcp`
+* Sett namespace til pia `kubens pia`
+* Finn cronjobben for datafortellingen ( `kubectl get cronjobs | grep fia-datafortelling` )
+* Kjør jobben manuelt ( `kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc` )
+
 # Oppdater avhengigheter
 
 - Oppdater python:
