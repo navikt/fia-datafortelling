@@ -114,10 +114,24 @@ statusflyt(data_status)
 
 
 ## Antall saker per status
-
+::: {.panel-tabset}
+# Nåsituasjon
 ```{python}
 antall_saker_per_status(data_status[~data_status.siste_status.isin(["SLETTET", "NY"])])
 ```
+
+# Historikk
+```{python}
+saker_per_status_per_måned(data_status)
+```
+
+# Gjennomstrømmingstall
+Viser hvor mange saker som går inn og ut av status Vi bistår.
+Fra status Vi bistår er det mulig å skifte til enten Fullført eller Ikke aktuell.
+```{python}
+gjennomstrømmingstall(data_status)
+```
+:::
 
 
 ## Antall aktive saker per fylke
