@@ -14,7 +14,9 @@ def saker_per_status_per_måned(data_status):
 
     status_per_måned = dict(zip(statuser, [[0]] * len(statuser)))
     for måned in alle_måneder:
-        data_måned = data_status[data_status.endretTidspunkt.dt.strftime("%Y-%m") == måned]
+        data_måned = data_status[
+            data_status.endretTidspunkt.dt.strftime("%Y-%m") == måned
+        ]
         for status in statuser:
             sist_count = status_per_måned[status][-1]
             count = (
@@ -80,7 +82,7 @@ def saker_per_status_over_tid(data_status, valgte_fylker=None):
 
     if not valgte_fylker:
         valgte_fylker = fylker.keys()
-    
+
     # En strek for hver kombinasjon av fylke og status
     for fylkesnr in valgte_fylker:
         status_per_dato = beregn_status_per_dato(
@@ -102,7 +104,9 @@ def saker_per_status_over_tid(data_status, valgte_fylker=None):
     # som velger hvilke strekker som vises med hver knapp.
     # Hvis vi hadde 3 fylker og 2 statuser, det ville være:
     # [1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 1]
-    knapper_navn = ["Alle fylker"] + [fylker[valgt_fylke] for valgt_fylke in valgte_fylker]
+    knapper_navn = ["Alle fylker"] + [
+        fylker[valgt_fylke] for valgt_fylke in valgte_fylker
+    ]
     knapper = [
         dict(
             args=[
@@ -516,7 +520,7 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         .sort_index()
     )
 
-    andel_fullført_med_leveranse = (fullført_per_måned_med_leveranse / fullført_per_måned)
+    andel_fullført_med_leveranse = fullført_per_måned_med_leveranse / fullført_per_måned
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
