@@ -56,7 +56,9 @@ from code.plots import (
     begrunnelse_ikke_aktuell,
     hovedbegrunnelse_ikke_aktuell,
     leveranse_tjeneste_per_maaned,
+    gjennomstrømmingstall,
 )
+from code.plots_datakvalitet import saker_per_status_per_måned
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
 from code.helper import (
