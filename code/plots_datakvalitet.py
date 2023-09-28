@@ -496,6 +496,10 @@ def fullført_per_måned(data_status):
 
 def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     første_dato = data_leveranse.sistEndret.min()
+    siste_dato = datetime.now()
+    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
+    alle_måneder = alle_datoer.strftime("%Y-%m").drop_duplicates()
+
     fullført_per_måned = (
         data_status[
             (data_status.status == "FULLFØRT")
@@ -503,11 +507,8 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         ]
         .endretTidspunkt_måned.value_counts()
         .sort_index()
+        .reindex(alle_måneder, fill_value=0)
     )
-
-    alle_måneder = pd.date_range(
-        start=data_leveranse.sistEndret.min(), end=datetime.now(), freq="M"
-    ).strftime("%Y-%m")
 
     saker_med_leveranser = data_leveranse.saksnummer.unique()
     data_status["med_leveranse"] = False
@@ -518,14 +519,14 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         data_status[(data_status.status == "FULLFØRT") & data_status.med_leveranse]
         .endretTidspunkt_måned.value_counts()
         .sort_index()
-        .reindex(alle_måneder, fill_value=0)
     )
 
+    andel_fullført_med_leveranse = (fullført_per_måned_med_leveranse / fullført_per_måned)
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=fullført_per_måned.index,
-            y=(fullført_per_måned_med_leveranse / fullført_per_måned).values,
+            x=andel_fullført_med_leveranse.index,
+            y=andel_fullført_med_leveranse.values,
         )
     )
     fig.update_layout(
