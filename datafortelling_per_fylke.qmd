@@ -136,7 +136,7 @@ antall_saker_per_status(data_status_fylke[~data_status_fylke.siste_status.isin([
 
 # Historikk
 ```{python}
-saker_per_status_per_måned(data_status)
+saker_per_status_per_måned(data_status_fylke)
 ```
 
 # Gjennomstrømmingstall
