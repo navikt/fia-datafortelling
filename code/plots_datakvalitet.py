@@ -4,15 +4,12 @@ from plotly.subplots import make_subplots
 from datetime import datetime, timezone, timedelta
 
 
-from code.helper import annotate_ikke_offisiell_statistikk
+from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
 from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
 
 
 def saker_per_status_per_måned(data_status):
-    første_dato = data_status.endretTidspunkt.min()
-    siste_dato = datetime.now()
-    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
-    alle_måneder = alle_datoer.strftime("%Y-%m").drop_duplicates()
+    alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
     statuser = [status for status in statusordre if status != "NY"]
 
     status_per_måned = dict(zip(statuser, [[0]] * len(statuser)))
@@ -496,9 +493,7 @@ def fullført_per_måned(data_status):
 
 def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     første_dato = data_leveranse.sistEndret.min()
-    siste_dato = datetime.now()
-    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
-    alle_måneder = alle_datoer.strftime("%Y-%m").drop_duplicates()
+    alle_måneder = alle_måneder_mellom_datoer(første_dato)
 
     fullført_per_måned = (
         data_status[

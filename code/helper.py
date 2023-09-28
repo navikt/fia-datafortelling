@@ -1,3 +1,7 @@
+import pandas as pd
+from datetime import datetime
+
+
 def annotate_ikke_offisiell_statistikk(fig, x=0.5, y=1.1):
     fig.add_annotation(
         text="NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.",
@@ -64,3 +68,9 @@ def ikke_aktuell_begrunnelse_sortering(ikke_aktuell):
     )
 
     return begrunnelse_sortering
+
+
+def alle_måneder_mellom_datoer(første_dato, siste_dato=datetime.now()):
+    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
+    alle_måneder = alle_datoer.strftime("%Y-%m").drop_duplicates()
+    return alle_måneder

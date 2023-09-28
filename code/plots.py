@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 
 from code.datahandler import beregn_siste_oppdatering
-from code.helper import annotate_ikke_offisiell_statistikk
+from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
 from code.konstanter import (
     statusordre,
     plotly_colors,
@@ -489,10 +489,7 @@ def hovedbegrunnelse_ikke_aktuell(ikke_aktuell):
 
 def leveranse_per_maaned(data_leveranse):
     data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
-
-    alle_måneder = pd.date_range(
-        start=data_leveranse.sistEndret.min(), end=datetime.now(), freq="M"
-    ).strftime("%Y-%m")
+    alle_måneder = alle_måneder_mellom_datoer(data_leveranse.sistEndret.min())
 
     saker_per_måned = (
         data_leveranse[data_leveranse.status == "LEVERT"]
@@ -529,9 +526,7 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
 
     fig = go.Figure()
 
-    alle_måneder = pd.date_range(
-        start=data_leveranse.sistEndret.min(), end=datetime.now(), freq="M"
-    ).strftime("%Y-%m")
+    alle_måneder = alle_måneder_mellom_datoer(data_leveranse.sistEndret.min())
 
     for tjeneste in saker_per_tjeneste_og_måned.iaTjenesteNavn.unique():
         filtrert = (
@@ -559,9 +554,7 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
 
 
 def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
-    alle_måneder = pd.date_range(
-        start=data_status.endretTidspunkt.min(), end=datetime.now(), freq="M"
-    ).strftime("%Y-%m")
+    alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
     inn = (
         data_status[data_status.status == status]
         .endretTidspunkt.dt.strftime("%Y-%m")
