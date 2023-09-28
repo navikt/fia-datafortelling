@@ -505,6 +505,10 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         .sort_index()
     )
 
+    alle_måneder = pd.date_range(
+        start=data_leveranse.sistEndret.min(), end=datetime.now(), freq="M"
+    ).strftime("%Y-%m")
+
     saker_med_leveranser = data_leveranse.saksnummer.unique()
     data_status["med_leveranse"] = False
     data_status.loc[
@@ -514,6 +518,7 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         data_status[(data_status.status == "FULLFØRT") & data_status.med_leveranse]
         .endretTidspunkt_måned.value_counts()
         .sort_index()
+        .reindex(alle_måneder, fill_value=0)
     )
 
     fig = go.Figure()
@@ -528,7 +533,6 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         width=850,
         xaxis_title="Fullført måned",
         yaxis_title="Andel fullførte saker med leveranse",
-        xaxis={"type": "category"},
     )
 
     return annotate_ikke_offisiell_statistikk(fig)

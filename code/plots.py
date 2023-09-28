@@ -489,18 +489,23 @@ def hovedbegrunnelse_ikke_aktuell(ikke_aktuell):
 
 def leveranse_per_maaned(data_leveranse):
     data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
+
+    alle_måneder = pd.date_range(
+        start=data_leveranse.sistEndret.min(), end=datetime.now(), freq="M"
+    ).strftime("%Y-%m")
+
     saker_per_måned = (
         data_leveranse[data_leveranse.status == "LEVERT"]
         .groupby("fullfort_yearmonth")
         .saksnummer.size()
-        .reset_index()
+        .reindex(alle_måneder, fill_value=0)
     )
 
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=saker_per_måned.fullfort_yearmonth,
-            y=saker_per_måned.saksnummer,
+            x=saker_per_måned.index,
+            y=saker_per_måned.values,
         )
     )
 
@@ -509,7 +514,6 @@ def leveranse_per_maaned(data_leveranse):
         width=850,
         xaxis_title="Fullført måned",
         yaxis_title="Antall fullførte leveranser",
-        xaxis={"type": "category"},
     )
     return annotate_ikke_offisiell_statistikk(fig)
 
@@ -525,13 +529,21 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
 
     fig = go.Figure()
 
+    alle_måneder = pd.date_range(
+        start=data_leveranse.sistEndret.min(), end=datetime.now(), freq="M"
+    ).strftime("%Y-%m")
+
     for tjeneste in saker_per_tjeneste_og_måned.iaTjenesteNavn.unique():
-        filtrert = saker_per_tjeneste_og_måned[
-            saker_per_tjeneste_og_måned.iaTjenesteNavn == tjeneste
-        ]
+        filtrert = (
+            saker_per_tjeneste_og_måned[
+                saker_per_tjeneste_og_måned.iaTjenesteNavn == tjeneste
+            ]
+            .set_index("fullfort_yearmonth")
+            .reindex(alle_måneder, fill_value=0)
+        )
         fig.add_trace(
             go.Scatter(
-                x=filtrert.fullfort_yearmonth,
+                x=filtrert.index,
                 y=filtrert.saksnummer,
                 name=tjeneste,
             )
@@ -542,13 +554,12 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
         width=850,
         xaxis_title="Fullført måned",
         yaxis_title="Antall fullførte leveranser",
-        xaxis={"type": "category"},
     )
     return annotate_ikke_offisiell_statistikk(fig)
 
 
 def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
-    mnd = pd.date_range(
+    alle_måneder = pd.date_range(
         start=data_status.endretTidspunkt.min(), end=datetime.now(), freq="M"
     ).strftime("%Y-%m")
     inn = (
@@ -556,14 +567,14 @@ def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
         .endretTidspunkt.dt.strftime("%Y-%m")
         .value_counts()
         .sort_index()
-        .reindex(mnd, fill_value=0)
+        .reindex(alle_måneder, fill_value=0)
     )
     ut = (
         data_status[data_status.forrige_status == status]
         .endretTidspunkt.dt.strftime("%Y-%m")
         .value_counts()
         .sort_index()
-        .reindex(mnd, fill_value=0)
+        .reindex(alle_måneder, fill_value=0)
     )
 
     fig = go.Figure()
