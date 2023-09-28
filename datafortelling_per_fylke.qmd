@@ -361,9 +361,3 @@ begrunnelse_ikke_aktuell(
     begrunnelse_sortering,
 )
 ```
-
-
-## Antall saker per eier
-```{python}
-antall_saker_per_eier(data_status_fylke)
-```
