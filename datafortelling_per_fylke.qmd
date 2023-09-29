@@ -229,7 +229,7 @@ Antall saker som har leveranser registrert med IA-tjenester. Én sak kan ha leve
 antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
 ```
 
-# Per bransje
+# Per bransjeprogram
 Antall saker som har leveranser registrert med IA-tjenester. Én sak kan ha leveranser i flere tjenester.
 
 ::: {.panel-tabset}
