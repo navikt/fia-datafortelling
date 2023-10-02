@@ -223,7 +223,7 @@ andel_fullforte_saker_med_leveranse_per_måned(data_status_fylke, data_leveranse
 
 
 ::: {.panel-tabset}
-# Alle bransjer
+# Alle virksomheter
 Antall saker som har leveranser registrert med IA-tjenester. Én sak kan ha leveranser i flere tjenester.
 ```{python}
 antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
