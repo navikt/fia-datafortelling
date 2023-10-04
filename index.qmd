@@ -60,7 +60,6 @@ from code.plots import (
 )
 from code.plots_datakvalitet import saker_per_status_per_måned
 from code.tables import moduler_per_maaned
-from code.indicators import antall_saker_indicator
 from code.helper import (
     modul_sortering,
     ikke_aktuell_begrunnelse_sortering,
@@ -85,26 +84,6 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
 
-## Antall saker
-
-```{python}
-antall_saker_indicator(data_status)
-```
-
-::: {.callout-note}
-
-## Forklaring av begrepet "sak" i Fia
-
-En sak i Fia betyr at en virksomhet som er en del av IA-samarbeidet får en begrenset periode med evaluering og mulig hjelp.
-
-En aktiv sak i Fia er en sak som står i status Vurderes, Kontaktes, Kartlegges eller Vi bistår.
-
-En sak er ansett som Avsluttet når den har fått status Ikke aktuell eller Fullført.
-
-En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
-:::
-
-
 ## Statusflyt i Fia
 Grafen nedenfor viser antall statusendringer som er registrert i Fia siden starten 10.05.2022.
 Gjelder ikke slettede saker og angret statusendringer.
@@ -112,6 +91,7 @@ Gjelder ikke slettede saker og angret statusendringer.
 ```{python}
 statusflyt(data_status)
 ```
+{{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
 
 
