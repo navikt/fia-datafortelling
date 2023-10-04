@@ -300,6 +300,7 @@ else:
 
 
 #### Andel fullførte saker med leveranse registrert
+PS: Manglende verdier kan oppstå når det ikke er fullført noen saker den måneden.
 ```{python}
 andel_fullforte_saker_med_leveranse_per_måned(data_status_fylke, data_leveranse_fylke)
 ```
