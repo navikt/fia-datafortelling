@@ -105,7 +105,11 @@ def antall_saker_per_status(data_status):
         ]
     )
     fig.update_xaxes(visible=False)
-    fig.update_layout(plot_bgcolor="rgb(255,255,255)")
+    fig.update_layout(
+        width=850,
+        height=400,
+        plot_bgcolor="rgb(255,255,255)"
+    )
 
     return annotate_ikke_offisiell_statistikk(fig)
 
