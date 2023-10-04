@@ -539,7 +539,6 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         y=1,
         line_dash="dash",
         line_color=plotly_colors[1],
-        annotation_text=f"mål",
         annotation_position="top right",
         annotation_bgcolor=plotly_colors[1],
     )
