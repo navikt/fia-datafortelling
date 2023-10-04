@@ -166,12 +166,12 @@ def antall_leveranser_per_sak(data_status, data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_leveranser_per_tjeneste(data_leveranse):
+def antall_leveranser_per_tjeneste(data_leveranse, alle_iatjenester_og_status):
     leveranser_per_tjeneste = (
         data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
         .groupby(["iaTjenesteNavn", "status"])
         .saksnummer.nunique()
-        .sort_values(ascending=True)
+        .reindex(alle_iatjenester_og_status, fill_value=0)
         .reset_index()
     )
 
@@ -193,7 +193,7 @@ def antall_leveranser_per_tjeneste(data_leveranse):
 
     fig.update_layout(
         height=500,
-        width=850,
+        width=800,
         plot_bgcolor="rgb(255,255,255)",
         xaxis_showticklabels=False,
         xaxis_title="Antall saker",

@@ -66,7 +66,10 @@ from code.plots_datakvalitet import (
 )
 from code.tables import moduler_per_maaned
 from code.indicators import antall_saker_indicator
-from code.helper import ikke_aktuell_begrunnelse_sortering
+from code.helper import (
+    ikke_aktuell_begrunnelse_sortering,
+    iatjeneste_og_status_sortering,
+)
 from code.konstanter import (
     ikkeaktuell_hovedgrunn,
     gamle_ikkeaktuell_hovedgrunn,
@@ -217,11 +220,15 @@ leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
 
 
 #### Antall saker som har leveranser registrert med IA-tjenester
+```{python}
+alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_leveranse)
+```
+
 ::: {.panel-tabset}
 # Alle virksomheter
 PS: Én sak kan ha leveranser i flere tjenester.
 ```{python}
-antall_leveranser_per_tjeneste(data_siste_leveranse_fylke)
+antall_leveranser_per_tjeneste(data_siste_leveranse_fylke, alle_iatjenester_og_status)
 ```
 
 # Per bransjeprogram
@@ -236,7 +243,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_tjeneste(data).show()
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
 ```
 
 # Sykehjem
@@ -247,7 +254,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_tjeneste(data).show()
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
 ```
 
 # Sykehus
@@ -258,7 +265,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_tjeneste(data).show()
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
 ```
 
 # Næringsmiddelindustri
@@ -269,7 +276,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_tjeneste(data).show()
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
 ```
 
 # Bygg og anlegg
@@ -280,7 +287,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_tjeneste(data).show()
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
 ```
 
 # Transport
@@ -291,7 +298,7 @@ data = data_siste_leveranse_fylke[
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
 else:
-    antall_leveranser_per_tjeneste(data).show()
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
 ```
 :::
 :::

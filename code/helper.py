@@ -74,3 +74,13 @@ def alle_måneder_mellom_datoer(første_dato, siste_dato=datetime.now()):
     alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
     alle_måneder = alle_datoer.strftime("%Y-%m").drop_duplicates()
     return alle_måneder
+
+
+def iatjeneste_og_status_sortering(data_leveranse):
+    return (
+        data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
+        .groupby(["iaTjenesteNavn", "status"])
+        .saksnummer.count()
+        .sort_values(ascending=True)
+        .index
+    )
