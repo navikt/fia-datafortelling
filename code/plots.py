@@ -497,6 +497,7 @@ def hovedbegrunnelse_ikke_aktuell(ikke_aktuell):
 def leveranse_per_maaned(data_leveranse):
     data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
     alle_måneder = alle_måneder_mellom_datoer(data_leveranse.sistEndret.min())
+    antall_mnd = min(len(alle_måneder), 12)
 
     saker_per_måned = (
         data_leveranse[data_leveranse.status == "LEVERT"]
@@ -508,8 +509,8 @@ def leveranse_per_maaned(data_leveranse):
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=saker_per_måned.index,
-            y=saker_per_måned.values,
+            x=saker_per_måned.index[-antall_mnd:],
+            y=saker_per_måned.values[-antall_mnd:],
         )
     )
 
@@ -534,6 +535,7 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
     fig = go.Figure()
 
     alle_måneder = alle_måneder_mellom_datoer(data_leveranse.sistEndret.min())
+    antall_mnd = min(len(alle_måneder), 12)
 
     for tjeneste in saker_per_tjeneste_og_måned.iaTjenesteNavn.unique():
         filtrert = (
@@ -545,8 +547,8 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
         )
         fig.add_trace(
             go.Scatter(
-                x=filtrert.index,
-                y=filtrert.saksnummer,
+                x=filtrert.index[-antall_mnd:],
+                y=filtrert.saksnummer[-antall_mnd:],
                 name=tjeneste,
             )
         )

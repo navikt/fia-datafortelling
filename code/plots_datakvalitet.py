@@ -505,6 +505,7 @@ def fullført_per_måned(data_status):
 def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     første_dato = data_leveranse.sistEndret.min()
     alle_måneder = alle_måneder_mellom_datoer(første_dato)
+    antall_mnd = min(len(alle_måneder), 12)
 
     fullført_per_måned = (
         data_status[
@@ -531,8 +532,8 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=andel_fullført_med_leveranse.index,
-            y=100*andel_fullført_med_leveranse.values,
+            x=andel_fullført_med_leveranse.index[-antall_mnd:],
+            y=100*andel_fullført_med_leveranse.values[-antall_mnd:],
         )
     )
     fig.update_layout(
