@@ -525,24 +525,22 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     fig.add_trace(
         go.Scatter(
             x=andel_fullført_med_leveranse.index,
-            y=andel_fullført_med_leveranse.values,
+            y=100*andel_fullført_med_leveranse.values,
         )
     )
     fig.update_layout(
         height=500,
         width=850,
         xaxis_title="Fullført måned",
-        yaxis_title="Andel fullførte saker med leveranse",
+        yaxis_title="Andel fullførte saker med leveranse (%)",
     )
 
     fig.add_hline(
-        y=1,
+        y=100,
         line_dash="dash",
         line_color=plotly_colors[1],
-        annotation_position="top right",
-        annotation_bgcolor=plotly_colors[1],
     )
-    fig.update_yaxes(range=[0, 1.1])
+    fig.update_yaxes(range=[0, 110])
 
     return annotate_ikke_offisiell_statistikk(fig)
 
