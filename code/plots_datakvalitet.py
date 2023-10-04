@@ -535,6 +535,16 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
         yaxis_title="Andel fullførte saker med leveranse",
     )
 
+    fig.add_hline(
+        y=1,
+        line_dash="dash",
+        line_color=plotly_colors[1],
+        annotation_text=f"mål",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[1],
+    )
+    fig.update_yaxes(range=[0, 1.1])
+
     return annotate_ikke_offisiell_statistikk(fig)
 
 
