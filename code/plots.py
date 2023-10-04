@@ -558,12 +558,14 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
 
 def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
     alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
+    antall_mnd = min(len(alle_måneder), 12)
     inn = (
         data_status[data_status.status == status]
         .endretTidspunkt.dt.strftime("%Y-%m")
         .value_counts()
         .sort_index()
         .reindex(alle_måneder, fill_value=0)
+        [-antall_mnd:]
     )
     ut = (
         data_status[data_status.forrige_status == status]
@@ -571,6 +573,7 @@ def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
         .value_counts()
         .sort_index()
         .reindex(alle_måneder, fill_value=0)
+        [-antall_mnd:]
     )
 
     fig = go.Figure()
