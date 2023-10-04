@@ -99,7 +99,7 @@ statusflyt(data_status)
 ::: {.panel-tabset}
 # Nåsituasjon
 ```{python}
-antall_saker_per_status(data_status[~data_status.siste_status.isin(["SLETTET", "NY"])])
+antall_saker_per_status(data_status[data_status.aktiv_sak])
 ```
 
 # Historikk

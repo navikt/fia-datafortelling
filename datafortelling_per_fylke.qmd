@@ -113,7 +113,7 @@ ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.fylkesnummer == fylkesnr]
 ::: {.panel-tabset}
 # Nåsituasjon
 ```{python}
-antall_saker_per_status(data_status_fylke[~data_status_fylke.siste_status.isin(["SLETTET", "NY"])])
+antall_saker_per_status(data_status_fylke[data_status.aktiv_sak])
 ```
 
 # Historikk
