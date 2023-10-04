@@ -173,7 +173,7 @@ def antall_leveranser_per_tjeneste(data_leveranse, alle_iatjenester_og_status=No
             .saksnummer.nunique()
             .sort_values(ascending=True)
         )
-    if alle_iatjenester_og_status:
+    if alle_iatjenester_og_status is not None:
         leveranser_per_tjeneste = leveranser_per_tjeneste.reindex(alle_iatjenester_og_status, fill_value=0)
     
     leveranser_per_tjeneste = leveranser_per_tjeneste.reset_index()
