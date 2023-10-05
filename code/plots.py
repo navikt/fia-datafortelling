@@ -461,7 +461,6 @@ def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
         xaxis_title="Andel og antall saker med status ikke aktuell",
         xaxis_title_standoff=80,
         yaxis_autorange="reversed",
-        xaxis_range=[0, 60],
     )
 
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
