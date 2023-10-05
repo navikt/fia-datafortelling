@@ -55,7 +55,6 @@ from code.plots import (
     virksomhetsprofil,
     statusflyt,
     begrunnelse_ikke_aktuell,
-    hovedbegrunnelse_ikke_aktuell,
     leveranse_tjeneste_per_maaned,
     gjennomstrømmingstall,
 )
@@ -290,11 +289,6 @@ begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
 
 ## Fra alle mulige statuser
 ```{python}
-hovedbegrunnelse_ikke_aktuell(ikke_aktuell)
-```
-
-Detaljert begrunnelse
-```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
     begrunnelse_sortering,
@@ -302,11 +296,6 @@ begrunnelse_ikke_aktuell(
 ```
 
 ## Fra Vurderes
-```{python}
-hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "VURDERES"])
-```
-
-Detaljert begrunnelse
 ```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[
@@ -319,11 +308,6 @@ begrunnelse_ikke_aktuell(
 
 ## Fra Kontaktes
 ```{python}
-hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "KONTAKTES"])
-```
-
-Detaljert begrunnelse
-```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[
         ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
@@ -335,11 +319,6 @@ begrunnelse_ikke_aktuell(
 
 ## Fra Kartlegges
 ```{python}
-hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "KARTLEGGES"])
-```
-
-Detaljert begrunnelse
-```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[
         ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
@@ -350,11 +329,6 @@ begrunnelse_ikke_aktuell(
 ```
 
 ## Fra Vi bistår
-```{python}
-hovedbegrunnelse_ikke_aktuell(ikke_aktuell[ikke_aktuell.forrige_status == "VI_BISTÅR"])
-```
-
-Detaljert begrunnelse
 ```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell[

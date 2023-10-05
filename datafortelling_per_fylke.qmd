@@ -55,7 +55,6 @@ from code.plots import (
     virksomhetsprofil,
     statusflyt,
     begrunnelse_ikke_aktuell,
-    hovedbegrunnelse_ikke_aktuell,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
     gjennomstrømmingstall,
@@ -348,14 +347,6 @@ og derfor kan andelssummen være større enn 100%.
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
-```
-
-```{python}
-hovedbegrunnelse_ikke_aktuell(ikke_aktuell_fylke)
-```
-
-Detaljert begrunnelse
-```{python}
 begrunnelse_ikke_aktuell(
     ikke_aktuell_fylke[ikke_aktuell_fylke.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
     begrunnelse_sortering,

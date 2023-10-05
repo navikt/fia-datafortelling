@@ -421,6 +421,41 @@ def statusflyt(data_status):
 
 
 def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
+    fig = make_subplots(
+        rows=1,
+        cols=2,
+        specs=[[{"type": "domain", "r": 0.1}, {}]],
+        subplot_titles=("Hovedgrunn", "Detaljert begrunnelse"),
+        column_widths=[0.4, 0.6],
+    )
+    fig.update_layout(
+        height=450,
+        width=850,
+        showlegend=False,
+    )
+
+    # Hovedgrunn
+
+    ikke_aktuell["hovedgrunn"] = ikke_aktuell.ikkeAktuelBegrunnelse.map(
+        ikkeaktuell_hovedgrunn | gamle_ikkeaktuell_hovedgrunn
+    )
+    antall_hovedgrunn = ikke_aktuell.hovedgrunn.value_counts().sort_values(
+        ascending=True
+    )
+    fig.add_trace(
+        go.Pie(
+            labels=antall_hovedgrunn.index,
+            values=antall_hovedgrunn.values,
+            textinfo="label+percent",
+            hole=0.4,
+            marker_colors=plotly_colors,
+        ),
+        row=1,
+        col=1,
+    )
+
+    # Detaljert begrunnelse
+
     antall_saker_ikke_aktuell = ikke_aktuell.drop_duplicates(
         "saksnummer", keep="last"
     ).shape[0]
@@ -439,8 +474,6 @@ def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
         x * 100 / antall_saker_ikke_aktuell
         for x in ikke_aktuell_per_begrunnelse.saksnummer
     ]
-
-    fig = go.Figure()
     fig.add_trace(
         go.Bar(
             y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar,
@@ -451,44 +484,27 @@ def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
             ],
             marker_color=plotly_colors,
             orientation="h",
+        ),
+        row=1,
+        col=2,
+    )
+    for idx, begrunnelse in enumerate(
+        ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar
+    ):
+        fig.add_annotation(
+            x=0,
+            y=idx - 0.5,
+            text=begrunnelse,
+            xanchor="left",
+            showarrow=False,
+            row=1,
+            col=2,
         )
-    )
-    fig.update_layout(
-        height=500,
-        width=800,
-        plot_bgcolor="rgb(255,255,255)",
-        xaxis_showticklabels=False,
-        xaxis_title="Andel og antall saker med status ikke aktuell",
-        xaxis_title_standoff=80,
-        yaxis_autorange="reversed",
-    )
+    fig.update_layout(plot_bgcolor="rgb(255,255,255)")
+    fig.update_xaxes(showticklabels=False, row=1, col=2)
+    fig.update_yaxes(autorange="reversed", visible=False, row=1, col=2)
 
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
-
-
-def hovedbegrunnelse_ikke_aktuell(ikke_aktuell):
-    ikke_aktuell["hovedgrunn"] = ikke_aktuell.ikkeAktuelBegrunnelse.map(
-        ikkeaktuell_hovedgrunn | gamle_ikkeaktuell_hovedgrunn
-    )
-    antall_hovedgrunn = ikke_aktuell.hovedgrunn.value_counts().sort_values(
-        ascending=True
-    )
-
-    fig = go.Figure()
-    fig.add_trace(
-        go.Pie(
-            labels=antall_hovedgrunn.index,
-            values=antall_hovedgrunn.values,
-            hole=0.5,
-            marker_colors=plotly_colors,
-        )
-    )
-    fig.update_layout(
-        height=400,
-        width=850,
-    )
-
-    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def leveranse_per_maaned(data_leveranse):
