@@ -43,6 +43,7 @@ from code.datahandler import (
     preprocess_data_leveranse,
     kollaps_leveranse_historikk,
     explode_ikke_aktuell_begrunnelse,
+    get_data_siste_x_dager,
 )
 from code.plots import (
     aktive_saker_per_fylke,
@@ -117,6 +118,7 @@ antall_saker_per_status(data_status_fylke[data_status.aktiv_sak])
 ```
 
 # Historikk
+Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år.
 ```{python}
 saker_per_status_per_måned(data_status_fylke)
 ```
@@ -318,16 +320,20 @@ virksomhetsprofil(data_input)
 ```
 
 ## Ikke aktuell
-Saker med nåværende status "Ikke aktuell".\
+Saker som ble satt til "Ikke aktuell" i det siste 365 dagene.\
+
 ```{python}
 data_input = data_status_fylke[data_status_fylke.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
+data_input = get_data_siste_x_dager(data_input)
 virksomhetsprofil(data_input)
 ```
 
 ## Fullført
-Saker med nåværende status "Fullført".\
+Saker som ble satt til "Fullført" i det siste 365 dagene.\
+
 ```{python}
 data_input = data_status_fylke[data_status_fylke.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
+data_input = get_data_siste_x_dager(data_input)
 virksomhetsprofil(data_input)
 ```
 

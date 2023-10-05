@@ -1,27 +1,24 @@
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timedelta
 
 
 from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
 from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
+from code.datahandler import get_data_siste_x_dager
 
 
 def saker_per_status_per_måned(data_status):
-    one_year_ago = datetime.now() - timedelta(days=365)
-    filter_avsluttet_one_year_ago = data_status[
-        data_status.avsluttetTidspunkt<one_year_ago
-    ].saksnummer.unique()
-    data_status_filtert = data_status[~data_status.saksnummer.isin(filter_avsluttet_one_year_ago)]
+    data_status = get_data_siste_x_dager(data_status, antall_dager=365)
 
     alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
     statuser = [status for status in statusordre if status != "NY"]
 
     status_per_måned = dict(zip(statuser, [[0]] * len(statuser)))
     for måned in alle_måneder:
-        data_måned = data_status_filtert[
-            data_status_filtert.endretTidspunkt.dt.strftime("%Y-%m") == måned
+        data_måned = data_status[
+            data_status.endretTidspunkt.dt.strftime("%Y-%m") == måned
         ]
         for status in statuser:
             sist_count = status_per_måned[status][-1]
@@ -38,7 +35,7 @@ def saker_per_status_per_måned(data_status):
         fig.add_trace(
             go.Scatter(
                 x=alle_måneder[-antall_mnd:],
-                y=status_per_måned[status][-antall_mnd-1:-1],
+                y=status_per_måned[status][-antall_mnd - 1 : -1],
                 name=status.capitalize().replace("_", " "),
             )
         )

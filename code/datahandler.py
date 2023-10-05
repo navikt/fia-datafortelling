@@ -1,7 +1,7 @@
 from google.cloud.bigquery import Client
 import json
 import pandas as pd
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 
 from code.konstanter import fylker, intervall_sortering
 
@@ -290,3 +290,11 @@ def explode_ikke_aktuell_begrunnelse(data_status):
     )
 
     return ikke_aktuell
+
+
+def get_data_siste_x_dager(data_status, antall_dager=365):
+    some_time_ago = datetime.now() - timedelta(days=antall_dager)
+    avsluttet_some_time_ago = data_status[
+        data_status.avsluttetTidspunkt < some_time_ago
+    ].saksnummer.unique()
+    return data_status[~data_status.saksnummer.isin(avsluttet_some_time_ago)]
