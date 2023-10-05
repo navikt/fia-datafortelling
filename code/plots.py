@@ -105,11 +105,7 @@ def antall_saker_per_status(data_status):
         ]
     )
     fig.update_xaxes(visible=False)
-    fig.update_layout(
-        width=850,
-        height=400,
-        plot_bgcolor="rgb(255,255,255)"
-    )
+    fig.update_layout(width=850, height=400, plot_bgcolor="rgb(255,255,255)")
 
     return annotate_ikke_offisiell_statistikk(fig)
 
@@ -172,14 +168,16 @@ def antall_leveranser_per_sak(data_status, data_leveranse):
 
 def antall_leveranser_per_tjeneste(data_leveranse, alle_iatjenester_og_status=None):
     leveranser_per_tjeneste = (
-            data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
-            .groupby(["iaTjenesteNavn", "status"])
-            .saksnummer.nunique()
-            .sort_values(ascending=True)
-        )
+        data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
+        .groupby(["iaTjenesteNavn", "status"])
+        .saksnummer.nunique()
+        .sort_values(ascending=True)
+    )
     if alle_iatjenester_og_status is not None:
-        leveranser_per_tjeneste = leveranser_per_tjeneste.reindex(alle_iatjenester_og_status, fill_value=0)
-    
+        leveranser_per_tjeneste = leveranser_per_tjeneste.reindex(
+            alle_iatjenester_og_status, fill_value=0
+        )
+
     leveranser_per_tjeneste = leveranser_per_tjeneste.reset_index()
 
     fig = go.Figure()
@@ -570,16 +568,14 @@ def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
         .endretTidspunkt.dt.strftime("%Y-%m")
         .value_counts()
         .sort_index()
-        .reindex(alle_måneder, fill_value=0)
-        [-antall_mnd:]
+        .reindex(alle_måneder, fill_value=0)[-antall_mnd:]
     )
     ut = (
         data_status[data_status.forrige_status == status]
         .endretTidspunkt.dt.strftime("%Y-%m")
         .value_counts()
         .sort_index()
-        .reindex(alle_måneder, fill_value=0)
-        [-antall_mnd:]
+        .reindex(alle_måneder, fill_value=0)[-antall_mnd:]
     )
 
     fig = go.Figure()

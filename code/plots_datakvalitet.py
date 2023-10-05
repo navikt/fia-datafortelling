@@ -530,7 +530,7 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     fig.add_trace(
         go.Scatter(
             x=andel_fullført_med_leveranse.index[-antall_mnd:],
-            y=100*andel_fullført_med_leveranse.values[-antall_mnd:],
+            y=100 * andel_fullført_med_leveranse.values[-antall_mnd:],
         )
     )
     fig.update_layout(
