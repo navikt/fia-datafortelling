@@ -493,14 +493,14 @@ def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
     ):
         fig.add_annotation(
             x=0,
-            y=idx - 0.5,
+            y=idx - 0.4,
             text=begrunnelse,
             xanchor="left",
             showarrow=False,
             row=1,
             col=2,
         )
-    fig.update_layout(plot_bgcolor="rgb(255,255,255)")
+    fig.update_layout(plot_bgcolor="rgb(255,255,255)", bargap=0.4)
     fig.update_xaxes(showticklabels=False, row=1, col=2)
     fig.update_yaxes(autorange="reversed", visible=False, row=1, col=2)
 
