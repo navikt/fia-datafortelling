@@ -60,27 +60,20 @@ def preprocess_data_statistikk(data_statistikk):
     ] = (data_statistikk.hoved_nering.str[:47] + "...")
 
     # Gruppering av virksomheter per antall ansatte
+    col_name = "antallPersoner_gruppe"
+    data_statistikk.loc[data_statistikk.antallPersoner == 0, col_name] = "0"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(1, 4), col_name] = "1-4"
     data_statistikk.loc[
-        data_statistikk.antallPersoner == 0, "antallPersoner_gruppe"
-    ] = "0"
-    data_statistikk.loc[
-        data_statistikk.antallPersoner.between(1, 4), "antallPersoner_gruppe"
-    ] = "1-4"
-    data_statistikk.loc[
-        data_statistikk.antallPersoner.between(5, 19), "antallPersoner_gruppe"
+        data_statistikk.antallPersoner.between(5, 19), col_name
     ] = "5-19"
     data_statistikk.loc[
-        data_statistikk.antallPersoner.between(20, 49), "antallPersoner_gruppe"
+        data_statistikk.antallPersoner.between(20, 49), col_name
     ] = "20-49"
     data_statistikk.loc[
-        data_statistikk.antallPersoner.between(50, 99), "antallPersoner_gruppe"
+        data_statistikk.antallPersoner.between(50, 99), col_name
     ] = "50-99"
-    data_statistikk.loc[
-        data_statistikk.antallPersoner >= 100, "antallPersoner_gruppe"
-    ] = "100+"
-    data_statistikk.loc[
-        data_statistikk.antallPersoner.isna(), "antallPersoner_gruppe"
-    ] = "Ukjent"
+    data_statistikk.loc[data_statistikk.antallPersoner >= 100, col_name] = "100+"
+    data_statistikk.loc[data_statistikk.antallPersoner.isna(), col_name] = "Ukjent"
 
     return data_statistikk
 
@@ -240,36 +233,23 @@ def beregn_intervall_tid_siden_siste_endring(data_status):
     seconds = data_status.tid_siden_siste_endring.dt.seconds
     days = data_status.tid_siden_siste_endring.dt.days
 
+    col_name = "intervall_tid_siden_siste_endring"
+    data_status.loc[seconds < 60, col_name] = intervall_sortering[0]
+    data_status.loc[seconds.between(60, 60 * 10), col_name] = intervall_sortering[1]
+    data_status.loc[seconds.between(60 * 10, 60 * 60), col_name] = intervall_sortering[
+        2
+    ]
     data_status.loc[
-        seconds < 60, "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[0]
-    data_status.loc[
-        seconds.between(60, 60 * 10), "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[1]
-    data_status.loc[
-        seconds.between(60 * 10, 60 * 60), "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[2]
-    data_status.loc[
-        seconds.between(60 * 60, 60 * 60 * 8), "intervall_tid_siden_siste_endring"
+        seconds.between(60 * 60, 60 * 60 * 8), col_name
     ] = intervall_sortering[3]
     data_status.loc[
-        seconds.between(60 * 60 * 8, 60 * 60 * 24), "intervall_tid_siden_siste_endring"
+        seconds.between(60 * 60 * 8, 60 * 60 * 24), col_name
     ] = intervall_sortering[4]
-    data_status.loc[
-        days.between(1, 10), "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[5]
-    data_status.loc[
-        days.between(10, 30), "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[6]
-    data_status.loc[
-        days.between(30, 100), "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[7]
-    data_status.loc[
-        days.between(100, 365), "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[8]
-    data_status.loc[
-        days >= 365, "intervall_tid_siden_siste_endring"
-    ] = intervall_sortering[9]
+    data_status.loc[days.between(1, 10), col_name] = intervall_sortering[5]
+    data_status.loc[days.between(10, 30), col_name] = intervall_sortering[6]
+    data_status.loc[days.between(30, 100), col_name] = intervall_sortering[7]
+    data_status.loc[days.between(100, 365), col_name] = intervall_sortering[8]
+    data_status.loc[days >= 365, col_name] = intervall_sortering[9]
 
     return data_status
 
