@@ -32,6 +32,9 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 </span>
 
 ```{python}
+%load_ext autoreload
+%autoreload 2
+
 import os
 
 from code.datahandler import (
