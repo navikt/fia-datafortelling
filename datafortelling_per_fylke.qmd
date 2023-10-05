@@ -320,7 +320,7 @@ virksomhetsprofil(data_input)
 ```
 
 ## Ikke aktuell
-Saker som ble satt til "Ikke aktuell" i det siste 365 dagene.\
+Saker som ble satt til "Ikke aktuell" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status_fylke[data_status_fylke.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
@@ -329,7 +329,7 @@ virksomhetsprofil(data_input)
 ```
 
 ## Fullført
-Saker som ble satt til "Fullført" i det siste 365 dagene.\
+Saker som ble satt til "Fullført" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status_fylke[data_status_fylke.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
