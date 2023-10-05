@@ -555,8 +555,10 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
         width=850,
         xaxis_title="Fullført måned",
         yaxis_title="Antall fullførte leveranser",
+        legend_orientation="h",
+        legend_y=1.1,
     )
-    return annotate_ikke_offisiell_statistikk(fig)
+    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
 def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
