@@ -15,11 +15,13 @@ Som en god praksis, opprett et virtuelt pythonmiljø i root til prosjektet:\
 `python3.11 -m venv env`\
 `source env/bin/activate`
 
-Installer requirements `pip3 install -r requirements.txt`.
+Installer requirements med `pip3 install -r requirements.txt`.
 
-Installer [black](https://pypi.org/project/black/), en python-kode formatter, med `pip install black`.
+### Git pre-commit hooks
 
-(noe mer?)
+Installer pre-commit pakke med `pip3 install pre-commit`.
+
+Installer git hook-skriptene med `pre-commit install`.
 
 ### Lokal utvikling
 
@@ -29,7 +31,7 @@ Kjør opp quarto i preview mode med følgende kommando:
 
 `export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto preview <datafortelling>.qmd`
 
-hvor datafortelling feks kan være `main`.
+hvor datafortelling feks kan være `index`.
 
 ### Bygg docker image på M1:
 
