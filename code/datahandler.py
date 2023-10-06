@@ -272,7 +272,12 @@ def explode_ikke_aktuell_begrunnelse(data_status):
     return ikke_aktuell
 
 
-def get_data_siste_x_dager(data, variabel, antall_dager=365):
+def filtrer_bort_saker_på_avsluttet_tidspunkt(data, antall_dager=365):
+    """
+    Filtrerer bort saker avsluttet for over "x" antall dager siden
+    """
     dato_some_time_ago = datetime.now() - timedelta(days=antall_dager)
-    saker_some_time_ago = data[data[variabel] < dato_some_time_ago].saksnummer.unique()
+    saker_some_time_ago = data[
+        data.avsluttetTidspunkt < dato_some_time_ago
+    ].saksnummer.unique()
     return data[~data.saksnummer.isin(saker_some_time_ago)]

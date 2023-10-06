@@ -47,7 +47,7 @@ from code.datahandler import (
     preprocess_data_leveranse,
     kollaps_leveranse_historikk,
     explode_ikke_aktuell_begrunnelse,
-    get_data_siste_x_dager,
+    filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
 from code.plots import (
     aktive_saker_per_fylke,
@@ -94,7 +94,7 @@ Vi filtrerer bort saker som ble satt til “Fullført” eller “Ikke aktuell�
 Gjelder ikke slettede saker og angret statusendringer.
 
 ```{python}
-data_input = get_data_siste_x_dager(data_status, "avsluttetTidspunkt")
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 statusflyt(data_input)
 ```
 {{< include includes/sak-forklaring.qmd >}}
@@ -182,33 +182,39 @@ Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjene
 En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
 Slettet leveranser vises ikke i grafene under.
 
+```{python}
+# Filtrerer bort saker avsluttet for over ett år siden
+data_status_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
+data_siste_leveranse_siste_år = data_siste_leveranse[data_siste_leveranse.saksnummer.isin(data_status_siste_år.saksnummer.unique())]
+```
+
 ::: {.panel-tabset}
 
 ## Per tjeneste
 ```{python}
-antall_leveranser_per_tjeneste(data_siste_leveranse)
+antall_leveranser_per_tjeneste(data_siste_leveranse_siste_år)
 ```
 
 ## Per modul
 ```{python}
-modul_sortering = modul_sortering(data_siste_leveranse)
+modul_sortering = modul_sortering(data_siste_leveranse_siste_år)
 ```
 ::: {.panel-tabset}
 ## Levert
 ```{python}
 antall_leveranser_per_modul(
-    data_siste_leveranse[data_siste_leveranse.status=="LEVERT"], modul_sortering
+    data_siste_leveranse_siste_år[data_siste_leveranse_siste_år.status=="LEVERT"], modul_sortering
 )
 ```
 ## Under arbeid
 ```{python}
 antall_leveranser_per_modul(
-    data_siste_leveranse[data_siste_leveranse.status == "UNDER_ARBEID"], modul_sortering
+    data_siste_leveranse_siste_år[data_siste_leveranse_siste_år.status == "UNDER_ARBEID"], modul_sortering
 )
 ```
 ## Levert og under arbeid
 ```{python}
-antall_leveranser_per_modul(data_siste_leveranse, modul_sortering)
+antall_leveranser_per_modul(data_siste_leveranse_siste_år, modul_sortering)
 ```
 :::
 
@@ -223,13 +229,13 @@ antall_leveranser_per_sak(data_status, data_siste_leveranse)
 ## Per måned
 PS: En sak kan ha flere leveranser.
 ```{python}
-leveranse_tjeneste_per_maaned(data_siste_leveranse)
+leveranse_tjeneste_per_maaned(data_siste_leveranse_siste_år)
 ```
 
 ## Detaljer
 Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
 ```{python}
-moduler_per_maaned(data_siste_leveranse)
+moduler_per_maaned(data_siste_leveranse_siste_år)
 ```
 
 :::
@@ -265,7 +271,7 @@ Saker som ble satt til "Ikke aktuell" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status[data_status.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
-data_input = get_data_siste_x_dager(data_input, "avsluttetTidspunkt")
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
 virksomhetsprofil(data_input)
 ```
 
@@ -274,7 +280,7 @@ Saker som ble satt til "Fullført" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status[data_status.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
-data_input = get_data_siste_x_dager(data_input, "avsluttetTidspunkt")
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
 virksomhetsprofil(data_input)
 ```
 
@@ -296,57 +302,52 @@ bare_dagens_begrunnelser = ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_h
 
 ## Fra alle mulige statuser
 ```{python}
-data_input = get_data_siste_x_dager(
-    ikke_aktuell[bare_dagens_begrunnelser],
-    "avsluttetTidspunkt",
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
+    ikke_aktuell[bare_dagens_begrunnelser]
 )
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Vurderes
 ```{python}
-data_input = get_data_siste_x_dager(
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
     ikke_aktuell[
         bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "VURDERES")
-    ],
-    "avsluttetTidspunkt",
+    ]
 )
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Kontaktes
 ```{python}
-data_input = get_data_siste_x_dager(
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
     ikke_aktuell[
         bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "KONTAKTES")
-    ],
-    "avsluttetTidspunkt",
+    ]
 )
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Kartlegges
 ```{python}
-data_input = get_data_siste_x_dager(
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
     ikke_aktuell[
         bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "KARTLEGGES")
-    ],
-    "avsluttetTidspunkt",
+    ]
 )
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Vi bistår
 ```{python}
-data_input = get_data_siste_x_dager(
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
     ikke_aktuell[
         bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "VI_BISTÅR")
-    ],
-    "avsluttetTidspunkt",
+    ]
 )
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```

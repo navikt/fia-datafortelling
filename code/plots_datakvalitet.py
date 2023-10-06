@@ -6,12 +6,12 @@ from datetime import datetime, timedelta
 
 from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
 from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
-from code.datahandler import get_data_siste_x_dager
+from code.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
 
 
 def saker_per_status_per_måned(data_status):
-    data_status = get_data_siste_x_dager(
-        data_status, "avsluttetTidspunkt", antall_dager=365
+    data_status = filtrer_bort_saker_på_avsluttet_tidspunkt(
+        data_status, antall_dager=365
     )
 
     alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())

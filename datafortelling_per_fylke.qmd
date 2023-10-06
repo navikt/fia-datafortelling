@@ -47,7 +47,7 @@ from code.datahandler import (
     preprocess_data_leveranse,
     kollaps_leveranse_historikk,
     explode_ikke_aktuell_begrunnelse,
-    get_data_siste_x_dager,
+    filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
 from code.plots import (
     aktive_saker_per_fylke,
@@ -207,14 +207,20 @@ leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
 
 #### Antall saker som har leveranser registrert med IA-tjenester
 ```{python}
-alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_leveranse)
+# Filtrerer bort saker avsluttet for over ett år siden
+data_status_fylke_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status_fylke)
+data_siste_leveranse_fylke_siste_år = data_siste_leveranse_fylke[
+    data_siste_leveranse_fylke.saksnummer.isin(data_status_fylke_siste_år.saksnummer.unique())
+]
+
+alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_siste_leveranse)
 ```
 
 ::: {.panel-tabset}
 # Alle virksomheter
 PS: Én sak kan ha leveranser i flere tjenester.
 ```{python}
-antall_leveranser_per_tjeneste(data_siste_leveranse_fylke, alle_iatjenester_og_status)
+antall_leveranser_per_tjeneste(data_siste_leveranse_fylke_siste_år, alle_iatjenester_og_status)
 ```
 
 # Per bransjeprogram
@@ -223,8 +229,8 @@ PS: Én sak kan ha leveranser i flere tjenester.
 ::: {.panel-tabset}
 # Barnehager
 ```{python}
-data = data_siste_leveranse_fylke[
-    data_siste_leveranse_fylke.bransjeprogram=="BARNEHAGER"
+data = data_siste_leveranse_fylke_siste_år[
+    data_siste_leveranse_fylke_siste_år.bransjeprogram=="BARNEHAGER"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -234,8 +240,8 @@ else:
 
 # Sykehjem
 ```{python}
-data = data_siste_leveranse_fylke[
-    data_siste_leveranse_fylke.bransjeprogram=="SYKEHJEM"
+data = data_siste_leveranse_fylke_siste_år[
+    data_siste_leveranse_fylke_siste_år.bransjeprogram=="SYKEHJEM"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -245,8 +251,8 @@ else:
 
 # Sykehus
 ```{python}
-data = data_siste_leveranse_fylke[
-    data_siste_leveranse_fylke.bransjeprogram=="SYKEHUS"
+data = data_siste_leveranse_fylke_siste_år[
+    data_siste_leveranse_fylke_siste_år.bransjeprogram=="SYKEHUS"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -256,8 +262,8 @@ else:
 
 # Næringsmiddelindustri
 ```{python}
-data = data_siste_leveranse_fylke[
-    data_siste_leveranse_fylke.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
+data = data_siste_leveranse_fylke_siste_år[
+    data_siste_leveranse_fylke_siste_år.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -267,8 +273,8 @@ else:
 
 # Bygg og anlegg
 ```{python}
-data = data_siste_leveranse_fylke[
-    data_siste_leveranse_fylke.bransjeprogram.isin(["BYGG", "ANLEGG"])
+data = data_siste_leveranse_fylke_siste_år[
+    data_siste_leveranse_fylke_siste_år.bransjeprogram.isin(["BYGG", "ANLEGG"])
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -278,8 +284,8 @@ else:
 
 # Transport
 ```{python}
-data = data_siste_leveranse_fylke[
-    data_siste_leveranse_fylke.bransjeprogram=="TRANSPORT"
+data = data_siste_leveranse_fylke_siste_år[
+    data_siste_leveranse_fylke_siste_år.bransjeprogram=="TRANSPORT"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -327,7 +333,7 @@ Saker som ble satt til "Ikke aktuell" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status_fylke[data_status_fylke.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
-data_input = get_data_siste_x_dager(data_input, "avsluttetTidspunkt")
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
 virksomhetsprofil(data_input)
 ```
 
@@ -336,7 +342,7 @@ Saker som ble satt til "Fullført" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status_fylke[data_status_fylke.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
-data_input = get_data_siste_x_dager(data_input, "avsluttetTidspunkt")
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
 virksomhetsprofil(data_input)
 ```
 
@@ -351,9 +357,8 @@ og derfor kan andelssummen være større enn 100%.
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
-data_input = get_data_siste_x_dager(
-    ikke_aktuell_fylke[ikke_aktuell_fylke.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
-    "avsluttetTidspunkt",
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
+    ikke_aktuell_fylke[ikke_aktuell_fylke.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())]
 )
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
