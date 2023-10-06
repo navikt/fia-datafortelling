@@ -268,7 +268,7 @@ def virksomhetsprofil(data_input):
         "Sektor",
         "Bransjeprogram",
         "",
-        "Hovednæring",
+        "Top 10 hovednæringer",
     )
 
     fig = make_subplots(
