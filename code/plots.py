@@ -417,7 +417,7 @@ def statusflyt(data_status):
             ),
         )
     )
-    return annotate_ikke_offisiell_statistikk(fig)
+    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
 def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
