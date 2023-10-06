@@ -263,7 +263,7 @@ Saker som ble satt til "Ikke aktuell" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status[data_status.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
-data_input = get_data_siste_x_dager(data_input)
+data_input = get_data_siste_x_dager(data_input, "avsluttetTidspunkt")
 virksomhetsprofil(data_input)
 ```
 
@@ -272,7 +272,7 @@ Saker som ble satt til "Fullført" i de siste 365 dagene.\
 
 ```{python}
 data_input = data_status[data_status.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
-data_input = get_data_siste_x_dager(data_input)
+data_input = get_data_siste_x_dager(data_input, "avsluttetTidspunkt")
 virksomhetsprofil(data_input)
 ```
 

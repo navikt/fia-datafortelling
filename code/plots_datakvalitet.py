@@ -10,7 +10,9 @@ from code.datahandler import get_data_siste_x_dager
 
 
 def saker_per_status_per_måned(data_status):
-    data_status = get_data_siste_x_dager(data_status, antall_dager=365)
+    data_status = get_data_siste_x_dager(
+        data_status, "avsluttetTidspunkt", antall_dager=365
+    )
 
     alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
     statuser = [status for status in statusordre if status != "NY"]
