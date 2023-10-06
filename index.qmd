@@ -287,60 +287,66 @@ og derfor kan andelssummen være større enn 100%.
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
+bare_dagens_begrunnelser = ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())
 ```
 
 ::: {.panel-tabset}
 
 ## Fra alle mulige statuser
 ```{python}
-begrunnelse_ikke_aktuell(
-    ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
-    begrunnelse_sortering,
+data_input = get_data_siste_x_dager(
+    ikke_aktuell[bare_dagens_begrunnelser],
+    "avsluttetTidspunkt",
 )
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Vurderes
 ```{python}
-begrunnelse_ikke_aktuell(
+data_input = get_data_siste_x_dager(
     ikke_aktuell[
-        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "VURDERES")
     ],
-    begrunnelse_sortering,
+    "avsluttetTidspunkt",
 )
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Kontaktes
 ```{python}
-begrunnelse_ikke_aktuell(
+data_input = get_data_siste_x_dager(
     ikke_aktuell[
-        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "KONTAKTES")
     ],
-    begrunnelse_sortering,
+    "avsluttetTidspunkt",
 )
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Kartlegges
 ```{python}
-begrunnelse_ikke_aktuell(
+data_input = get_data_siste_x_dager(
     ikke_aktuell[
-        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "KARTLEGGES")
     ],
-    begrunnelse_sortering,
+    "avsluttetTidspunkt",
 )
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 ## Fra Vi bistår
 ```{python}
-begrunnelse_ikke_aktuell(
+data_input = get_data_siste_x_dager(
     ikke_aktuell[
-        ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys()) &
+        bare_dagens_begrunnelser &
         (ikke_aktuell.forrige_status == "VI_BISTÅR")
     ],
-    begrunnelse_sortering,
+    "avsluttetTidspunkt",
 )
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 :::

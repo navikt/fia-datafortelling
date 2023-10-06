@@ -351,8 +351,9 @@ og derfor kan andelssummen være større enn 100%.
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
-begrunnelse_ikke_aktuell(
+data_input = get_data_siste_x_dager(
     ikke_aktuell_fylke[ikke_aktuell_fylke.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())],
-    begrunnelse_sortering,
+    "avsluttetTidspunkt",
 )
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
