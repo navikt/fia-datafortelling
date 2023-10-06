@@ -121,7 +121,7 @@ antall_saker_per_status(data_status_fylke[data_status.aktiv_sak])
 ```
 
 # Historikk
-Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år.
+Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år siden.
 ```{python}
 saker_per_status_per_måned(data_status_fylke)
 ```

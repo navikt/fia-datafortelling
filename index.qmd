@@ -90,7 +90,7 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
 ## Statusflyt i Fia
 Grafen nedenfor viser antall statusendringer som er registrert i Fia.
-Vi filtrerer bort saker som ble satt til “Fullført” eller “Ikke aktuell” for over ett år.
+Vi filtrerer bort saker som ble satt til “Fullført” eller “Ikke aktuell” for over ett år siden.
 Gjelder ikke slettede saker og angret statusendringer.
 
 ```{python}
@@ -109,7 +109,7 @@ antall_saker_per_status(data_status[data_status.aktiv_sak])
 ```
 
 # Historikk
-Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år.
+Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år siden.
 ```{python}
 saker_per_status_per_måned(data_status)
 ```
