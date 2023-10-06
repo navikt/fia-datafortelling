@@ -53,7 +53,6 @@ from code.plots import (
     aktive_saker_per_fylke,
     dager_siden_siste_oppdatering,
     antall_saker_per_status,
-    antall_leveranser_per_sak,
     antall_leveranser_per_tjeneste,
     antall_leveranser_per_modul,
     virksomhetsprofil,
@@ -217,14 +216,6 @@ antall_leveranser_per_modul(
 antall_leveranser_per_modul(data_siste_leveranse_siste_år, modul_sortering)
 ```
 :::
-
-## Per sak
-Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
-Her gjelder alle saker som har leveranser registert eller kunne ha hatt det, i.e., saker fullført etter det ble mulig å registrere leveranser (mars 2023), og saker i bistand nå.
-
-```{python}
-antall_leveranser_per_sak(data_status, data_siste_leveranse)
-```
 
 ## Per måned
 PS: En sak kan ha flere leveranser.
