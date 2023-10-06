@@ -89,11 +89,13 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
 
 ## Statusflyt i Fia
-Grafen nedenfor viser antall statusendringer som er registrert i Fia siden starten 10.05.2022.
+Grafen nedenfor viser antall statusendringer som er registrert i Fia.
+Vi filtrerer bort saker som ble satt til “Fullført” eller “Ikke aktuell” for over ett år.
 Gjelder ikke slettede saker og angret statusendringer.
 
 ```{python}
-statusflyt(data_status)
+data_input = get_data_siste_x_dager(data_status, "avsluttetTidspunkt")
+statusflyt(data_input)
 ```
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
