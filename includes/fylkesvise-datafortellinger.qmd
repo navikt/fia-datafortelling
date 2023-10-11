@@ -1,0 +1,28 @@
+::: {.callout-note collapse="true"}
+## Fylkesvise datafortellinger
+
+* [Oslo](datafortelling_per_fylke_Oslo.html)
+
+* [Rogaland](datafortelling_per_fylke_Rogaland.html)
+
+* [Møre og Romsdal](datafortelling_per_fylke_Møre_og_Romsdal.html)
+
+* [Nordland](datafortelling_per_fylke_Nordland.html)
+
+* [Vest-Viken](datafortelling_per_fylke_Vest-Viken.html)
+
+* [Øst-Viken](datafortelling_per_fylke_Øst-Viken.html)
+
+* [Innlandet](datafortelling_per_fylke_Innlandet.html)
+
+* [Vestfold og Telemark](datafortelling_per_fylke_Vestfold_og_Telemark.html)
+
+* [Agder](datafortelling_per_fylke_Agder.html)
+
+* [Vestland](datafortelling_per_fylke_Vestland.html)
+
+* [Trøndelag](datafortelling_per_fylke_Trøndelag.html)
+
+* [Troms og Finnmark](datafortelling_per_fylke_Troms_og_Finnmark.html)
+
+:::

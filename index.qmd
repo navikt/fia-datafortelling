@@ -347,3 +347,7 @@ begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 
 {{< include includes/ikke-aktuell-forklaring.qmd >}}
 {{< include includes/ikke-aktuell-forklaring-før-2023-06-30.qmd >}}
+
+---
+
+{{< include includes/fylkesvise-datafortellinger.qmd >}}
