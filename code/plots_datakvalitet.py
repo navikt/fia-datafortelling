@@ -467,7 +467,7 @@ def mindre_virksomhet(data_status, ikke_aktuell):
     fig.update_layout(
         height=500,
         width=850,
-        xaxis_title="Antall ansatte (%)",
+        xaxis_title="Antall arbeidsforhold (%)",
         yaxis_title="Andel saker (%)",
         barmode="overlay",
     )

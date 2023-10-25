@@ -263,7 +263,7 @@ def virksomhetsprofil(data_input):
         [{}, {}],
     ]
     subplot_titles = (
-        "Antall ansatte",
+        "Antall arbeidsforhold",
         "Sykefraværsprosent",
         "Sektor",
         "Bransjeprogram",
@@ -285,7 +285,7 @@ def virksomhetsprofil(data_input):
         showlegend=False,
     )
 
-    # Antall ansatte
+    # Antall arbeidsforhold
     saker_per_storrelsesgruppe = (
         data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
     )

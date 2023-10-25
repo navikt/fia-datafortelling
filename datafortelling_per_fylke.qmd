@@ -307,7 +307,7 @@ andel_fullforte_saker_med_leveranse_per_måned(data_status_fylke, data_leveranse
 
 ## Virksomhetsprofil
 Her vises profilen til virksomheter som er registrert i Fia.
-Grafene viser antall saker per antall ansatte, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
 Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
 
 Obs.: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.

@@ -286,7 +286,7 @@ for_lavt_sykefravær(data_status, ikke_aktuell)
 
 ### Mindre virksomhet
 Sammenligner saker i status ikke aktuell og begrunnelse "Mindre virksomher", med biståtte saker.
-Alle saker med over 150 ansatte havner i den siste søylen.
+Alle saker med over 150 arbeidsforhold havner i den siste søylen.
 ```{python}
 mindre_virksomhet(data_status, ikke_aktuell)
 ```
