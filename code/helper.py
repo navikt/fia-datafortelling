@@ -1,8 +1,9 @@
 import pandas as pd
 from datetime import datetime
+import plotly.graph_objects as go
 
 
-def annotate_ikke_offisiell_statistikk(fig, x=0.5, y=1.1):
+def annotate_ikke_offisiell_statistikk(fig: go.Figure, x=0.5, y=1.1) -> go.Figure:
     fig.add_annotation(
         text="NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.",
         xref="paper",
@@ -16,7 +17,7 @@ def annotate_ikke_offisiell_statistikk(fig, x=0.5, y=1.1):
     return fig
 
 
-def pretty_time_delta(seconds):
+def pretty_time_delta(seconds: int) -> str:
     sign_string = "-" if seconds < 0 else ""
     seconds = abs(int(seconds))
     days, seconds = divmod(seconds, 86400)
@@ -38,7 +39,7 @@ def pretty_time_delta(seconds):
         return "%s %d sek" % (sign_string, seconds)
 
 
-def modul_sortering(data_siste_leveranse):
+def modul_sortering(data_siste_leveranse: pd.DataFrame) -> pd.DataFrame:
     tjeneste_sortering = (
         data_siste_leveranse.groupby("iaTjenesteNavn")
         .saksnummer.nunique()
@@ -59,7 +60,7 @@ def modul_sortering(data_siste_leveranse):
     return modul_sortering
 
 
-def ikke_aktuell_begrunnelse_sortering(ikke_aktuell):
+def ikke_aktuell_begrunnelse_sortering(ikke_aktuell: pd.DataFrame) -> list:
     begrunnelse_sortering = (
         ikke_aktuell.groupby("ikkeAktuelBegrunnelse_lesbar")
         .saksnummer.nunique()
@@ -70,13 +71,17 @@ def ikke_aktuell_begrunnelse_sortering(ikke_aktuell):
     return begrunnelse_sortering
 
 
-def alle_måneder_mellom_datoer(første_dato, siste_dato=datetime.now()):
-    alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
-    alle_måneder = alle_datoer.strftime("%Y-%m").drop_duplicates()
+def alle_måneder_mellom_datoer(
+    første_dato: str, siste_dato=datetime.now()
+) -> pd.Series:
+    alle_datoer: pd.DatetimeIndex = pd.date_range(
+        første_dato, siste_dato, freq="d", normalize=True
+    )
+    alle_måneder: pd.Series = alle_datoer.strftime("%Y-%m").drop_duplicates()
     return alle_måneder
 
 
-def iatjeneste_og_status_sortering(data_leveranse):
+def iatjeneste_og_status_sortering(data_leveranse: pd.DataFrame) -> pd.MultiIndex:
     return (
         data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
         .groupby(["iaTjenesteNavn", "status"])

@@ -6,14 +6,14 @@ from datetime import datetime, timedelta
 from code.konstanter import fylker, intervall_sortering
 
 
-def load_data(project, dataset, table):
+def load_data(project: str, dataset: str, table: str) -> pd.DataFrame:
     sql_query = f"SELECT  * FROM `{project}.{dataset}.{table}`"
     bq_client = Client(project=project)
     data = bq_client.query(query=sql_query).to_dataframe()
     return data
 
 
-def load_data_deduplicate(project, dataset, table):
+def load_data_deduplicate(project: str, dataset: str, table: str) -> pd.DataFrame:
     sql_query = f"""
         SELECT
            * except (radnummerBasertPaaTidsstempel)
@@ -29,14 +29,14 @@ def load_data_deduplicate(project, dataset, table):
     return data
 
 
-def fjern_tidssone(data):
+def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
     date_columns = data.select_dtypes(include=["datetimetz"]).columns.tolist()
     for col in date_columns:
         data[col] = data[col].dt.tz_localize(None)
     return data
 
 
-def preprocess_data_statistikk(data_statistikk):
+def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
     # Sorter basert på endrettidspunkt
     data_statistikk = data_statistikk.sort_values(
         "endretTidspunkt", ascending=True
@@ -78,7 +78,9 @@ def preprocess_data_statistikk(data_statistikk):
     return data_statistikk
 
 
-def split_data_statistikk(data_statistikk):
+def split_data_statistikk(
+    data_statistikk: pd.DataFrame,
+) -> (pd.DataFrame, pd.DataFrame):
     # Fjern tidssone fra datoene, alt i utc
     data_statistikk = fjern_tidssone(data_statistikk)
 
@@ -90,7 +92,7 @@ def split_data_statistikk(data_statistikk):
     return data_status, data_eierskap
 
 
-def preprocess_data_status(data_status):
+def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
     # Sorter basert på sak og endret tidspunkt
     data_status = data_status.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
@@ -133,7 +135,7 @@ def preprocess_data_status(data_status):
     return data_status
 
 
-def preprocess_data_leveranse(data_leveranse):
+def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     slettet_leveranse_id = data_leveranse[data_leveranse.status == "SLETTET"].id
     data_leveranse = data_leveranse[~data_leveranse.id.isin(slettet_leveranse_id)]
 
@@ -146,18 +148,18 @@ def preprocess_data_leveranse(data_leveranse):
     return data_leveranse
 
 
-def kollaps_leveranse_historikk(data_leveranse):
+def kollaps_leveranse_historikk(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     return data_leveranse.sort_values(
         ["saksnummer", "sistEndret"], ascending=True
     ).drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
 
 
 def beregn_siste_oppdatering(
-    data_status,
-    data_eierskap,
-    data_leveranse,
+    data_status: pd.DataFrame,
+    data_eierskap: pd.DataFrame,
+    data_leveranse: pd.DataFrame,
     beregningsdato=datetime.now(),
-):
+) -> pd.DataFrame:
     # Filtrere på beregningsdato
     data_status = data_status[data_status.endretTidspunkt < beregningsdato]
     data_eierskap = data_eierskap[data_eierskap.endretTidspunkt < beregningsdato]
@@ -226,7 +228,7 @@ def beregn_siste_oppdatering(
     return siste_oppdatering
 
 
-def beregn_intervall_tid_siden_siste_endring(data_status):
+def beregn_intervall_tid_siden_siste_endring(data_status: pd.DataFrame) -> pd.DataFrame:
     data_status["tid_siden_siste_endring"] = (
         data_status.endretTidspunkt - data_status.forrige_endretTidspunkt
     )
@@ -254,7 +256,7 @@ def beregn_intervall_tid_siden_siste_endring(data_status):
     return data_status
 
 
-def explode_ikke_aktuell_begrunnelse(data_status):
+def explode_ikke_aktuell_begrunnelse(data_status: pd.DataFrame) -> pd.DataFrame:
     ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
         "saksnummer", keep="last"
     )
@@ -272,7 +274,9 @@ def explode_ikke_aktuell_begrunnelse(data_status):
     return ikke_aktuell
 
 
-def filtrer_bort_saker_på_avsluttet_tidspunkt(data, antall_dager=365):
+def filtrer_bort_saker_på_avsluttet_tidspunkt(
+    data: pd.DataFrame, antall_dager=365
+) -> pd.DataFrame:
     """
     Filtrerer bort saker avsluttet for over "x" antall dager siden
     """

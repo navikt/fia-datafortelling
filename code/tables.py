@@ -4,7 +4,7 @@ from IPython.display import Markdown
 from tabulate import tabulate
 
 
-def moduler_per_maaned(data_leveranse):
+def moduler_per_maaned(data_leveranse: pd.DataFrame) -> Markdown:
     fullforte_saker = (
         data_leveranse.status == "LEVERT"
     ) & ~data_leveranse.fullfort.isna()

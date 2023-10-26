@@ -9,7 +9,7 @@ from code.konstanter import statusordre, fylker, intervall_sortering, plotly_col
 from code.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
 
 
-def saker_per_status_per_måned(data_status):
+def saker_per_status_per_måned(data_status: pd.DataFrame) -> go.Figure:
     data_status = filtrer_bort_saker_på_avsluttet_tidspunkt(
         data_status, antall_dager=365
     )
@@ -52,7 +52,9 @@ def saker_per_status_per_måned(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def saker_per_status_over_tid(data_status, valgte_fylker=None):
+def saker_per_status_over_tid(
+    data_status: pd.DataFrame, valgte_fylker=None
+) -> go.Figure:
     første_dato = data_status.endretTidspunkt.min()
     siste_dato = datetime.now()
     alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
@@ -151,7 +153,7 @@ def saker_per_status_over_tid(data_status, valgte_fylker=None):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def dager_mellom_statusendringer(data_status):
+def dager_mellom_statusendringer(data_status: pd.DataFrame) -> go.Figure:
     saker_per_intervall = (
         data_status.groupby("intervall_tid_siden_siste_endring")
         .saksnummer.nunique()
@@ -177,7 +179,12 @@ def dager_mellom_statusendringer(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dager):
+def urørt_saker_over_tid(
+    data_status: pd.DataFrame,
+    data_eierskap: pd.DataFrame,
+    data_leveranse: pd.DataFrame,
+    antall_dager: int,
+) -> go.Figure:
     første_dato = data_status.endretTidspunkt.min()
     now = datetime.now()
     alle_datoer = pd.date_range(første_dato, now, freq="d", normalize=True)
@@ -256,7 +263,9 @@ def urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dag
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
+def median_og_gjennomsnitt_av_tid_mellom_statusendringer(
+    data_status: pd.DataFrame,
+) -> go.Figure:
     data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
         "%Y-%m"
     )
@@ -315,7 +324,7 @@ def median_og_gjennomsnitt_av_tid_mellom_statusendringer(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_saker_per_eier(data_status):
+def antall_saker_per_eier(data_status: pd.DataFrame) -> go.Figure():
     saker_per_eier = (
         data_status[data_status.siste_status.isin(["VI_BISTÅR"])]
         .drop_duplicates("saksnummer", keep="last")
@@ -352,7 +361,9 @@ def antall_saker_per_eier(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def for_lavt_sykefravær(data_status, ikke_aktuell):
+def for_lavt_sykefravær(
+    data_status: pd.DataFrame, ikke_aktuell: pd.DataFrame
+) -> go.Figure():
     fig = go.Figure()
 
     # Sammenlignesgrunnlag
@@ -412,7 +423,9 @@ def for_lavt_sykefravær(data_status, ikke_aktuell):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def mindre_virksomhet(data_status, ikke_aktuell):
+def mindre_virksomhet(
+    data_status: pd.DataFrame, ikke_aktuell: pd.DataFrame
+) -> go.Figure():
     fig = go.Figure()
 
     # Sammenlignesgrunnlag
@@ -476,7 +489,7 @@ def mindre_virksomhet(data_status, ikke_aktuell):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def fullført_per_måned(data_status):
+def fullført_per_måned(data_status: pd.DataFrame) -> go.Figure():
     fullført_per_måned = (
         data_status[data_status.status == "FULLFØRT"]
         .endretTidspunkt_måned.value_counts()
@@ -501,7 +514,9 @@ def fullført_per_måned(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
+def andel_fullforte_saker_med_leveranse_per_måned(
+    data_status: pd.DataFrame, data_leveranse: pd.DataFrame
+) -> go.Figure():
     første_dato = data_leveranse.sistEndret.min()
     alle_måneder = alle_måneder_mellom_datoer(første_dato)
     antall_mnd = min(len(alle_måneder), 12)
@@ -552,7 +567,9 @@ def andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse):
+def andel_fullforte_saker_med_leveranse_over_tid(
+    data_status: pd.DataFrame, data_leveranse: pd.DataFrame
+) -> go.Figure():
     saker_med_leveranser = data_leveranse.saksnummer.unique()
     data_status["med_leveranse"] = False
     data_status.loc[
@@ -604,7 +621,7 @@ def andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def forskjell_frist_fullfort(data_leveranse):
+def forskjell_frist_fullfort(data_leveranse: pd.DataFrame) -> go.Figure():
     fullfort_leveranser = data_leveranse[data_leveranse.status == "LEVERT"]
     forskjell_frist_fullfort = (
         fullfort_leveranser.fullfort.dt.normalize() - fullfort_leveranser.frist
@@ -638,7 +655,7 @@ def forskjell_frist_fullfort(data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_brukere_per_fylke(data_statistikk):
+def antall_brukere_per_fylke(data_statistikk: pd.DataFrame) -> go.Figure():
     bruker_per_fylke = (
         data_statistikk.groupby("fylkesnavn").endretAv.nunique().sort_values()
     )
@@ -661,7 +678,7 @@ def antall_brukere_per_fylke(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
+def antall_brukere_per_fylke_og_nav_enhet(data_statistikk: pd.DataFrame) -> go.Figure():
     data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
     fylkeordre = (
         data_statistikk.groupby("fylkesnavn")
@@ -718,7 +735,7 @@ def antall_brukere_per_fylke_og_nav_enhet(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_brukere_akkumulert_over_tid(data_statistikk):
+def antall_brukere_akkumulert_over_tid(data_statistikk: pd.DataFrame) -> go.Figure():
     antall_brukere_akkumulert_over_tid = (
         data_statistikk[["endretTidspunkt", "endretAv"]]
         .assign(
@@ -748,7 +765,7 @@ def antall_brukere_akkumulert_over_tid(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_brukere_per_måned(data_statistikk):
+def antall_brukere_per_måned(data_statistikk: pd.DataFrame) -> go.Figure():
     antall_brukere_per_måned = data_statistikk.groupby(
         "endretTidspunkt_måned"
     ).endretAv.nunique()
@@ -770,7 +787,9 @@ def antall_brukere_per_måned(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def andel_statusendringer_gjort_av_superbrukere(data_statistikk):
+def andel_statusendringer_gjort_av_superbrukere(
+    data_statistikk: pd.DataFrame,
+) -> go.Figure():
     antall_endringer_superbrukere_per_måned = (
         data_statistikk[data_statistikk.endretAvRolle == "SUPERBRUKER"]
         .groupby("endretTidspunkt_måned")
@@ -803,7 +822,9 @@ def andel_statusendringer_gjort_av_superbrukere(data_statistikk):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def andel_leveranseregistreringer_gjort_av_superbrukere(data_leveranse):
+def andel_leveranseregistreringer_gjort_av_superbrukere(
+    data_leveranse: pd.DataFrame,
+) -> go.Figure():
     data_leveranse["sistEndret_måned"] = data_leveranse.sistEndret.dt.strftime("%Y-%m")
 
     antall_registreringer_superbrukere_per_måned = (
@@ -843,7 +864,7 @@ def andel_leveranseregistreringer_gjort_av_superbrukere(data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def andel_superbrukere(data_statistikk):
+def andel_superbrukere(data_statistikk: pd.DataFrame) -> go.Figure():
     antall_superbrukere_per_måned = (
         data_statistikk[data_statistikk.endretAvRolle == "SUPERBRUKER"]
         .groupby("endretTidspunkt_måned")

@@ -13,8 +13,8 @@ from code.konstanter import (
 )
 
 
-def aktive_saker_per_fylke(data_status):
-    fylkeordre = (
+def aktive_saker_per_fylke(data_status: pd.DataFrame) -> go.Figure:
+    fylkeordre: list = (
         data_status[data_status.aktiv_sak]
         .groupby("fylkesnavn")
         .saksnummer.nunique()
@@ -22,7 +22,7 @@ def aktive_saker_per_fylke(data_status):
         .index.tolist()
     )
 
-    aktive_saker_per_fylke_og_status = (
+    aktive_saker_per_fylke_og_status: pd.DataFrame = (
         data_status[data_status.aktiv_sak]
         .groupby(["fylkesnavn", "siste_status"])
         .saksnummer.nunique()
@@ -59,7 +59,9 @@ def aktive_saker_per_fylke(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def dager_siden_siste_oppdatering(data_status, data_eierskap, data_leveranse):
+def dager_siden_siste_oppdatering(
+    data_status: pd.DataFrame, data_eierskap: pd.DataFrame, data_leveranse: pd.DataFrame
+) -> go.Figure:
     siste_oppdatering = beregn_siste_oppdatering(
         data_status, data_eierskap, data_leveranse
     )
@@ -81,7 +83,7 @@ def dager_siden_siste_oppdatering(data_status, data_eierskap, data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_saker_per_status(data_status):
+def antall_saker_per_status(data_status: pd.DataFrame) -> go.Figure:
     saker_per_status = (
         data_status.groupby("siste_status")
         .saksnummer.nunique()
@@ -110,7 +112,9 @@ def antall_saker_per_status(data_status):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_leveranser_per_sak(data_status, data_leveranse):
+def antall_leveranser_per_sak(
+    data_status: pd.DataFrame, data_leveranse: pd.DataFrame
+) -> go.Figure:
     # saker som har leveranser registrert
     leveranser_per_sak = data_leveranse.groupby("saksnummer").iaModulId.nunique()
 
@@ -166,7 +170,9 @@ def antall_leveranser_per_sak(data_status, data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_leveranser_per_tjeneste(data_leveranse, alle_iatjenester_og_status=None):
+def antall_leveranser_per_tjeneste(
+    data_leveranse: pd.DataFrame, alle_iatjenester_og_status=None
+) -> go.Figure:
     leveranser_per_tjeneste = (
         data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
         .groupby(["iaTjenesteNavn", "status"])
@@ -209,7 +215,9 @@ def antall_leveranser_per_tjeneste(data_leveranse, alle_iatjenester_og_status=No
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def antall_leveranser_per_modul(data_leveranse, modul_sortering):
+def antall_leveranser_per_modul(
+    data_leveranse: pd.DataFrame, modul_sortering: pd.DataFrame
+) -> go.Figure:
     leveranser_per_modul = (
         data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
         .saksnummer.nunique()
@@ -252,7 +260,7 @@ def antall_leveranser_per_modul(data_leveranse, modul_sortering):
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def virksomhetsprofil(data_input):
+def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
     data = data_input.sort_values(
         ["saksnummer", "endretTidspunkt"], ascending=True
     ).drop_duplicates(["saksnummer"], keep="last")
@@ -387,7 +395,7 @@ def virksomhetsprofil(data_input):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def statusflyt(data_status):
+def statusflyt(data_status: pd.DataFrame) -> go.Figure:
     # Fjern slettede saker
     data_status_uslettet = data_status[data_status.siste_status != "SLETTET"]
     statusordre_uslettet = statusordre[:-1]
@@ -420,7 +428,9 @@ def statusflyt(data_status):
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
+def begrunnelse_ikke_aktuell(
+    ikke_aktuell: pd.DataFrame, begrunnelse_sortering: list
+) -> go.Figure:
     fig = make_subplots(
         rows=1,
         cols=2,
@@ -507,7 +517,7 @@ def begrunnelse_ikke_aktuell(ikke_aktuell, begrunnelse_sortering):
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def leveranse_per_maaned(data_leveranse):
+def leveranse_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
     data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
     alle_måneder = alle_måneder_mellom_datoer(data_leveranse.sistEndret.min())
     antall_mnd = min(len(alle_måneder), 12)
@@ -536,7 +546,7 @@ def leveranse_per_maaned(data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def leveranse_tjeneste_per_maaned(data_leveranse):
+def leveranse_tjeneste_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
     data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
     saker_per_tjeneste_og_måned = (
         data_leveranse[data_leveranse.status == "LEVERT"]
@@ -577,7 +587,7 @@ def leveranse_tjeneste_per_maaned(data_leveranse):
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def gjennomstrømmingstall(data_status, status="VI_BISTÅR"):
+def gjennomstrømmingstall(data_status: pd.DataFrame, status="VI_BISTÅR") -> go.Figure:
     alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
     antall_mnd = min(len(alle_måneder), 12)
     inn = (
