@@ -45,7 +45,7 @@ from code.datahandler import (
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
-    kollaps_leveranse_historikk,
+    hent_leveranse_sistestatus,
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
@@ -100,14 +100,14 @@ data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
-data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
+data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
 data_statistikk_fylke = data_statistikk[data_statistikk.fylkesnummer == fylkesnr]
 data_status_fylke = data_status[data_status.fylkesnummer == fylkesnr]
 data_eierskap_fylke = data_eierskap[data_eierskap.fylkesnummer == fylkesnr]
 data_leveranse_fylke = data_leveranse[data_leveranse.fylkesnummer == fylkesnr]
-data_siste_leveranse_fylke = data_siste_leveranse[data_siste_leveranse.fylkesnummer == fylkesnr]
+data_leveranse_sistestatus_fylke = data_leveranse_sistestatus[data_leveranse_sistestatus.fylkesnummer == fylkesnr]
 ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.fylkesnummer == fylkesnr]
 ```
 
@@ -196,11 +196,11 @@ PS: En sak kan ha flere leveranser.
 ::: {.panel-tabset}
 # Totalt
 ```{python}
-leveranse_per_maaned(data_siste_leveranse_fylke)
+leveranse_per_maaned(data_leveranse_sistestatus_fylke)
 ```
 # Per tjeneste
 ```{python}
-leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
+leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_fylke)
 ```
 :::
 
@@ -209,18 +209,18 @@ leveranse_tjeneste_per_maaned(data_siste_leveranse_fylke)
 ```{python}
 # Filtrerer bort saker avsluttet for over ett år siden
 data_status_fylke_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status_fylke)
-data_siste_leveranse_fylke_siste_år = data_siste_leveranse_fylke[
-    data_siste_leveranse_fylke.saksnummer.isin(data_status_fylke_siste_år.saksnummer.unique())
+data_leveranse_sistestatus_fylke_siste_år = data_leveranse_sistestatus_fylke[
+    data_leveranse_sistestatus_fylke.saksnummer.isin(data_status_fylke_siste_år.saksnummer.unique())
 ]
 
-alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_siste_leveranse)
+alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_leveranse_sistestatus)
 ```
 
 ::: {.panel-tabset}
 # Alle virksomheter
 PS: Én sak kan ha leveranser i flere tjenester.
 ```{python}
-antall_leveranser_per_tjeneste(data_siste_leveranse_fylke_siste_år, alle_iatjenester_og_status)
+antall_leveranser_per_tjeneste(data_leveranse_sistestatus_fylke_siste_år, alle_iatjenester_og_status)
 ```
 
 # Per bransjeprogram
@@ -229,8 +229,8 @@ PS: Én sak kan ha leveranser i flere tjenester.
 ::: {.panel-tabset}
 # Barnehager
 ```{python}
-data = data_siste_leveranse_fylke_siste_år[
-    data_siste_leveranse_fylke_siste_år.bransjeprogram=="BARNEHAGER"
+data = data_leveranse_sistestatus_fylke_siste_år[
+    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="BARNEHAGER"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -240,8 +240,8 @@ else:
 
 # Sykehjem
 ```{python}
-data = data_siste_leveranse_fylke_siste_år[
-    data_siste_leveranse_fylke_siste_år.bransjeprogram=="SYKEHJEM"
+data = data_leveranse_sistestatus_fylke_siste_år[
+    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="SYKEHJEM"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -251,8 +251,8 @@ else:
 
 # Sykehus
 ```{python}
-data = data_siste_leveranse_fylke_siste_år[
-    data_siste_leveranse_fylke_siste_år.bransjeprogram=="SYKEHUS"
+data = data_leveranse_sistestatus_fylke_siste_år[
+    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="SYKEHUS"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -262,8 +262,8 @@ else:
 
 # Næringsmiddelindustri
 ```{python}
-data = data_siste_leveranse_fylke_siste_år[
-    data_siste_leveranse_fylke_siste_år.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
+data = data_leveranse_sistestatus_fylke_siste_år[
+    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -273,8 +273,8 @@ else:
 
 # Bygg og anlegg
 ```{python}
-data = data_siste_leveranse_fylke_siste_år[
-    data_siste_leveranse_fylke_siste_år.bransjeprogram.isin(["BYGG", "ANLEGG"])
+data = data_leveranse_sistestatus_fylke_siste_år[
+    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram.isin(["BYGG", "ANLEGG"])
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -284,8 +284,8 @@ else:
 
 # Transport
 ```{python}
-data = data_siste_leveranse_fylke_siste_år[
-    data_siste_leveranse_fylke_siste_år.bransjeprogram=="TRANSPORT"
+data = data_leveranse_sistestatus_fylke_siste_år[
+    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="TRANSPORT"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")

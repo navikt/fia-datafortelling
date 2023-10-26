@@ -148,7 +148,7 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     return data_leveranse
 
 
-def kollaps_leveranse_historikk(data_leveranse: pd.DataFrame) -> pd.DataFrame:
+def hent_leveranse_sistestatus(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     return data_leveranse.sort_values(
         ["saksnummer", "sistEndret"], ascending=True
     ).drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")

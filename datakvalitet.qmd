@@ -39,7 +39,7 @@ from code.datahandler import (
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
-    kollaps_leveranse_historikk,
+    hent_leveranse_sistestatus,
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
@@ -75,7 +75,7 @@ data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
-data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
+data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
@@ -309,7 +309,7 @@ andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse)
 
 ## Forskjellen mellom frist og fullført dato
 ```{python}
-forskjell_frist_fullfort(data_siste_leveranse)
+forskjell_frist_fullfort(data_leveranse_sistestatus)
 ```
 
 
@@ -318,7 +318,7 @@ Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til 
 Her gjelder alle saker som har leveranser registert eller kunne ha hatt det, i.e., saker fullført etter det ble mulig å registrere leveranser (mars 2023), og saker i bistand nå.
 
 ```{python}
-antall_leveranser_per_sak(data_status, data_siste_leveranse)
+antall_leveranser_per_sak(data_status, data_leveranse_sistestatus)
 ```
 
 

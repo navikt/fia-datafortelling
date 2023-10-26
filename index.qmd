@@ -45,7 +45,7 @@ from code.datahandler import (
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
-    kollaps_leveranse_historikk,
+    hent_leveranse_sistestatus,
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
@@ -82,7 +82,7 @@ data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
-data_siste_leveranse = kollaps_leveranse_historikk(data_leveranse)
+data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
@@ -184,49 +184,49 @@ Slettet leveranser vises ikke i grafene under.
 ```{python}
 # Filtrerer bort saker avsluttet for over ett år siden
 data_status_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
-data_siste_leveranse_siste_år = data_siste_leveranse[data_siste_leveranse.saksnummer.isin(data_status_siste_år.saksnummer.unique())]
+data_leveranse_sistestatus_siste_år = data_leveranse_sistestatus[data_leveranse_sistestatus.saksnummer.isin(data_status_siste_år.saksnummer.unique())]
 ```
 
 ::: {.panel-tabset}
 
 ## Per tjeneste
 ```{python}
-antall_leveranser_per_tjeneste(data_siste_leveranse_siste_år)
+antall_leveranser_per_tjeneste(data_leveranse_sistestatus_siste_år)
 ```
 
 ## Per modul
 ```{python}
-modul_sortering = modul_sortering(data_siste_leveranse_siste_år)
+modul_sortering = modul_sortering(data_leveranse_sistestatus_siste_år)
 ```
 ::: {.panel-tabset}
 ## Levert
 ```{python}
 antall_leveranser_per_modul(
-    data_siste_leveranse_siste_år[data_siste_leveranse_siste_år.status=="LEVERT"], modul_sortering
+    data_leveranse_sistestatus_siste_år[data_leveranse_sistestatus_siste_år.status=="LEVERT"], modul_sortering
 )
 ```
 ## Under arbeid
 ```{python}
 antall_leveranser_per_modul(
-    data_siste_leveranse_siste_år[data_siste_leveranse_siste_år.status == "UNDER_ARBEID"], modul_sortering
+    data_leveranse_sistestatus_siste_år[data_leveranse_sistestatus_siste_år.status == "UNDER_ARBEID"], modul_sortering
 )
 ```
 ## Levert og under arbeid
 ```{python}
-antall_leveranser_per_modul(data_siste_leveranse_siste_år, modul_sortering)
+antall_leveranser_per_modul(data_leveranse_sistestatus_siste_år, modul_sortering)
 ```
 :::
 
 ## Per måned
 PS: En sak kan ha flere leveranser.
 ```{python}
-leveranse_tjeneste_per_maaned(data_siste_leveranse_siste_år)
+leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_siste_år)
 ```
 
 ## Detaljer
 Tabellen viser antall saker per modul og fullført måned, i.e., måneden som modulen ble registrert som levert.
 ```{python}
-moduler_per_maaned(data_siste_leveranse_siste_år)
+moduler_per_maaned(data_leveranse_sistestatus_siste_år)
 ```
 
 :::
