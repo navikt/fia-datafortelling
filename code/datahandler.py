@@ -7,6 +7,9 @@ from code.konstanter import fylker, intervall_sortering
 
 
 def load_data(project: str, dataset: str, table: str) -> pd.DataFrame:
+    """
+    Henter data fra BigQuery
+    """
     sql_query = f"SELECT  * FROM `{project}.{dataset}.{table}`"
     bq_client = Client(project=project)
     data = bq_client.query(query=sql_query).to_dataframe()
@@ -14,6 +17,9 @@ def load_data(project: str, dataset: str, table: str) -> pd.DataFrame:
 
 
 def load_data_deduplicate(project: str, dataset: str, table: str) -> pd.DataFrame:
+    """
+    Henter data fra BigQuery og fjerner duplikater basert på tidsstempel
+    """
     sql_query = f"""
         SELECT
            * except (radnummerBasertPaaTidsstempel)
@@ -30,6 +36,9 @@ def load_data_deduplicate(project: str, dataset: str, table: str) -> pd.DataFram
 
 
 def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
+    """
+    Fjerner tidssone fra alle kolonner som har datatype datetimetz
+    """
     date_columns = data.select_dtypes(include=["datetimetz"]).columns.tolist()
     for col in date_columns:
         data[col] = data[col].dt.tz_localize(None)
@@ -81,6 +90,9 @@ def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
 def split_data_statistikk(
     data_statistikk: pd.DataFrame,
 ) -> (pd.DataFrame, pd.DataFrame):
+    """
+    Splitter data_statistikk inn i data_status og data_eierskap
+    """
     # Fjern tidssone fra datoene, alt i utc
     data_statistikk = fjern_tidssone(data_statistikk)
 
@@ -149,6 +161,9 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
 
 
 def hent_leveranse_sistestatus(data_leveranse: pd.DataFrame) -> pd.DataFrame:
+    """
+    Henter siste status for hver leveranse
+    """
     return data_leveranse.sort_values(
         ["saksnummer", "sistEndret"], ascending=True
     ).drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
@@ -160,6 +175,9 @@ def beregn_siste_oppdatering(
     data_leveranse: pd.DataFrame,
     beregningsdato=datetime.now(),
 ) -> pd.DataFrame:
+    """
+    Beregner siste oppdatering for hver sak
+    """
     # Filtrere på beregningsdato
     data_status = data_status[data_status.endretTidspunkt < beregningsdato]
     data_eierskap = data_eierskap[data_eierskap.endretTidspunkt < beregningsdato]
@@ -257,6 +275,9 @@ def beregn_intervall_tid_siden_siste_endring(data_status: pd.DataFrame) -> pd.Da
 
 
 def explode_ikke_aktuell_begrunnelse(data_status: pd.DataFrame) -> pd.DataFrame:
+    """
+    Splitter ikkeAktuelBegrunnelse inn i flere rader, en rad per begrunnelse.
+    """
     ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
         "saksnummer", keep="last"
     )
