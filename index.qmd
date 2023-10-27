@@ -239,7 +239,9 @@ Her vises profilen til virksomheter som er registrert i Fia.
 Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
 Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
 
-Obs.: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
+PS: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
+
+Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).
 
 ::: {.panel-tabset}
 
@@ -350,3 +352,5 @@ begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ---
 
 {{< include includes/fylkesvise-datafortellinger.qmd >}}
+
+Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).
