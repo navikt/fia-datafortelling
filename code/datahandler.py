@@ -110,7 +110,7 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
         ["saksnummer", "endretTidspunkt"], ascending=True
     ).reset_index(drop=True)
 
-    # Fjern rader basert på tilbake-knapp
+    # Fjern rader som var angret med bruk av tilbake-knappen
     tilbake_rader = data_status[data_status.hendelse == "TILBAKE"].index.tolist()
     fjern_rader = set(tilbake_rader)
     for index in tilbake_rader:
@@ -148,6 +148,7 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
 
 
 def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
+    # Fjern slettede leveranser
     slettet_leveranse_id = data_leveranse[data_leveranse.status == "SLETTET"].id
     data_leveranse = data_leveranse[~data_leveranse.id.isin(slettet_leveranse_id)]
 
@@ -196,7 +197,7 @@ def beregn_siste_oppdatering(
     aktiv_sak_beregningsdato = data_status.status_beregningsdato.isin(aktive_statuser)
     data_status = data_status[aktiv_sak_beregningsdato]
 
-    # Beregne siste oppdatering
+    # Hente rader med siste oppdatering for hver sak i hvert enkelt datasett
     siste_oppdatering_status = (
         data_status.groupby("saksnummer")
         .endretTidspunkt.max()
@@ -216,6 +217,7 @@ def beregn_siste_oppdatering(
         .rename(columns={"sistEndret": "siste_oppdatering_leveranse"})
     )
 
+    # Merge datasettene
     siste_oppdatering = siste_oppdatering_status.merge(
         siste_oppdatering_eierskap, on="saksnummer", how="left"
     )
@@ -223,6 +225,7 @@ def beregn_siste_oppdatering(
         siste_oppdatering_leveranse, on="saksnummer", how="left"
     )
 
+    # Beregne siste oppdatering av alle datasettene
     siste_oppdatering["siste_oppdatering"] = siste_oppdatering[
         [
             "siste_oppdatering_status",
@@ -231,10 +234,12 @@ def beregn_siste_oppdatering(
         ]
     ].max(axis=1, numeric_only=False)
 
+    # Beregne antall dager siden siste oppdatering til berengningsdato
     siste_oppdatering["dager_siden_siste_oppdatering"] = (
         beregningsdato - siste_oppdatering.siste_oppdatering
     ).dt.days
 
+    # Hente informasjon/kolonner fra data_status
     siste_oppdatering = siste_oppdatering.merge(
         data_status[["saksnummer", "status_beregningsdato"]].drop_duplicates(
             "saksnummer"
