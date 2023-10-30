@@ -27,11 +27,12 @@ Installer git hook-skriptene med `pre-commit install`.
 
 Logg inn i gcp med `gcloud auth login --update-adc`.
 
-Kjør opp quarto i preview mode med følgende kommando:
+Kjør opp datafortellingene lokalt med følgende kommandoer:
 
-`export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto preview <datafortelling>.qmd`
+`export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render <datafortelling>.qmd`
 
-hvor datafortelling feks kan være `index`.
+`export FYLKESNAVN="<fylkesnavn>" && export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render datafortelling_per_fylke.qmd --output "datafortelling_per_fylke_$FYLKESNAVN.html"`
+
 
 ### Bygg docker image på M1:
 
