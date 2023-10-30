@@ -1,7 +1,6 @@
 import pandas as pd
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
-from datetime import datetime
 
 from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
@@ -9,7 +8,6 @@ from code.konstanter import (
     statusordre,
     plotly_colors,
     ikkeaktuell_hovedgrunn,
-    gamle_ikkeaktuell_hovedgrunn,
 )
 
 
@@ -447,7 +445,7 @@ def begrunnelse_ikke_aktuell(
     # Hovedgrunn
 
     ikke_aktuell["hovedgrunn"] = ikke_aktuell.ikkeAktuelBegrunnelse.map(
-        ikkeaktuell_hovedgrunn | gamle_ikkeaktuell_hovedgrunn
+        ikkeaktuell_hovedgrunn
     )
     antall_hovedgrunn = ikke_aktuell.hovedgrunn.value_counts().sort_values(
         ascending=True

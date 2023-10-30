@@ -67,10 +67,7 @@ from code.helper import (
     modul_sortering,
     ikke_aktuell_begrunnelse_sortering,
 )
-from code.konstanter import (
-    ikkeaktuell_hovedgrunn,
-    gamle_ikkeaktuell_hovedgrunn,
-)
+from code.konstanter import ikkeaktuell_hovedgrunn
 
 
 PROJECT = os.environ['GCP_PROJECT']

@@ -58,17 +58,3 @@ ikkeaktuell_hovedgrunn = {
     "VIRKSOMHETEN_ØNSKER_IKKE_SAMARBEID": "Virksomhet",
     "VIRKSOMHETEN_HAR_IKKE_RESPONDERT": "Virksomhet",
 }
-
-# Gamle begrunnelser, fra før 30-06-2023
-gamle_ikkeaktuell_hovedgrunn = {
-    # NAV
-    "FOR_LAVT_SYKEFRAVÆR": "NAV",
-    "IKKE_TID": "NAV",
-    "MINDRE_VIRKSOMHET": "NAV",
-    "MANGLER_PARTSGRUPPE": "NAV",
-    "IKKE_TILFREDSSTILLENDE_SAMARBEID": "NAV",
-    # Virksomhet
-    "GJENNOMFØRER_TILTAK_MED_BHT": "Virksomhet",
-    "GJENNOMFØRER_TILTAK_PÅ_EGENHÅND": "Virksomhet",
-    "HAR_IKKE_KAPASITET": "Virksomhet",
-}
