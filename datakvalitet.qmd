@@ -43,27 +43,31 @@ from code.datahandler import (
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
-from code.plots_datakvalitet import (
-    saker_per_status_over_tid,
-    dager_mellom_statusendringer,
+from code.plots import (
     urørt_saker_over_tid,
-    median_og_gjennomsnitt_av_tid_mellom_statusendringer,
-    antall_saker_per_eier,
     for_lavt_sykefravær,
     mindre_virksomhet,
-    fullført_per_måned,
     andel_fullforte_saker_med_leveranse_per_måned,
     andel_fullforte_saker_med_leveranse_over_tid,
-    forskjell_frist_fullfort,
+    antall_leveranser_per_sak,
+)
+from code.plots_statistikk import (
+    saker_per_status_over_tid,
+    dager_mellom_statusendringer,
+    median_og_gjennomsnitt_av_tid_mellom_statusendringer,
+    fullført_per_måned,
+    antall_saker_per_eier,
     antall_brukere_akkumulert_over_tid,
     antall_brukere_per_måned,
     antall_brukere_per_fylke,
     antall_brukere_per_fylke_og_nav_enhet,
     andel_superbrukere,
     andel_statusendringer_gjort_av_superbrukere,
+)
+from code.plots_leveranse import (
+    forskjell_frist_fullfort,
     andel_leveranseregistreringer_gjort_av_superbrukere,
 )
-from code.plots import antall_leveranser_per_sak
 
 
 PROJECT = os.environ['GCP_PROJECT']

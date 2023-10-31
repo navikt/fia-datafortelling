@@ -1,60 +1,10 @@
 import pandas as pd
-from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+from datetime import datetime, timedelta
 
 from code.datahandler import beregn_siste_oppdatering
 from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
-from code.konstanter import (
-    statusordre,
-    plotly_colors,
-    ikkeaktuell_hovedgrunn,
-)
-
-
-def aktive_saker_per_fylke(data_status: pd.DataFrame) -> go.Figure:
-    fylkeordre: list = (
-        data_status[data_status.aktiv_sak]
-        .groupby("fylkesnavn")
-        .saksnummer.nunique()
-        .sort_values(ascending=False)
-        .index.tolist()
-    )
-
-    aktive_saker_per_fylke_og_status: pd.DataFrame = (
-        data_status[data_status.aktiv_sak]
-        .groupby(["fylkesnavn", "siste_status"])
-        .saksnummer.nunique()
-        .reset_index()
-        .sort_values(
-            by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e))
-        )
-        .sort_values(
-            by="fylkesnavn", key=lambda col: -col.map(lambda e: fylkeordre.index(e))
-        )
-    )
-
-    fig = go.Figure()
-
-    for status in aktive_saker_per_fylke_og_status.siste_status.unique():
-        aktive_saker_per_fylke_filtered = aktive_saker_per_fylke_og_status[
-            aktive_saker_per_fylke_og_status.siste_status == status
-        ]
-        fig.add_trace(
-            go.Bar(
-                y=aktive_saker_per_fylke_filtered["fylkesnavn"],
-                x=aktive_saker_per_fylke_filtered["saksnummer"],
-                name=status.capitalize().replace("_", " "),
-                orientation="h",
-            )
-        )
-
-    fig.update_layout(
-        xaxis_title="Antall aktive saker",
-        barmode="stack",
-        hovermode="y unified",
-        legend_traceorder="normal",
-    )
-    return annotate_ikke_offisiell_statistikk(fig)
+from code.konstanter import plotly_colors
 
 
 def dager_siden_siste_oppdatering(
@@ -77,35 +27,6 @@ def dager_siden_siste_oppdatering(
         xaxis_title="Dager siden siste oppdatering i Fia",
         yaxis_title="Antall saker",
     )
-
-    return annotate_ikke_offisiell_statistikk(fig)
-
-
-def antall_saker_per_status(data_status: pd.DataFrame) -> go.Figure:
-    saker_per_status = (
-        data_status.groupby("siste_status")
-        .saksnummer.nunique()
-        .reset_index()
-        .sort_values(
-            by="siste_status", key=lambda col: -col.map(lambda e: statusordre.index(e))
-        )
-        .reset_index()
-    )
-
-    fig = go.Figure(
-        data=[
-            go.Bar(
-                y=saker_per_status["siste_status"]
-                .str.capitalize()
-                .str.replace("_", " "),
-                x=saker_per_status["saksnummer"],
-                text=saker_per_status["saksnummer"],
-                orientation="h",
-            )
-        ]
-    )
-    fig.update_xaxes(visible=False)
-    fig.update_layout(width=850, height=400, plot_bgcolor="rgb(255,255,255)")
 
     return annotate_ikke_offisiell_statistikk(fig)
 
@@ -168,448 +89,320 @@ def antall_leveranser_per_sak(
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_leveranser_per_tjeneste(
-    data_leveranse: pd.DataFrame, alle_iatjenester_og_status=None
+def urørt_saker_over_tid(
+    data_status: pd.DataFrame,
+    data_eierskap: pd.DataFrame,
+    data_leveranse: pd.DataFrame,
+    antall_dager: int,
 ) -> go.Figure:
-    leveranser_per_tjeneste = (
-        data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
-        .groupby(["iaTjenesteNavn", "status"])
-        .saksnummer.nunique()
-        .sort_values(ascending=True)
-    )
-    if alle_iatjenester_og_status is not None:
-        leveranser_per_tjeneste = leveranser_per_tjeneste.reindex(
-            alle_iatjenester_og_status, fill_value=0
-        )
+    første_dato = data_status.endretTidspunkt.min()
+    now = datetime.now()
+    alle_datoer = pd.date_range(første_dato, now, freq="d", normalize=True)
+    aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
 
-    leveranser_per_tjeneste = leveranser_per_tjeneste.reset_index()
+    data = pd.concat(
+        [
+            data_status[["saksnummer", "status", "endretTidspunkt"]],
+            data_eierskap[["saksnummer", "status", "endretTidspunkt"]],
+            (
+                data_leveranse[["saksnummer", "sistEndret"]]
+                .rename(columns={"sistEndret": "endretTidspunkt"})
+                .assign(status="VI_BISTÅR")
+            ),
+        ]
+    )
+    data = data.sort_values(
+        ["saksnummer", "endretTidspunkt"], ascending=True
+    ).reset_index()
+    data["aktiv_status"] = data.status.isin(aktive_statuser)
+    data.loc[
+        data.saksnummer == data.saksnummer.shift(-1),
+        "neste_endretTidspunkt",
+    ] = data.endretTidspunkt.shift(-1)
+    data.loc[
+        data.neste_endretTidspunkt.astype(str) == "NaT", "neste_endretTidspunkt"
+    ] = now
+    data["antall_dager"] = (data.neste_endretTidspunkt - data.endretTidspunkt).dt.days
+    data["mer_enn_x_dager"] = data.antall_dager > antall_dager
+
+    urørt_per_status_og_dato = dict(
+        zip(aktive_statuser, [[0] * len(alle_datoer)] * len(aktive_statuser))
+    )
+
+    for _, row in data[data.mer_enn_x_dager & data.aktiv_status].iterrows():
+        status = row["status"]
+        endretTidspunkt = row["endretTidspunkt"]
+        neste_endretTidspunkt = row["neste_endretTidspunkt"]
+
+        urørt_intervall = []
+        for dato in alle_datoer:
+            if (dato > endretTidspunkt + timedelta(days=antall_dager)) & (
+                dato < neste_endretTidspunkt
+            ):
+                urørt_intervall.append(1)
+            else:
+                urørt_intervall.append(0)
+        urørt_per_status_og_dato[status] = [
+            sum(x) for x in zip(urørt_per_status_og_dato[status], urørt_intervall)
+        ]
 
     fig = go.Figure()
 
-    for status in leveranser_per_tjeneste.status.unique():
-        leveranser_per_tjeneste_filtered = leveranser_per_tjeneste[
-            leveranser_per_tjeneste.status == status
-        ]
+    for status in aktive_statuser:
         fig.add_trace(
-            go.Bar(
-                y=leveranser_per_tjeneste_filtered["iaTjenesteNavn"],
-                x=leveranser_per_tjeneste_filtered["saksnummer"],
-                text=leveranser_per_tjeneste_filtered["saksnummer"],
-                orientation="h",
+            go.Scatter(
+                x=alle_datoer,
+                y=urørt_per_status_og_dato[status],
                 name=status.capitalize().replace("_", " "),
             )
         )
 
     fig.update_layout(
         height=500,
-        width=800,
-        plot_bgcolor="rgb(255,255,255)",
-        xaxis_showticklabels=False,
-        xaxis_title="Antall saker",
-        xaxis_title_standoff=80,
-        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
+        width=850,
+        xaxis_title="Dato",
+        yaxis_title="Antall saker",
     )
 
-    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
-
-
-def antall_leveranser_per_modul(
-    data_leveranse: pd.DataFrame, modul_sortering: pd.DataFrame
-) -> go.Figure:
-    leveranser_per_modul = (
-        data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
-        .saksnummer.nunique()
-        .reset_index()
+    # Create slider
+    fig.update_layout(
+        height=600,
+        xaxis=dict(autorange=True, rangeslider=dict(autorange=True, visible=True)),
     )
-    # Inkluder alle moduler i dataframen ved å fylle med null der modulene mangler
-    # og sorterer tjenester/moduler basert på modul_sortering
-    leveranser_per_modul = modul_sortering.merge(
-        leveranser_per_modul, how="left", on=["iaTjenesteNavn", "iaModulNavn"]
-    ).fillna(0)
 
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def for_lavt_sykefravær(
+    data_status: pd.DataFrame, ikke_aktuell: pd.DataFrame
+) -> go.Figure():
     fig = go.Figure()
 
-    for tjeneste in leveranser_per_modul.iaTjenesteNavn.unique():
-        leveranser_per_modul_filtered = leveranser_per_modul[
-            leveranser_per_modul.iaTjenesteNavn == tjeneste
-        ]
-        fig.add_trace(
-            go.Bar(
-                y=leveranser_per_modul_filtered.iaModulNavn,
-                x=leveranser_per_modul_filtered.saksnummer,
-                text=leveranser_per_modul_filtered.saksnummer,
-                orientation="h",
-                name=tjeneste,
-            )
-        )
-
-    fig.update_layout(
-        height=500,
-        width=800,
-        plot_bgcolor="rgb(255,255,255)",
-        xaxis_showticklabels=False,
-        xaxis_title="Antall saker per modul",
-        xaxis_title_standoff=80,
-        yaxis_autorange="reversed",
-        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1.1),
-    )
-    fig.update_yaxes(categoryorder="array", categoryarray=modul_sortering)
-
-    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
-
-
-def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
-    data = data_input.sort_values(
-        ["saksnummer", "endretTidspunkt"], ascending=True
-    ).drop_duplicates(["saksnummer"], keep="last")
-
-    specs = [
-        [{}, {}],
-        [{"type": "domain", "r": 0.1}, {}],
-        [{}, {}],
-    ]
-    subplot_titles = (
-        "Antall arbeidsforhold",
-        "Sykefraværsprosent",
-        "Sektor",
-        "Bransjeprogram",
-        "",
-        "Topp 10 hovednæringer",
-    )
-
-    fig = make_subplots(
-        rows=3,
-        cols=2,
-        specs=specs,
-        subplot_titles=subplot_titles,
-        horizontal_spacing=0.1,
-        vertical_spacing=0.1,
-    )
-    fig.update_layout(
-        height=900,
-        width=850,
-        showlegend=False,
-    )
-
-    # Antall arbeidsforhold
-    saker_per_storrelsesgruppe = (
-        data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
-    )
+    # Sammenlignesgrunnlag
+    data = data_status[
+        data_status.siste_status.isin(["VI_BISTÅR", "FULLFØRT"])
+    ].drop_duplicates("saksnummer", keep="last")
     fig.add_trace(
-        go.Bar(
-            x=saker_per_storrelsesgruppe.antallPersoner_gruppe,
-            y=saker_per_storrelsesgruppe.saksnummer,
-            text=saker_per_storrelsesgruppe.saksnummer,
-        ),
-        row=1,
-        col=1,
+        go.Histogram(
+            x=data.sykefraversprosent,
+            histnorm="percent",
+            nbinsx=100,
+            name="Biståtte saker",
+        )
     )
-    fig.update_yaxes(visible=False, row=1, col=1)
-    storrelse_sortering = (
-        data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
-    )
-    fig.update_xaxes(categoryorder="array", categoryarray=storrelse_sortering)
-
-    # Sykefraværsprosent
-    fig.add_trace(go.Histogram(x=data.sykefraversprosent), row=1, col=2)
     gjennomsnitt = data.sykefraversprosent.mean()
     fig.add_vline(
         x=gjennomsnitt,
         line_width=1,
         line_dash="solid",
-        line_color="red",
+        line_color=plotly_colors[0],
         annotation_text=f"gjennomsnitt={gjennomsnitt:.3}",
         annotation_position="top right",
-        annotation_bgcolor="red",
-        row=1,
-        col=2,
+        annotation_bgcolor=plotly_colors[0],
+        annotation_yshift=-20,
     )
 
-    # Sektor
-    virksomheter_per_sektor = (
-        data.groupby("sektor").saksnummer.nunique().reset_index().sort_values("sektor")
-    )
+    # For lavt sykefravær
+    data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "FOR_LAVT_SYKEFRAVÆR"]
     fig.add_trace(
-        go.Pie(
-            labels=virksomheter_per_sektor.sektor,
-            values=virksomheter_per_sektor.saksnummer,
-            text=virksomheter_per_sektor.sektor.str.capitalize(),
-            sort=False,
-        ),
-        row=2,
-        col=1,
+        go.Histogram(
+            x=data.sykefraversprosent,
+            histnorm="percent",
+            nbinsx=100,
+            name="For lavt sykefravær",
+        )
     )
-    fig.update_xaxes(visible=False, row=2, col=1)
+    gjennomsnitt = data.sykefraversprosent.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[1],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.3}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[1],
+    )
 
-    # Bransje
-    virksomheter_per_bransje = (
-        data.groupby("bransjeprogram", dropna=False)
-        .saksnummer.nunique()
-        .sort_values(ascending=True)
-        .reset_index()
-        .fillna("Ikke bransjeprogram")
-    )
-    fig.add_trace(
-        go.Bar(
-            y=virksomheter_per_bransje.bransjeprogram.str.capitalize(),
-            x=virksomheter_per_bransje.saksnummer,
-            text=virksomheter_per_bransje.saksnummer,
-            orientation="h",
-        ),
-        row=2,
-        col=2,
-    )
-    fig.update_xaxes(visible=False, row=2, col=2)
-
-    # Hoved næring
-    virksomheter_per_nering = (
-        data.groupby("hoved_nering")
-        .saksnummer.nunique()
-        .sort_values(ascending=True)
-        .reset_index()
-    )
-    show_n_neringer = 10
-    truncation_map = dict(zip(data.hoved_nering, data.hoved_nering_truncated))
-    fig.add_trace(
-        go.Bar(
-            y=virksomheter_per_nering[-show_n_neringer:].hoved_nering,
-            x=virksomheter_per_nering[-show_n_neringer:].saksnummer,
-            text=virksomheter_per_nering[-show_n_neringer:].saksnummer,
-            orientation="h",
-        ),
-        row=3,
-        col=2,
-    )
     fig.update_layout(
-        yaxis5_tickvals=list(truncation_map.keys()),
-        yaxis5_ticktext=list(truncation_map.values()),
+        height=500,
+        width=850,
+        xaxis_title="Sykefravær (%)",
+        yaxis_title="Andel saker (%)",
+        barmode="overlay",
     )
-    fig.update_xaxes(
-        visible=False,
-        row=3,
-        col=2,
-    )
+    fig.update_traces(opacity=0.75)
 
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def statusflyt(data_status: pd.DataFrame) -> go.Figure:
-    # Fjern slettede saker
-    data_status_uslettet = data_status[data_status.siste_status != "SLETTET"]
-    statusordre_uslettet = statusordre[:-1]
-
-    status_indexes = dict(zip(statusordre_uslettet, range(len(statusordre_uslettet))))
-    status_endringer = data_status_uslettet.value_counts(["forrige_status", "status"])
-    source_status = status_endringer.index.get_level_values(0).map(status_indexes)
-    target_status = status_endringer.index.get_level_values(1).map(status_indexes)
-    count_endringer = status_endringer.values
-
-    status_label = [x.capitalize().replace("_", " ") for x in statusordre_uslettet]
-    status_label = [x if x != "Ny" else "Alle saker" for x in status_label]
+def mindre_virksomhet(
+    data_status: pd.DataFrame, ikke_aktuell: pd.DataFrame
+) -> go.Figure():
     fig = go.Figure()
+
+    # Sammenlignesgrunnlag
+    data = data_status[
+        data_status.siste_status.isin(["VI_BISTÅR", "FULLFØRT"])
+    ].drop_duplicates("saksnummer", keep="last")
     fig.add_trace(
-        go.Sankey(
-            node=dict(
-                pad=200,
-                label=status_label,
-                # node position in the open interval (0, 1)
-                x=[0.001, 0.2, 0.4, 0.6, 0.8, 0.999, 0.999],
-                y=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.001],
+        go.Histogram(
+            x=data[~data.antallPersoner.isna()].antallPersoner.apply(
+                lambda x: 150 if x > 150 else x
             ),
-            link=dict(
-                source=source_status,
-                target=target_status,
-                value=count_endringer,
-            ),
+            histnorm="percent",
+            nbinsx=100,
+            name="Biståtte saker",
         )
     )
-    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
-
-
-def begrunnelse_ikke_aktuell(
-    ikke_aktuell: pd.DataFrame, begrunnelse_sortering: list
-) -> go.Figure:
-    fig = make_subplots(
-        rows=1,
-        cols=2,
-        specs=[[{"type": "domain", "r": 0.1}, {}]],
-        subplot_titles=("Hovedgrunn", "Detaljert begrunnelse"),
-        column_widths=[0.4, 0.6],
+    gjennomsnitt = data.antallPersoner.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[0],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.2f}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[0],
+        annotation_yshift=-20,
     )
+
+    # Mindre virksomhet
+    data = ikke_aktuell[ikke_aktuell.ikkeAktuelBegrunnelse == "MINDRE_VIRKSOMHET"]
+    fig.add_trace(
+        go.Histogram(
+            x=data[~data.antallPersoner.isna()].antallPersoner.apply(
+                lambda x: 150 if x > 150 else x
+            ),
+            histnorm="percent",
+            nbinsx=100,
+            name="Mindre virksomhet",
+        )
+    )
+    gjennomsnitt = data.antallPersoner.mean()
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=1,
+        line_dash="solid",
+        line_color=plotly_colors[1],
+        annotation_text=f"gjennomsnitt={gjennomsnitt:.2f}",
+        annotation_position="top right",
+        annotation_bgcolor=plotly_colors[1],
+    )
+
     fig.update_layout(
-        height=450,
+        height=500,
         width=850,
-        showlegend=False,
+        xaxis_title="Antall arbeidsforhold (%)",
+        yaxis_title="Andel saker (%)",
+        barmode="overlay",
     )
+    fig.update_traces(opacity=0.75)
 
-    # Hovedgrunn
-
-    ikke_aktuell["hovedgrunn"] = ikke_aktuell.ikkeAktuelBegrunnelse.map(
-        ikkeaktuell_hovedgrunn
-    )
-    antall_hovedgrunn = ikke_aktuell.hovedgrunn.value_counts().sort_values(
-        ascending=True
-    )
-    fig.add_trace(
-        go.Pie(
-            labels=antall_hovedgrunn.index,
-            values=antall_hovedgrunn.values,
-            textinfo="label+percent",
-            hole=0.4,
-            marker_colors=plotly_colors,
-        ),
-        row=1,
-        col=1,
-    )
-
-    # Detaljert begrunnelse
-
-    antall_saker_ikke_aktuell = ikke_aktuell.drop_duplicates(
-        "saksnummer", keep="last"
-    ).shape[0]
-
-    ikke_aktuell_per_begrunnelse = (
-        ikke_aktuell.groupby("ikkeAktuelBegrunnelse_lesbar")
-        .saksnummer.nunique()
-        .reset_index()
-        .sort_values(
-            "ikkeAktuelBegrunnelse_lesbar",
-            key=lambda col: col.map(lambda e: begrunnelse_sortering.index(e)),
-        )
-        .reset_index()
-    )
-    andel = [
-        x * 100 / antall_saker_ikke_aktuell
-        for x in ikke_aktuell_per_begrunnelse.saksnummer
-    ]
-    fig.add_trace(
-        go.Bar(
-            y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar,
-            x=andel,
-            text=[
-                f"{andel[i]:.2f}%, {ikke_aktuell_per_begrunnelse.saksnummer[i]}"
-                for i in range(len(andel))
-            ],
-            marker_color=plotly_colors,
-            orientation="h",
-        ),
-        row=1,
-        col=2,
-    )
-    for idx, begrunnelse in enumerate(
-        ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar
-    ):
-        fig.add_annotation(
-            x=0,
-            y=idx - 0.4,
-            text=begrunnelse,
-            xanchor="left",
-            showarrow=False,
-            row=1,
-            col=2,
-        )
-    fig.update_layout(plot_bgcolor="rgb(255,255,255)", bargap=0.4)
-    fig.update_xaxes(showticklabels=False, row=1, col=2)
-    fig.update_yaxes(autorange="reversed", visible=False, row=1, col=2)
-
-    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
-def leveranse_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
-    data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
-    alle_måneder = alle_måneder_mellom_datoer(data_leveranse.sistEndret.min())
+def andel_fullforte_saker_med_leveranse_per_måned(
+    data_status: pd.DataFrame, data_leveranse: pd.DataFrame
+) -> go.Figure():
+    første_dato = data_leveranse.sistEndret.min()
+    alle_måneder = alle_måneder_mellom_datoer(første_dato)
     antall_mnd = min(len(alle_måneder), 12)
 
-    saker_per_måned = (
-        data_leveranse[data_leveranse.status == "LEVERT"]
-        .groupby("fullfort_yearmonth")
-        .saksnummer.size()
+    fullført_per_måned = (
+        data_status[
+            (data_status.status == "FULLFØRT")
+            & (data_status.endretTidspunkt >= første_dato.strftime("%Y-%m-%d"))
+        ]
+        .endretTidspunkt_måned.value_counts()
+        .sort_index()
         .reindex(alle_måneder, fill_value=0)
     )
+
+    saker_med_leveranser = data_leveranse.saksnummer.unique()
+    data_status["med_leveranse"] = False
+    data_status.loc[
+        data_status.saksnummer.isin(saker_med_leveranser), "med_leveranse"
+    ] = True
+    fullført_per_måned_med_leveranse = (
+        data_status[(data_status.status == "FULLFØRT") & data_status.med_leveranse]
+        .endretTidspunkt_måned.value_counts()
+        .sort_index()
+    )
+
+    andel_fullført_med_leveranse = fullført_per_måned_med_leveranse / fullført_per_måned
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(
+            x=andel_fullført_med_leveranse.index[-antall_mnd:],
+            y=100 * andel_fullført_med_leveranse.values[-antall_mnd:],
+        )
+    )
+    fig.update_layout(
+        height=500,
+        width=850,
+        xaxis_title="Fullført måned",
+        yaxis_title="Andel fullførte saker med leveranse (%)",
+    )
+
+    fig.add_hline(
+        y=100,
+        line_dash="dash",
+        line_color=plotly_colors[1],
+    )
+    fig.update_yaxes(range=[0, 110])
+
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
+def andel_fullforte_saker_med_leveranse_over_tid(
+    data_status: pd.DataFrame, data_leveranse: pd.DataFrame
+) -> go.Figure():
+    saker_med_leveranser = data_leveranse.saksnummer.unique()
+    data_status["med_leveranse"] = False
+    data_status.loc[
+        data_status.saksnummer.isin(saker_med_leveranser), "med_leveranse"
+    ] = True
+
+    første_dato = data_leveranse.sistEndret.min()
+    now = datetime.now()
+    alle_datoer = pd.date_range(første_dato, now, freq="d", normalize=True)
+
+    fullførte_saker_over_tid = []
+    saker_med_leveranser_over_tid = []
+
+    data = data_status[data_status.status == "FULLFØRT"]
+    for dato in alle_datoer:
+        fullførte_saker_over_tid.append(
+            data[
+                (data.endretTidspunkt >= første_dato.strftime("%Y-%m-%d"))
+                & (data.endretTidspunkt < dato)
+            ].saksnummer.nunique()
+        )
+        saker_med_leveranser_over_tid.append(
+            data[
+                (data.endretTidspunkt < dato) & data.med_leveranse
+            ].saksnummer.nunique()
+        )
+
+    andel_saker_med_leveranser = [
+        saker_med_leveranser_over_tid[i] / fullførte_saker_over_tid[i]
+        if fullførte_saker_over_tid[i] > 0
+        else 0
+        for i in range(len(alle_datoer))
+    ]
 
     fig = go.Figure()
     fig.add_trace(
         go.Scatter(
-            x=saker_per_måned.index[-antall_mnd:],
-            y=saker_per_måned.values[-antall_mnd:],
+            x=alle_datoer,
+            y=andel_saker_med_leveranser,
         )
     )
-
     fig.update_layout(
         height=500,
         width=850,
-        xaxis_title="Fullført måned",
-        yaxis_title="Antall fullførte leveranser",
-    )
-    return annotate_ikke_offisiell_statistikk(fig)
-
-
-def leveranse_tjeneste_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
-    data_leveranse["fullfort_yearmonth"] = data_leveranse.fullfort.dt.strftime("%Y-%m")
-    saker_per_tjeneste_og_måned = (
-        data_leveranse[data_leveranse.status == "LEVERT"]
-        .groupby(["iaTjenesteNavn", "fullfort_yearmonth"])
-        .saksnummer.size()
-        .reset_index()
+        xaxis_title="Dato",
+        yaxis_title="Akumulert andel fullførte saker med leveranse",
     )
 
-    fig = go.Figure()
-
-    alle_måneder = alle_måneder_mellom_datoer(data_leveranse.sistEndret.min())
-    antall_mnd = min(len(alle_måneder), 12)
-
-    for tjeneste in saker_per_tjeneste_og_måned.iaTjenesteNavn.unique():
-        filtrert = (
-            saker_per_tjeneste_og_måned[
-                saker_per_tjeneste_og_måned.iaTjenesteNavn == tjeneste
-            ]
-            .set_index("fullfort_yearmonth")
-            .reindex(alle_måneder, fill_value=0)
-        )
-        fig.add_trace(
-            go.Scatter(
-                x=filtrert.index[-antall_mnd:],
-                y=filtrert.saksnummer[-antall_mnd:],
-                name=tjeneste,
-            )
-        )
-
-    fig.update_layout(
-        height=500,
-        width=850,
-        xaxis_title="Fullført måned",
-        yaxis_title="Antall fullførte leveranser",
-        legend_orientation="h",
-        legend_y=1.1,
-    )
-    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
-
-
-def gjennomstrømmingstall(data_status: pd.DataFrame, status="VI_BISTÅR") -> go.Figure:
-    alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
-    antall_mnd = min(len(alle_måneder), 12)
-    inn = (
-        data_status[data_status.status == status]
-        .endretTidspunkt.dt.strftime("%Y-%m")
-        .value_counts()
-        .sort_index()
-        .reindex(alle_måneder, fill_value=0)[-antall_mnd:]
-    )
-    ut = (
-        data_status[data_status.forrige_status == status]
-        .endretTidspunkt.dt.strftime("%Y-%m")
-        .value_counts()
-        .sort_index()
-        .reindex(alle_måneder, fill_value=0)[-antall_mnd:]
-    )
-
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=inn.index, y=inn.values, name="inn"))
-    fig.add_trace(go.Scatter(x=ut.index, y=ut.values, name="ut"))
-    fig.update_layout(
-        height=500,
-        width=850,
-        xaxis_title="Måned",
-        yaxis_title="Antall saker",
-    )
     return annotate_ikke_offisiell_statistikk(fig)

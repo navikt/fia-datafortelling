@@ -51,17 +51,22 @@ from code.datahandler import (
 )
 from code.plots import (
     dager_siden_siste_oppdatering,
+    andel_fullforte_saker_med_leveranse_per_måned,
+)
+from code.plots_statistikk import (
+    statusflyt,
+    gjennomstrømmingstall,
+    saker_per_status_per_måned,
     antall_saker_per_status,
-    antall_leveranser_per_tjeneste,
+    aktive_saker_per_fylke,
     virksomhetsprofil,
+)
+from code.plots_leveranse import (
+    antall_leveranser_per_tjeneste,
+    antall_leveranser_per_modul,
     begrunnelse_ikke_aktuell,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
-    gjennomstrømmingstall,
-)
-from code.plots_datakvalitet import (
-    saker_per_status_per_måned,
-    andel_fullforte_saker_med_leveranse_per_måned,
 )
 from code.helper import (
     ikke_aktuell_begrunnelse_sortering,

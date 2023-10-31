@@ -50,19 +50,23 @@ from code.datahandler import (
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
 from code.plots import (
-    aktive_saker_per_fylke,
     dager_siden_siste_oppdatering,
+)
+from code.plots_statistikk import (
+    statusflyt,
+    gjennomstrømmingstall,
+    saker_per_status_per_måned,
     antall_saker_per_status,
+    aktive_saker_per_fylke,
+    virksomhetsprofil,
+)
+from code.plots_leveranse import (
     antall_leveranser_per_tjeneste,
     antall_leveranser_per_modul,
-    virksomhetsprofil,
-    statusflyt,
     begrunnelse_ikke_aktuell,
     leveranse_tjeneste_per_maaned,
-    gjennomstrømmingstall,
+    moduler_per_maaned,
 )
-from code.plots_datakvalitet import saker_per_status_per_måned
-from code.tables import moduler_per_maaned
 from code.helper import (
     modul_sortering,
     ikke_aktuell_begrunnelse_sortering,
