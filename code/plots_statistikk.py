@@ -654,36 +654,6 @@ def antall_brukere_per_fylke_og_nav_enhet(data_statistikk: pd.DataFrame) -> go.F
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_brukere_akkumulert_over_tid(data_statistikk: pd.DataFrame) -> go.Figure():
-    antall_brukere_akkumulert_over_tid = (
-        data_statistikk[["endretTidspunkt", "endretAv"]]
-        .assign(
-            endretTidspunkt_date=data_statistikk.endretTidspunkt.dt.date.astype(str)
-        )
-        .sort_values("endretTidspunkt", ascending=True)
-        .drop_duplicates("endretAv", keep="first")
-        .groupby("endretTidspunkt_date")
-        .endretAv.nunique()
-        .cumsum()
-    )
-
-    fig = go.Figure()
-    fig.add_trace(
-        go.Scatter(
-            x=antall_brukere_akkumulert_over_tid.index,
-            y=antall_brukere_akkumulert_over_tid.values,
-        )
-    )
-    fig.update_layout(
-        height=500,
-        width=850,
-        xaxis_title="Dato",
-        yaxis_title="Antall brukere",
-    )
-
-    return annotate_ikke_offisiell_statistikk(fig)
-
-
 def antall_brukere_per_måned(data_statistikk: pd.DataFrame) -> go.Figure():
     antall_brukere_per_måned = data_statistikk.groupby(
         "endretTidspunkt_måned"

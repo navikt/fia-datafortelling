@@ -53,7 +53,6 @@ from code.plots_statistikk import (
     median_og_gjennomsnitt_av_tid_mellom_statusendringer,
     fullført_per_måned,
     antall_saker_per_eier,
-    antall_brukere_akkumulert_over_tid,
     antall_brukere_per_måned,
     antall_brukere_per_fylke,
     antall_brukere_per_fylke_og_nav_enhet,
@@ -300,11 +299,6 @@ antall_leveranser_per_sak(data_status, data_leveranse_sistestatus)
 Antall unike brukere som har gjort noe som fører til en statusendring.
 
 ::: {.panel-tabset}
-## Akkumulert over tid
-```{python}
-antall_brukere_akkumulert_over_tid(data_statistikk)
-```
-
 ## Per måned
 ```{python}
 antall_brukere_per_måned(data_statistikk)
