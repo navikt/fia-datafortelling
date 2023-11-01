@@ -45,8 +45,6 @@ from code.datahandler import (
 )
 from code.plots import (
     urørt_saker_over_tid,
-    for_lavt_sykefravær,
-    mindre_virksomhet,
     andel_fullforte_saker_med_leveranse_per_måned,
     andel_fullforte_saker_med_leveranse_over_tid,
     antall_leveranser_per_sak,
@@ -276,23 +274,6 @@ Vise antall saker i status "Vi bistår" eller "Fullført" per eier. Gjelder bare
 
 ```{python}
 antall_saker_per_eier(data_status)
-```
-
-
-## Stemmer begrunnelse på ikke aktuell med virksomhetsprofil?
-Biståtte saker er de i status "Vi bistår" eller "Fullført".
-
-### For lavt sykefravær
-Sammenligner saker i status ikke aktuell og begrunnelse "For lavt sykefravær", med biståtte saker.
-```{python}
-for_lavt_sykefravær(data_status, ikke_aktuell)
-```
-
-### Mindre virksomhet
-Sammenligner saker i status ikke aktuell og begrunnelse "Mindre virksomher", med biståtte saker.
-Alle saker med over 150 arbeidsforhold havner i den siste søylen.
-```{python}
-mindre_virksomhet(data_status, ikke_aktuell)
 ```
 
 
