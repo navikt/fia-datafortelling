@@ -45,8 +45,6 @@ from code.datahandler import (
 )
 from code.plots import (
     urørt_saker_over_tid,
-    andel_fullforte_saker_med_leveranse_per_måned,
-    andel_fullforte_saker_med_leveranse_over_tid,
     antall_leveranser_per_sak,
 )
 from code.plots_statistikk import (
@@ -280,15 +278,6 @@ antall_saker_per_eier(data_status)
 ## Antall fullførte saker per måned
 ```{python}
 fullført_per_måned(data_status)
-```
-
-
-## Andel fullførte saker med leveranse registrert
-```{python}
-andel_fullforte_saker_med_leveranse_per_måned(data_status, data_leveranse)
-```
-```{python}
-andel_fullforte_saker_med_leveranse_over_tid(data_status, data_leveranse)
 ```
 
 
