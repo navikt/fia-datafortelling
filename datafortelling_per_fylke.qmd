@@ -60,7 +60,6 @@ from code.plots_statistikk import (
 )
 from code.plots_leveranse import (
     antall_leveranser_per_tjeneste,
-    antall_leveranser_per_modul,
     begrunnelse_ikke_aktuell,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
@@ -180,7 +179,7 @@ dager_siden_siste_oppdatering(
 
 
 ## Leveranser
-Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester/moduler som er under arbeid eller levert.
+Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester som er under arbeid eller levert.
 En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
 Slettet leveranser vises ikke i grafene under.
 

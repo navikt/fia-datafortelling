@@ -45,30 +45,6 @@ def pretty_time_delta(seconds: int) -> str:
         return "%s %d sek" % (sign_string, seconds)
 
 
-def modul_sortering(data_siste_leveranse: pd.DataFrame) -> pd.DataFrame:
-    """
-    Returnerer en dataframe sortert på IA-tjeneste og IA-modul
-    """
-    tjeneste_sortering = (
-        data_siste_leveranse.groupby("iaTjenesteNavn")
-        .saksnummer.nunique()
-        .sort_values(ascending=False)
-        .index.to_list()
-    )
-    tjeneste_sortering_map = dict(
-        zip(tjeneste_sortering, range(len(tjeneste_sortering)))
-    )
-    modul_sortering = (
-        data_siste_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
-        .saksnummer.nunique()
-        .sort_values(ascending=False)
-        .reset_index()
-        .sort_values("iaTjenesteNavn", key=lambda col: col.map(tjeneste_sortering_map))
-        .reset_index()
-    )[["iaTjenesteNavn", "iaModulNavn"]]
-    return modul_sortering
-
-
 def ikke_aktuell_begrunnelse_sortering(ikke_aktuell: pd.DataFrame) -> list:
     """
     Returnerer en sortert liste av ikke aktuell begrunnelse

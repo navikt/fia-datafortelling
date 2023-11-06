@@ -1,57 +1,9 @@
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from IPython.display import Markdown
-from tabulate import tabulate
 
 from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
 from code.konstanter import plotly_colors, ikkeaktuell_hovedgrunn
-
-
-def antall_leveranser_per_modul(
-    data_leveranse: pd.DataFrame, modul_sortering: pd.DataFrame
-) -> go.Figure:
-    leveranser_per_modul = (
-        data_leveranse.groupby(["iaTjenesteNavn", "iaModulNavn"])
-        .saksnummer.nunique()
-        .reset_index()
-    )
-    # Inkluder alle moduler i dataframen ved å fylle med null der modulene mangler
-    # og sorterer tjenester/moduler basert på modul_sortering
-    leveranser_per_modul = modul_sortering.merge(
-        leveranser_per_modul, how="left", on=["iaTjenesteNavn", "iaModulNavn"]
-    ).fillna(0)
-
-    fig = go.Figure()
-
-    for tjeneste in leveranser_per_modul.iaTjenesteNavn.unique():
-        leveranser_per_modul_filtered = leveranser_per_modul[
-            leveranser_per_modul.iaTjenesteNavn == tjeneste
-        ]
-        fig.add_trace(
-            go.Bar(
-                y=leveranser_per_modul_filtered.iaModulNavn,
-                x=leveranser_per_modul_filtered.saksnummer,
-                text=leveranser_per_modul_filtered.saksnummer,
-                orientation="h",
-                name=tjeneste,
-            )
-        )
-
-    fig.update_layout(
-        height=500,
-        width=800,
-        plot_bgcolor="rgb(255,255,255)",
-        xaxis_showticklabels=False,
-        xaxis_title="Antall saker per modul",
-        xaxis_title_standoff=80,
-        yaxis_autorange="reversed",
-        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1.1),
-    )
-    fig.update_yaxes(categoryorder="array", categoryarray=modul_sortering)
-
-    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
 def leveranse_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
@@ -116,8 +68,8 @@ def leveranse_tjeneste_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
     fig.update_layout(
         height=500,
         width=850,
-        xaxis_title="Fullført måned",
-        yaxis_title="Antall fullførte leveranser",
+        xaxis_title="Levert måned",
+        yaxis_title="Antall leverte IA-tjenester",
         legend_orientation="h",
         legend_y=1.1,
     )
@@ -147,7 +99,7 @@ def forskjell_frist_fullfort(data_leveranse: pd.DataFrame) -> go.Figure():
     fig.update_layout(
         height=500,
         width=850,
-        yaxis_title="Antall fullførte moduler",
+        yaxis_title="Antall fullførte IA-tjenester",
         xaxis=dict(
             title="Antall dager",
             rangeslider=dict(visible=True),
@@ -332,38 +284,3 @@ def antall_leveranser_per_tjeneste(
     )
 
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
-
-
-def moduler_per_maaned(data_leveranse: pd.DataFrame) -> Markdown:
-    fullforte_saker = (
-        data_leveranse.status == "LEVERT"
-    ) & ~data_leveranse.fullfort.isna()
-    data_leveranse.loc[fullforte_saker, "fullfort_yearmonth"] = data_leveranse[
-        fullforte_saker
-    ].fullfort.apply(lambda x: f"{x.year}/{x.month:02d}")
-
-    table = pd.pivot_table(
-        data=(
-            data_leveranse.groupby(
-                ["iaTjenesteNavn", "iaModulNavn", "fullfort_yearmonth"]
-            )
-            .saksnummer.size()
-            .reset_index()
-        ),
-        values="saksnummer",
-        index=["iaTjenesteNavn", "iaModulNavn"],
-        columns="fullfort_yearmonth",
-        aggfunc=np.sum,
-    )
-
-    table = (
-        table.fillna(0)
-        .assign(Total=table.sum(axis=1))
-        .astype(int)
-        .sort_values("Total", ascending=False)
-        .sort_values("iaTjenesteNavn")
-        .reset_index()
-        .rename(columns={"iaTjenesteNavn": "IA-tjeneste", "iaModulNavn": "IA-modul"})
-    )
-
-    return Markdown(tabulate(table.to_numpy(), headers=table.columns))

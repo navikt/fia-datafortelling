@@ -43,10 +43,7 @@ from code.datahandler import (
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
-from code.plots import (
-    urørt_saker_over_tid,
-    antall_leveranser_per_sak,
-)
+from code.plots import urørt_saker_over_tid
 from code.plots_statistikk import (
     saker_per_status_over_tid,
     dager_mellom_statusendringer,
@@ -283,15 +280,6 @@ fullført_per_måned(data_status)
 ## Forskjellen mellom frist og fullført dato
 ```{python}
 forskjell_frist_fullfort(data_leveranse_sistestatus)
-```
-
-
-## Antall moduler per sak
-Grafen nedenfor viser moduler per sak, i.e., hvor mange moduler som leveres til virksomheter under bistand.
-Her gjelder alle saker som har leveranser registert eller kunne ha hatt det, i.e., saker fullført etter det ble mulig å registrere leveranser (mars 2023), og saker i bistand nå.
-
-```{python}
-antall_leveranser_per_sak(data_status, data_leveranse_sistestatus)
 ```
 
 
