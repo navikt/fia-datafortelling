@@ -34,6 +34,8 @@ spec:
       value: {{ quarto_id }}
     - name: QUARTO_ID_DATAKVALITET
       value: {{ quarto_id_datakvalitet }}
+    - name: QUARTO_ID_TEAMPIA
+      value: {{ quarto_id_teampia }}
     - name: GCP_PROJECT
       value: {{ project }}
     - name: DATASET
