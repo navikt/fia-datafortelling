@@ -1,0 +1,31 @@
+---
+title: "PIA nøkkeltall"
+subtitle: Metrikker team PIA ser på kickstart av uken.
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
+author: Team Pia
+author-title: "Eier"
+execute:
+    echo: false
+    warning: false
+    daemon: false
+format:
+    html:
+        toc: true
+        toc-title: Indeks
+        page-layout: full
+        embed-resources: true
+jupyter: python3
+---
+
+Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
+Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
+
+Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
+
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
