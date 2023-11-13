@@ -33,7 +33,6 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 import os
 
 from code.datahandler import (
-    load_data,
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -64,8 +63,8 @@ from code.plots_leveranse import (
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
-raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1")
-raw_data_leveranse = load_data(PROJECT, DATASET, "ia-sak-leveranse-v1")
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)

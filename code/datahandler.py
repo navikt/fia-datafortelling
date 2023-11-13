@@ -6,19 +6,11 @@ from datetime import datetime, timedelta
 from code.konstanter import fylker, intervall_sortering
 
 
-def load_data(project: str, dataset: str, table: str) -> pd.DataFrame:
+def load_data_deduplicate(
+    project: str, dataset: str, table: str, distinct_colunms: str
+) -> pd.DataFrame:
     """
-    Henter data fra BigQuery
-    """
-    sql_query = f"SELECT  * FROM `{project}.{dataset}.{table}`"
-    bq_client = Client(project=project)
-    data = bq_client.query(query=sql_query).to_dataframe()
-    return data
-
-
-def load_data_deduplicate(project: str, dataset: str, table: str) -> pd.DataFrame:
-    """
-    Henter data fra BigQuery og fjerner duplikater basert på tidsstempel
+    Henter data fra BigQuery og fjerner duplikater med å beholde siste tidsstempel av repeterende distinct_colunms.
     """
     sql_query = f"""
         SELECT
@@ -26,7 +18,7 @@ def load_data_deduplicate(project: str, dataset: str, table: str) -> pd.DataFram
         FROM (
             SELECT
                 *,
-                row_number() over (partition by endretAvHendelseId order by tidsstempel desc) radnummerBasertPaaTidsstempel
+                row_number() over (partition by {distinct_colunms} order by tidsstempel desc) radnummerBasertPaaTidsstempel
             FROM `{project}.{dataset}.{table}`
         ) WHERE radnummerBasertPaaTidsstempel = 1;
     """
