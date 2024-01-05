@@ -56,8 +56,7 @@ from code.plots_statistikk import (
     gjennomstrømmingstall,
     saker_per_status_per_måned,
     antall_saker_per_status,
-    aktive_saker_per_navkontor,
-    aktive_saker_per_fylke,
+    aktive_saker_per_kolonne,
     virksomhetsprofil,
 )
 from code.plots_leveranse import (
@@ -121,13 +120,13 @@ gjennomstrømmingstall(data_status)
 ## Antall aktive saker per resultatområde
 
 ```{python}
-aktive_saker_per_navkontor(data_status)
+aktive_saker_per_kolonne(data_status, "navkontor")
 ```
 
 ## Antall aktive saker per fylke
 
 ```{python}
-aktive_saker_per_fylke(data_status)
+aktive_saker_per_kolonne(data_status, "fylkesnavn")
 ```
 
 

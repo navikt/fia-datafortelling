@@ -152,84 +152,38 @@ def saker_per_status_over_tid(
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def aktive_saker_per_navkontor(data_status: pd.DataFrame) -> go.Figure:
-    navkontorordre: list = (
+def aktive_saker_per_kolonne(data_status: pd.DataFrame, kolonne: str) -> go.Figure:
+    kolonne_ordre: list = (
         data_status[data_status.aktiv_sak]
-        .groupby("navkontor")
+        .groupby(kolonne)
         .saksnummer.nunique()
         .sort_values(ascending=False)
         .index.tolist()
     )
 
-    aktive_saker_per_navkontor_og_status: pd.DataFrame = (
+    aktive_saker_per_kolonne_og_status: pd.DataFrame = (
         data_status[data_status.aktiv_sak]
-        .groupby(["navkontor", "siste_status"])
+        .groupby([kolonne, "siste_status"])
         .saksnummer.nunique()
         .reset_index()
         .sort_values(
             by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e))
         )
         .sort_values(
-            by="navkontor", key=lambda col: -col.map(lambda e: navkontorordre.index(e))
+            by=kolonne, key=lambda col: -col.map(lambda e: kolonne_ordre.index(e))
         )
     )
 
     fig = go.Figure()
 
-    for status in aktive_saker_per_navkontor_og_status.siste_status.unique():
-        aktive_saker_per_navkontor_filtered = aktive_saker_per_navkontor_og_status[
-            aktive_saker_per_navkontor_og_status.siste_status == status
+    for status in aktive_saker_per_kolonne_og_status.siste_status.unique():
+        aktive_saker_per_kolonne_filtered = aktive_saker_per_kolonne_og_status[
+            aktive_saker_per_kolonne_og_status.siste_status == status
         ]
         fig.add_trace(
             go.Bar(
-                y=aktive_saker_per_navkontor_filtered["navkontor"],
-                x=aktive_saker_per_navkontor_filtered["saksnummer"],
-                name=status.capitalize().replace("_", " "),
-                orientation="h",
-            )
-        )
-
-    fig.update_layout(
-        xaxis_title="Antall aktive saker",
-        barmode="stack",
-        hovermode="y unified",
-        legend_traceorder="normal",
-    )
-    return annotate_ikke_offisiell_statistikk(fig)
-
-
-def aktive_saker_per_fylke(data_status: pd.DataFrame) -> go.Figure:
-    fylkeordre: list = (
-        data_status[data_status.aktiv_sak]
-        .groupby("fylkesnavn")
-        .saksnummer.nunique()
-        .sort_values(ascending=False)
-        .index.tolist()
-    )
-
-    aktive_saker_per_fylke_og_status: pd.DataFrame = (
-        data_status[data_status.aktiv_sak]
-        .groupby(["fylkesnavn", "siste_status"])
-        .saksnummer.nunique()
-        .reset_index()
-        .sort_values(
-            by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e))
-        )
-        .sort_values(
-            by="fylkesnavn", key=lambda col: -col.map(lambda e: fylkeordre.index(e))
-        )
-    )
-
-    fig = go.Figure()
-
-    for status in aktive_saker_per_fylke_og_status.siste_status.unique():
-        aktive_saker_per_fylke_filtered = aktive_saker_per_fylke_og_status[
-            aktive_saker_per_fylke_og_status.siste_status == status
-        ]
-        fig.add_trace(
-            go.Bar(
-                y=aktive_saker_per_fylke_filtered["fylkesnavn"],
-                x=aktive_saker_per_fylke_filtered["saksnummer"],
+                y=aktive_saker_per_kolonne_filtered[kolonne],
+                x=aktive_saker_per_kolonne_filtered["saksnummer"],
                 name=status.capitalize().replace("_", " "),
                 orientation="h",
             )
