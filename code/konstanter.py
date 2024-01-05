@@ -9,6 +9,7 @@ statusordre = [
     "SLETTET",
 ]
 
+# 'fylker' er fylker før og etter kommune- og fylkesendringer 1.1.2024
 fylker = {
     "03": "Oslo",
     "11": "Rogaland",
@@ -31,7 +32,8 @@ fylker = {
     "55": "Troms",
 }
 
-navkontor = {
+# Resultatområder forblir uendret etter kommune- og fylkesendringer 1.1.2024
+resultatområder = {
     "03": "Oslo",
     "11": "Rogaland",
     "15": "Møre og Romsdal",

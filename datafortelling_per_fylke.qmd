@@ -54,7 +54,6 @@ from code.plots_statistikk import (
     gjennomstrømmingstall,
     saker_per_status_per_måned,
     antall_saker_per_status,
-    aktive_saker_per_fylke,
     virksomhetsprofil,
 )
 from code.plots_leveranse import (
@@ -69,7 +68,7 @@ from code.helper import (
 )
 from code.konstanter import (
     ikkeaktuell_hovedgrunn,
-    navkontor,
+    resultatområder,
 )
 
 
@@ -79,15 +78,15 @@ raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
 fylkesnavn = os.environ['FYLKESNAVN']
-for nr, navn in navkontor.items():
+for _, navn in resultatområder.items():
     if navn == fylkesnavn:
         resultatområde = navn
 
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 
 raw_data_leveranse = raw_data_leveranse.merge(
-    data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram", "navkontor"]], 
-    how='left', 
+    data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram", "resultatomrade"]],
+    how='left',
     on='saksnummer',
 )
 
@@ -97,12 +96,12 @@ data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
 data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
-data_statistikk_fylke = data_statistikk[data_statistikk.navkontor == resultatområde]
-data_status_fylke = data_status[data_status.navkontor == resultatområde]
-data_eierskap_fylke = data_eierskap[data_eierskap.navkontor == resultatområde]
-data_leveranse_fylke = data_leveranse[data_leveranse.navkontor == resultatområde]
-data_leveranse_sistestatus_fylke = data_leveranse_sistestatus[data_leveranse_sistestatus.navkontor == resultatområde]
-ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.navkontor == resultatområde]
+data_statistikk_resultatområde = data_statistikk[data_statistikk.resultatomrade == resultatområde]
+data_status_resultatområde = data_status[data_status.resultatomrade == resultatområde]
+data_eierskap_resultatområde = data_eierskap[data_eierskap.resultatomrade == resultatområde]
+data_leveranse_resultatområde = data_leveranse[data_leveranse.resultatomrade == resultatområde]
+data_leveranse_sistestatus_resultatområde = data_leveranse_sistestatus[data_leveranse_sistestatus.resultatomrade == resultatområde]
+ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.resultatomrade == resultatområde]
 ```
 
 
@@ -111,20 +110,20 @@ ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.navkontor == resultatområde]
 ::: {.panel-tabset}
 # Nåsituasjon
 ```{python}
-antall_saker_per_status(data_status_fylke[data_status.aktiv_sak])
+antall_saker_per_status(data_status_resultatområde[data_status.aktiv_sak])
 ```
 
 # Historikk
 Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år siden.
 ```{python}
-saker_per_status_per_måned(data_status_fylke)
+saker_per_status_per_måned(data_status_resultatområde)
 ```
 
 # Gjennomstrømmingstall
 Viser hvor mange saker som går inn og ut av status **Vi bistår**.
 Fra status Vi bistår er det mulig å skifte til enten Fullført eller Ikke aktuell.
 ```{python}
-gjennomstrømmingstall(data_status_fylke)
+gjennomstrømmingstall(data_status_resultatområde)
 ```
 :::
 
@@ -141,38 +140,38 @@ Grafene gir en indikasjon på hvor mange saker som ligger urørt i Fia.
 ::: {.panel-tabset}
 ## Alle aktive saker
 ```{python}
-dager_siden_siste_oppdatering(data_status_fylke, data_eierskap_fylke, data_leveranse_fylke)
+dager_siden_siste_oppdatering(data_status_resultatområde, data_eierskap_resultatområde, data_leveranse_resultatområde)
 ```
 ## Vurderes
 ```{python}
 dager_siden_siste_oppdatering(
-    data_status_fylke[data_status_fylke.siste_status=="VURDERES"],
-    data_eierskap_fylke,
-    data_leveranse_fylke
+    data_status_resultatområde[data_status_resultatområde.siste_status=="VURDERES"],
+    data_eierskap_resultatområde,
+    data_leveranse_resultatområde
 )
 ```
 ## Kontaktes
 ```{python}
 dager_siden_siste_oppdatering(
-    data_status_fylke[data_status_fylke.siste_status=="KONTAKTES"],
-    data_eierskap_fylke,
-    data_leveranse_fylke
+    data_status_resultatområde[data_status_resultatområde.siste_status=="KONTAKTES"],
+    data_eierskap_resultatområde,
+    data_leveranse_resultatområde
 )
 ```
 ## Kartlegges
 ```{python}
 dager_siden_siste_oppdatering(
-    data_status_fylke[data_status_fylke.siste_status=="KARTLEGGES"],
-    data_eierskap_fylke,
-    data_leveranse_fylke
+    data_status_resultatområde[data_status_resultatområde.siste_status=="KARTLEGGES"],
+    data_eierskap_resultatområde,
+    data_leveranse_resultatområde
 )
 ```
 ## Vi bistår
 ```{python}
 dager_siden_siste_oppdatering(
-    data_status_fylke[data_status_fylke.siste_status=="VI_BISTÅR"],
-    data_eierskap_fylke,
-    data_leveranse_fylke
+    data_status_resultatområde[data_status_resultatområde.siste_status=="VI_BISTÅR"],
+    data_eierskap_resultatområde,
+    data_leveranse_resultatområde
 )
 ```
 :::
@@ -190,11 +189,11 @@ PS: En sak kan ha flere leveranser.
 ::: {.panel-tabset}
 # Totalt
 ```{python}
-leveranse_per_maaned(data_leveranse_sistestatus_fylke)
+leveranse_per_maaned(data_leveranse_sistestatus_resultatområde)
 ```
 # Per tjeneste
 ```{python}
-leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_fylke)
+leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_resultatområde)
 ```
 :::
 
@@ -202,9 +201,9 @@ leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_fylke)
 #### Antall saker som har leveranser registrert med IA-tjenester
 ```{python}
 # Filtrerer bort saker avsluttet for over ett år siden
-data_status_fylke_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status_fylke)
-data_leveranse_sistestatus_fylke_siste_år = data_leveranse_sistestatus_fylke[
-    data_leveranse_sistestatus_fylke.saksnummer.isin(data_status_fylke_siste_år.saksnummer.unique())
+data_status_resultatområde_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status_resultatområde)
+data_leveranse_sistestatus_resultatområde_siste_år = data_leveranse_sistestatus_resultatområde[
+    data_leveranse_sistestatus_resultatområde.saksnummer.isin(data_status_resultatområde_siste_år.saksnummer.unique())
 ]
 
 alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_leveranse_sistestatus)
@@ -214,7 +213,7 @@ alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_leveranse_siste
 # Alle virksomheter
 PS: Én sak kan ha leveranser i flere tjenester.
 ```{python}
-antall_leveranser_per_tjeneste(data_leveranse_sistestatus_fylke_siste_år, alle_iatjenester_og_status)
+antall_leveranser_per_tjeneste(data_leveranse_sistestatus_resultatområde_siste_år, alle_iatjenester_og_status)
 ```
 
 # Per bransjeprogram
@@ -223,8 +222,8 @@ PS: Én sak kan ha leveranser i flere tjenester.
 ::: {.panel-tabset}
 # Barnehager
 ```{python}
-data = data_leveranse_sistestatus_fylke_siste_år[
-    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="BARNEHAGER"
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="BARNEHAGER"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -234,8 +233,8 @@ else:
 
 # Sykehjem
 ```{python}
-data = data_leveranse_sistestatus_fylke_siste_år[
-    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="SYKEHJEM"
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="SYKEHJEM"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -245,8 +244,8 @@ else:
 
 # Sykehus
 ```{python}
-data = data_leveranse_sistestatus_fylke_siste_år[
-    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="SYKEHUS"
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="SYKEHUS"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -256,8 +255,8 @@ else:
 
 # Næringsmiddelindustri
 ```{python}
-data = data_leveranse_sistestatus_fylke_siste_år[
-    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -267,8 +266,8 @@ else:
 
 # Bygg og anlegg
 ```{python}
-data = data_leveranse_sistestatus_fylke_siste_år[
-    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram.isin(["BYGG", "ANLEGG"])
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram.isin(["BYGG", "ANLEGG"])
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -278,8 +277,8 @@ else:
 
 # Transport
 ```{python}
-data = data_leveranse_sistestatus_fylke_siste_år[
-    data_leveranse_sistestatus_fylke_siste_år.bransjeprogram=="TRANSPORT"
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="TRANSPORT"
 ]
 if data.empty:
     print("Det finnes ikke registerte leveranser i denne bransjen")
@@ -306,14 +305,14 @@ Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](ht
 ## Før bistand
 Saker med nåværende status "Vurderes", "Kontaktes" eller "Kartlegges".\
 ```{python}
-data_input = data_status_fylke[data_status_fylke.siste_status.isin(["VURDERES", "KONTAKTES", "KARTLEGGES"])]
+data_input = data_status_resultatområde[data_status_resultatområde.siste_status.isin(["VURDERES", "KONTAKTES", "KARTLEGGES"])]
 virksomhetsprofil(data_input)
 ```
 
 ## I bistand
 Saker med nåværende status "Vi bistår".\
 ```{python}
-data_input = data_status_fylke[data_status_fylke.siste_status=="VI_BISTÅR"]
+data_input = data_status_resultatområde[data_status_resultatområde.siste_status=="VI_BISTÅR"]
 virksomhetsprofil(data_input)
 ```
 
@@ -321,7 +320,7 @@ virksomhetsprofil(data_input)
 Saker som ble satt til "Ikke aktuell" i de siste 365 dagene.\
 
 ```{python}
-data_input = data_status_fylke[data_status_fylke.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
+data_input = data_status_resultatområde[data_status_resultatområde.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
 virksomhetsprofil(data_input)
 ```
@@ -330,7 +329,7 @@ virksomhetsprofil(data_input)
 Saker som ble satt til "Fullført" i de siste 365 dagene.\
 
 ```{python}
-data_input = data_status_fylke[data_status_fylke.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
+data_input = data_status_resultatområde[data_status_resultatområde.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
 virksomhetsprofil(data_input)
 ```

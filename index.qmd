@@ -120,7 +120,7 @@ gjennomstrømmingstall(data_status)
 ## Antall aktive saker per resultatområde
 
 ```{python}
-aktive_saker_per_kolonne(data_status, "navkontor")
+aktive_saker_per_kolonne(data_status, "resultatomrade")
 ```
 
 ## Antall aktive saker per fylke
