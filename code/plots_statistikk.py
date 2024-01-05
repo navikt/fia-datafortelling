@@ -152,6 +152,52 @@ def saker_per_status_over_tid(
     return annotate_ikke_offisiell_statistikk(fig)
 
 
+def aktive_saker_per_navkontor(data_status: pd.DataFrame) -> go.Figure:
+    navkontorordre: list = (
+        data_status[data_status.aktiv_sak]
+        .groupby("navkontor")
+        .saksnummer.nunique()
+        .sort_values(ascending=False)
+        .index.tolist()
+    )
+
+    aktive_saker_per_navkontor_og_status: pd.DataFrame = (
+        data_status[data_status.aktiv_sak]
+        .groupby(["navkontor", "siste_status"])
+        .saksnummer.nunique()
+        .reset_index()
+        .sort_values(
+            by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e))
+        )
+        .sort_values(
+            by="navkontor", key=lambda col: -col.map(lambda e: navkontorordre.index(e))
+        )
+    )
+
+    fig = go.Figure()
+
+    for status in aktive_saker_per_navkontor_og_status.siste_status.unique():
+        aktive_saker_per_navkontor_filtered = aktive_saker_per_navkontor_og_status[
+            aktive_saker_per_navkontor_og_status.siste_status == status
+        ]
+        fig.add_trace(
+            go.Bar(
+                y=aktive_saker_per_navkontor_filtered["navkontor"],
+                x=aktive_saker_per_navkontor_filtered["saksnummer"],
+                name=status.capitalize().replace("_", " "),
+                orientation="h",
+            )
+        )
+
+    fig.update_layout(
+        xaxis_title="Antall aktive saker",
+        barmode="stack",
+        hovermode="y unified",
+        legend_traceorder="normal",
+    )
+    return annotate_ikke_offisiell_statistikk(fig)
+
+
 def aktive_saker_per_fylke(data_status: pd.DataFrame) -> go.Figure:
     fylkeordre: list = (
         data_status[data_status.aktiv_sak]

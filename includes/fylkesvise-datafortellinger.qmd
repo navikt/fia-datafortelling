@@ -1,5 +1,5 @@
 ::: {.callout-note collapse="true"}
-## Fylkesvise datafortellinger
+## Datafortellinger per resultatområde
 
 * [Oslo](datafortelling_per_fylke_Oslo.html)
 

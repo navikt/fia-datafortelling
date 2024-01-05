@@ -22,6 +22,58 @@ fylker = {
     "46": "Vestland",
     "50": "Trøndelag",
     "54": "Troms og Finnmark",
+    "33": "Buskerud",
+    "32": "Akershus",
+    "31": "Østfold",
+    "40": "Telemark",
+    "39": "Vestfold",
+    "56": "Finnmark",
+    "55": "Troms",
+}
+
+navkontor = {
+    "03": "Oslo",
+    "11": "Rogaland",
+    "15": "Møre og Romsdal",
+    "18": "Nordland",
+    "V30": "Vest-Viken",
+    "Ø30": "Øst-Viken",
+    "34": "Innlandet",
+    "38": "Vestfold og Telemark",
+    "40": "Vestfold og Telemark",
+    "39": "Vestfold og Telemark",
+    "42": "Agder",
+    "46": "Vestland",
+    "50": "Trøndelag",
+    "54": "Troms og Finnmark",
+    "56": "Troms og Finnmark",
+    "55": "Troms og Finnmark",
+    "33": "Vest-Viken",
+    "31": "Øst-Viken",
+}
+
+akershussplit = {
+    "3201": "Vest-Viken",  # "Bærum"
+    "3203": "Vest-Viken",  # "Asker"
+    "3236": "Vest-Viken",  # "Jevnaker"
+    "3205": "Øst-Viken",  # "Lillestrøm"
+    "3207": "Øst-Viken",  # "Nordre Follo"
+    "3209": "Øst-Viken",  # "Ullensaker"
+    "3212": "Øst-Viken",  # "Nesodden"
+    "3214": "Øst-Viken",  # "Frogn"
+    "3216": "Øst-Viken",  # "Vestby"
+    "3218": "Øst-Viken",  # "Ås"
+    "3220": "Øst-Viken",  # "Enebakk"
+    "3222": "Øst-Viken",  # "Lørenskog"
+    "3224": "Øst-Viken",  # "Rælingen"
+    "3226": "Øst-Viken",  # "Aurskog-Høland"
+    "3228": "Øst-Viken",  # "Nes"
+    "3230": "Øst-Viken",  # "Gjerdrum"
+    "3232": "Øst-Viken",  # "Nittedal"
+    "3234": "Øst-Viken",  # "Lunner"
+    "3238": "Øst-Viken",  # "Nannestad"
+    "3240": "Øst-Viken",  # "Eidsvoll"
+    "3242": "Øst-Viken",  # "Hurdal"
 }
 
 intervall_sortering = [

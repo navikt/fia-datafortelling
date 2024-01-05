@@ -69,7 +69,7 @@ from code.helper import (
 )
 from code.konstanter import (
     ikkeaktuell_hovedgrunn,
-    fylker,
+    navkontor,
 )
 
 
@@ -79,29 +79,30 @@ raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
 fylkesnavn = os.environ['FYLKESNAVN']
-for nr, navn in fylker.items():
+for nr, navn in navkontor.items():
     if navn == fylkesnavn:
-        fylkesnr = nr
+        resultatområde = navn
+
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 
 raw_data_leveranse = raw_data_leveranse.merge(
-    raw_data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram"]], 
+    data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram", "navkontor"]], 
     how='left', 
     on='saksnummer',
 )
 
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
 data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
-data_statistikk_fylke = data_statistikk[data_statistikk.fylkesnummer == fylkesnr]
-data_status_fylke = data_status[data_status.fylkesnummer == fylkesnr]
-data_eierskap_fylke = data_eierskap[data_eierskap.fylkesnummer == fylkesnr]
-data_leveranse_fylke = data_leveranse[data_leveranse.fylkesnummer == fylkesnr]
-data_leveranse_sistestatus_fylke = data_leveranse_sistestatus[data_leveranse_sistestatus.fylkesnummer == fylkesnr]
-ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.fylkesnummer == fylkesnr]
+data_statistikk_fylke = data_statistikk[data_statistikk.navkontor == resultatområde]
+data_status_fylke = data_status[data_status.navkontor == resultatområde]
+data_eierskap_fylke = data_eierskap[data_eierskap.navkontor == resultatområde]
+data_leveranse_fylke = data_leveranse[data_leveranse.navkontor == resultatområde]
+data_leveranse_sistestatus_fylke = data_leveranse_sistestatus[data_leveranse_sistestatus.navkontor == resultatområde]
+ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.navkontor == resultatområde]
 ```
 
 

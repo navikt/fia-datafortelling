@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from datetime import datetime, timedelta
 
-from code.konstanter import fylker, intervall_sortering
+from code.konstanter import fylker, intervall_sortering, navkontor, akershussplit
 
 
 def load_data_deduplicate(
@@ -51,9 +51,20 @@ def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
     # Fylkesnavn
     data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
 
-    # Hoved næring
+    # Navkontor
+    data_statistikk["navkontor"] = data_statistikk.fylkesnummer.map(navkontor)
+
+    # Del akershus på øst og vest-viken
+    data_statistikk.loc[
+        data_statistikk["fylkesnummer"] == "32", "navkontor"
+    ] = data_statistikk.kommunenummer.map(akershussplit)
+
     data_statistikk["hoved_nering"] = data_statistikk.neringer.apply(
         lambda x: json.loads(x)[0]["navn"]
+        if (
+            json.loads(x) and isinstance(json.loads(x), list) and len(json.loads(x)) > 0
+        )
+        else "Mangler hovednæring"
     )
     data_statistikk["hoved_nering_truncated"] = data_statistikk.hoved_nering
     data_statistikk.loc[
