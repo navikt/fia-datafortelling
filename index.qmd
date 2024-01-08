@@ -323,6 +323,6 @@ begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 
 ---
 
-{{< include includes/fylkesvise-datafortellinger.qmd >}}
+{{< include includes/datafortellinger_per_resultatområde.qmd >}}
 
 Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).

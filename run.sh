@@ -3,11 +3,11 @@
 quarto render index.qmd
 
 FILER="-F index.html=@index.html"
-for FYLKESNAVN in "Oslo" "Rogaland" "Møre og Romsdal" "Nordland" "Vest-Viken" "Øst-Viken" "Innlandet" "Vestfold og Telemark" "Agder" "Vestland" "Trøndelag" "Troms og Finnmark"
+for RESULTATOMRADE in "Oslo" "Rogaland" "Møre og Romsdal" "Nordland" "Vest-Viken" "Øst-Viken" "Innlandet" "Vestfold og Telemark" "Agder" "Vestland" "Trøndelag" "Troms og Finnmark"
 do
-    export FYLKESNAVN
-    export FILNAVN=`echo "datafortelling_per_fylke_$FYLKESNAVN.html" | sed 's/ /_/g'`
-    quarto render datafortelling_per_fylke.qmd --output $FILNAVN
+    export RESULTATOMRADE
+    export FILNAVN=`echo "datafortelling_per_resultatområde_$RESULTATOMRADE.html" | sed 's/ /_/g'`
+    quarto render datafortelling_per_resultatområde.qmd --output $FILNAVN
     FILER="$FILER -F $FILNAVN=@$FILNAVN"
 done
 

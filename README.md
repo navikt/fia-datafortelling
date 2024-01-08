@@ -1,5 +1,4 @@
-fia-datafortelling
-================
+# fia-datafortelling
 
 Datafortelling basert på data fra [Fia](https://github.com/navikt/lydia-api).
 
@@ -31,13 +30,11 @@ Kjør opp datafortellingene lokalt med følgende kommandoer:
 
 `export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render <datafortelling>.qmd`
 
-`export FYLKESNAVN="<fylkesnavn>" && export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render datafortelling_per_fylke.qmd --output "datafortelling_per_fylke_$FYLKESNAVN.html"`
-
+`export RESULTATOMRADE="<resultatområde>" && export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render datafortelling_per_resultatområde.qmd --output "datafortelling_per_resultatområde_$RESULTATOMRADE.html"`
 
 ### Bygg docker image på M1:
 
 `docker build . --platform=linux/amd64`
-
 
 # Bygg og deploy
 
@@ -52,22 +49,22 @@ Dette er definert i [run.sh](run.sh).
 
 For å regenerere datafortellingen manuelt, gjør følgende:
 
-* Logg inn i gcp med `gcloud auth login --update-adc`
-* Gå til cluster prod-gcp i kubectl `kubectx prod-gcp`
-* Sett namespace til pia `kubens pia`
-* Finn cronjobben for datafortellingen ( `kubectl get cronjobs | grep fia-datafortelling` )
-* Kjør jobben manuelt ( `kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc` )
+- Logg inn i gcp med `gcloud auth login --update-adc`
+- Gå til cluster prod-gcp i kubectl `kubectx prod-gcp`
+- Sett namespace til pia `kubens pia`
+- Finn cronjobben for datafortellingen ( `kubectl get cronjobs | grep fia-datafortelling` )
+- Kjør jobben manuelt ( `kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc` )
 
 # Oppdater avhengigheter
 
 - Oppdater python:
-    - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/).
-    - Dersom kom ny versjon, lag et lokalt virtual miljø på nytt.
+  - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/).
+  - Dersom kom ny versjon, lag et lokalt virtual miljø på nytt.
 - Oppdater python pakker:
-    - `pip3 install --upgrade pip`
-    - `pip3 install --upgrade <pakke>`
-    - Oppdater `requirements.txt` manuelt (eller bruk `pip3 freeze > requirements.txt`)
-    - Kjør datafortellingene lokalt på nytt og sammenlign med prod
+  - `pip3 install --upgrade pip`
+  - `pip3 install --upgrade <pakke>`
+  - Oppdater `requirements.txt` manuelt (eller bruk `pip3 freeze > requirements.txt`)
+  - Kjør datafortellingene lokalt på nytt og sammenlign med prod
 
 ---
 
@@ -75,11 +72,9 @@ For å regenerere datafortellingen manuelt, gjør følgende:
 
 Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på GitHub.
 
-
 ## For NAV-ansatte
 
 Interne henvendelser kan sendes via Slack i kanalen #team-pia.
-
 
 ## Kode generert av GitHub Copilot
 

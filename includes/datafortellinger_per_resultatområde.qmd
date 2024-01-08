@@ -1,0 +1,28 @@
+::: {.callout-note collapse="true"}
+## Datafortellinger per resultatområde
+
+* [Oslo](datafortelling_per_resultatområde_Oslo.html)
+
+* [Rogaland](datafortelling_per_resultatområde_Rogaland.html)
+
+* [Møre og Romsdal](datafortelling_per_resultatområde_Møre_og_Romsdal.html)
+
+* [Nordland](datafortelling_per_resultatområde_Nordland.html)
+
+* [Vest-Viken](datafortelling_per_resultatområde_Vest-Viken.html)
+
+* [Øst-Viken](datafortelling_per_resultatområde_Øst-Viken.html)
+
+* [Innlandet](datafortelling_per_resultatområde_Innlandet.html)
+
+* [Vestfold og Telemark](datafortelling_per_resultatområde_Vestfold_og_Telemark.html)
+
+* [Agder](datafortelling_per_resultatområde_Agder.html)
+
+* [Vestland](datafortelling_per_resultatområde_Vestland.html)
+
+* [Trøndelag](datafortelling_per_resultatområde_Trøndelag.html)
+
+* [Troms og Finnmark](datafortelling_per_resultatområde_Troms_og_Finnmark.html)
+
+:::

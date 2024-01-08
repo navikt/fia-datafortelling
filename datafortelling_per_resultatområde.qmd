@@ -1,5 +1,5 @@
 ---
-title: "Fia datafortelling for {{< env FYLKESNAVN >}}"
+title: "Fia datafortelling for {{< env RESULTATOMRADE >}}"
 subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
@@ -77,10 +77,10 @@ DATASET = os.environ['DATASET']
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
-fylkesnavn = os.environ['FYLKESNAVN']
-for _, navn in resultatområder.items():
-    if navn == fylkesnavn:
-        resultatområde = navn
+navn = os.environ['RESULTATOMRADE']
+if navn in resultatområder.values():
+    resultatområde = navn
+
 
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 
@@ -101,7 +101,7 @@ data_status_resultatområde = data_status[data_status.resultatomrade == resultat
 data_eierskap_resultatområde = data_eierskap[data_eierskap.resultatomrade == resultatområde]
 data_leveranse_resultatområde = data_leveranse[data_leveranse.resultatomrade == resultatområde]
 data_leveranse_sistestatus_resultatområde = data_leveranse_sistestatus[data_leveranse_sistestatus.resultatomrade == resultatområde]
-ikke_aktuell_fylke = ikke_aktuell[ikke_aktuell.resultatomrade == resultatområde]
+ikke_aktuell_resultatområde = ikke_aktuell[ikke_aktuell.resultatomrade == resultatområde]
 ```
 
 
@@ -346,7 +346,7 @@ og derfor kan andelssummen være større enn 100%.
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
-    ikke_aktuell_fylke[ikke_aktuell_fylke.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())]
+    ikke_aktuell_resultatområde[ikke_aktuell_resultatområde.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())]
 )
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
