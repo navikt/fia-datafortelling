@@ -50,8 +50,8 @@ from code.plots_statistikk import (
     fullført_per_måned,
     antall_saker_per_eier,
     antall_brukere_per_måned,
-    antall_brukere_per_fylke,
-    antall_brukere_per_fylke_og_nav_enhet,
+    antall_brukere_per_resultatområde,
+    antall_brukere_per_resultatområde_og_nav_enhet,
     andel_superbrukere,
     andel_statusendringer_gjort_av_superbrukere,
 )
@@ -63,8 +63,10 @@ from code.plots_leveranse import (
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
-raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
+raw_data_statistikk = load_data_deduplicate(
+    PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+raw_data_leveranse = load_data_deduplicate(
+    PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap = split_data_statistikk(data_statistikk)
@@ -291,17 +293,17 @@ Antall unike brukere som har gjort noe som fører til en statusendring.
 antall_brukere_per_måned(data_statistikk)
 ```
 
-## Per fylke
-En bruker kan telles i flere fylker.
+## Per resultatområde
+En bruker kan telles i flere resultatområder.
 ```{python}
-antall_brukere_per_fylke(data_statistikk)
+antall_brukere_per_resultatområde(data_statistikk)
 ```
 
-## Per fylke og NAV-enhet
-En bruker kan telles i flere fylker, men bare i den siste NAV-enheten bruker er registrert med.
+## Per resultatområde og NAV-enhet
+En bruker kan telles i flere resultatområder, men bare i den siste NAV-enheten bruker er registrert med.
 NAV-enhet begynte å bli registrert i databasen 2023-05-05.
 ```{python}
-antall_brukere_per_fylke_og_nav_enhet(data_statistikk)
+antall_brukere_per_resultatområde_og_nav_enhet(data_statistikk)
 ```
 :::
 

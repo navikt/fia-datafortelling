@@ -5,7 +5,12 @@ from datetime import datetime
 
 from code.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
 from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
-from code.konstanter import statusordre, fylker, intervall_sortering, plotly_colors
+from code.konstanter import (
+    statusordre,
+    resultatområder,
+    intervall_sortering,
+    plotly_colors,
+)
 
 
 def saker_per_status_per_måned(data_status: pd.DataFrame) -> go.Figure:
@@ -52,7 +57,7 @@ def saker_per_status_per_måned(data_status: pd.DataFrame) -> go.Figure:
 
 
 def saker_per_status_over_tid(
-    data_status: pd.DataFrame, valgte_fylker=None
+    data_status: pd.DataFrame, valgte_resultatområder=None
 ) -> go.Figure:
     første_dato = data_status.endretTidspunkt.min()
     siste_dato = datetime.now()
@@ -87,13 +92,13 @@ def saker_per_status_over_tid(
             )
         )
 
-    if not valgte_fylker:
-        valgte_fylker = fylker.keys()
+    if not valgte_resultatområder:
+        valgte_resultatområder = list(set(resultatområder.values()))
 
     # En strek for hver kombinasjon av fylke og status
-    for fylkesnr in valgte_fylker:
+    for resultatområde in valgte_resultatområder:
         status_per_dato = beregn_status_per_dato(
-            data_status[data_status.fylkesnummer == fylkesnr], alle_datoer
+            data_status[data_status.resultatomrade == resultatområde], alle_datoer
         )
         for status in statuser:
             fig.add_trace(
@@ -111,9 +116,7 @@ def saker_per_status_over_tid(
     # som velger hvilke strekker som vises med hver knapp.
     # Hvis vi hadde 3 fylker og 2 statuser, det ville være:
     # [1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 1]
-    knapper_navn = ["Alle fylker"] + [
-        fylker[valgt_fylke] for valgt_fylke in valgte_fylker
-    ]
+    knapper_navn = ["Alle resultatområder"] + valgte_resultatområder
     knapper = [
         dict(
             args=[
@@ -574,16 +577,16 @@ def fullført_per_måned(data_status: pd.DataFrame) -> go.Figure():
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_brukere_per_fylke(data_statistikk: pd.DataFrame) -> go.Figure():
-    bruker_per_fylke = (
-        data_statistikk.groupby("fylkesnavn").endretAv.nunique().sort_values()
+def antall_brukere_per_resultatområde(data_statistikk: pd.DataFrame) -> go.Figure():
+    bruker_per_resultatområde = (
+        data_statistikk.groupby("resultatomrade").endretAv.nunique().sort_values()
     )
 
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
-            x=bruker_per_fylke.values,
-            y=bruker_per_fylke.index,
+            x=bruker_per_resultatområde.values,
+            y=bruker_per_resultatområde.index,
             orientation="h",
         )
     )
@@ -597,10 +600,14 @@ def antall_brukere_per_fylke(data_statistikk: pd.DataFrame) -> go.Figure():
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def antall_brukere_per_fylke_og_nav_enhet(data_statistikk: pd.DataFrame) -> go.Figure():
-    data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
-    fylkeordre = (
-        data_statistikk.groupby("fylkesnavn")
+def antall_brukere_per_resultatområde_og_nav_enhet(
+    data_statistikk: pd.DataFrame,
+) -> go.Figure():
+    data_statistikk["resultatomrade"] = data_statistikk.fylkesnummer.map(
+        resultatområder
+    )
+    resultatområdeordre = (
+        data_statistikk.groupby("resultatomrade")
         .endretAv.nunique()
         .sort_values()
         .index.tolist()
@@ -617,22 +624,22 @@ def antall_brukere_per_fylke_og_nav_enhet(data_statistikk: pd.DataFrame) -> go.F
     ].endretTidspunkt.min()
     bruker_per_navenhet = (
         data_statistikk[data_statistikk.endretTidspunkt >= første_register_navenhet]
-        .groupby(["fylkesnavn", "enhetsnavn"])
+        .groupby(["resultatomrade", "enhetsnavn"])
         .endretAv.nunique()
         .reset_index()
     )
 
     fig = go.Figure()
 
-    for fylke in fylkeordre:
+    for kol in resultatområdeordre:
         for enhet in enhetsordre:
             filtert = bruker_per_navenhet[
-                (bruker_per_navenhet.fylkesnavn == fylke)
+                (bruker_per_navenhet["resultatomrade"] == kol)
                 & (bruker_per_navenhet.enhetsnavn == enhet)
             ]
             fig.add_trace(
                 go.Bar(
-                    y=filtert.fylkesnavn,
+                    y=filtert["resultatomrade"],
                     x=filtert.endretAv,
                     text=enhet,
                     textposition="none",
