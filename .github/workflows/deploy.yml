@@ -24,7 +24,8 @@ jobs:
       image: ${{ steps.docker-push.outputs.image }}
 
   deploy:
-    permissions: {}
+    permissions:
+      id-token: write
     strategy:
       matrix:
         cluster: [prod]
@@ -34,10 +35,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: nais/deploy/actions/deploy@v1
+      - uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ needs.build.outputs.image }}
-          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: ${{ matrix.cluster }}-gcp
           RESOURCE: .nais/nais.yaml
           VARS: .nais/${{ matrix.cluster }}.yaml
