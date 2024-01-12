@@ -123,12 +123,6 @@ gjennomstrømmingstall(data_status)
 aktive_saker_per_kolonne(data_status, "resultatomrade")
 ```
 
-## Antall aktive saker per fylke
-
-```{python}
-aktive_saker_per_kolonne(data_status, "fylkesnavn")
-```
-
 
 ## Dager siden siste oppdatering i Fia
 Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
