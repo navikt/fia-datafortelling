@@ -54,29 +54,56 @@ resultatområder = {
     "31": "Øst-Viken",
 }
 
-akershussplit = {
-    "3201": "Vest-Viken",  # "Bærum"
-    "3203": "Vest-Viken",  # "Asker"
-    "3236": "Vest-Viken",  # "Jevnaker"
-    "3205": "Øst-Viken",  # "Lillestrøm"
-    "3207": "Øst-Viken",  # "Nordre Follo"
-    "3209": "Øst-Viken",  # "Ullensaker"
-    "3212": "Øst-Viken",  # "Nesodden"
-    "3214": "Øst-Viken",  # "Frogn"
-    "3216": "Øst-Viken",  # "Vestby"
-    "3218": "Øst-Viken",  # "Ås"
-    "3220": "Øst-Viken",  # "Enebakk"
-    "3222": "Øst-Viken",  # "Lørenskog"
-    "3224": "Øst-Viken",  # "Rælingen"
-    "3226": "Øst-Viken",  # "Aurskog-Høland"
-    "3228": "Øst-Viken",  # "Nes"
-    "3230": "Øst-Viken",  # "Gjerdrum"
-    "3232": "Øst-Viken",  # "Nittedal"
-    "3234": "Øst-Viken",  # "Lunner"
-    "3238": "Øst-Viken",  # "Nannestad"
-    "3240": "Øst-Viken",  # "Eidsvoll"
-    "3242": "Øst-Viken",  # "Hurdal"
+viken_akershus = {
+    "3201": "Vest-Viken",  # Bærum kommune
+    "3203": "Vest-Viken",  # Asker kommune
+    "3236": "Vest-Viken",  # Jevnaker kommune
+    "3205": "Øst-Viken",  # Lillestrøm kommune
+    "3207": "Øst-Viken",  # Nordre Follo kommune
+    "3209": "Øst-Viken",  # Ullensaker kommune
+    "3212": "Øst-Viken",  # Nesodden kommune
+    "3214": "Øst-Viken",  # Frogn kommune
+    "3216": "Øst-Viken",  # Vestby kommune
+    "3218": "Øst-Viken",  # Ås kommune
+    "3220": "Øst-Viken",  # Enebakk kommune
+    "3222": "Øst-Viken",  # Lørenskog kommune
+    "3224": "Øst-Viken",  # Rælingen kommune
+    "3226": "Øst-Viken",  # Aurskog-Høland kommune
+    "3228": "Øst-Viken",  # Nes kommune
+    "3230": "Øst-Viken",  # Gjerdrum kommune
+    "3232": "Øst-Viken",  # Nittedal kommune
+    "3234": "Øst-Viken",  # Lunner kommune
+    "3238": "Øst-Viken",  # Nannestad kommune
+    "3240": "Øst-Viken",  # Eidsvoll kommune
+    "3242": "Øst-Viken",  # Hurdal kommune
 }
+
+rogaland_lund = {
+    "1112": "Agder",  # Lund kommune
+    "1101": "Rogaland",  # Eigersund kommune
+    "1103": "Rogaland",  # Stavanger kommune
+    "1106": "Rogaland",  # Haugesund kommune
+    "1108": "Rogaland",  # Sandnes kommune
+    "1111": "Rogaland",  # Sokndal kommune
+    "1114": "Rogaland",  # Bjerkreim kommune
+    "1119": "Rogaland",  # Hå kommune
+    "1120": "Rogaland",  # Klepp kommune
+    "1121": "Rogaland",  # Time kommune
+    "1122": "Rogaland",  # Gjesdal kommune
+    "1124": "Rogaland",  # Sola kommune
+    "1127": "Rogaland",  # Randaberg kommune
+    "1130": "Rogaland",  # Strand kommune
+    "1133": "Rogaland",  # Hjelmeland kommune
+    "1134": "Rogaland",  # Suldal kommune
+    "1135": "Rogaland",  # Sauda kommune
+    "1144": "Rogaland",  # Kvitsøy kommune
+    "1145": "Rogaland",  # Bokn kommune
+    "1146": "Rogaland",  # Tysvær kommune
+    "1149": "Rogaland",  # Karmøy kommune
+    "1151": "Rogaland",  # Utsira kommune
+    "1160": "Rogaland",  # Vindafjord kommune
+}
+
 
 intervall_sortering = [
     "0-1 min",
