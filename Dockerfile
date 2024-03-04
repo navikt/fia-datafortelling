@@ -1,4 +1,4 @@
-FROM python:3.12 AS compile-image
+FROM python:3.11 AS compile-image
 
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
