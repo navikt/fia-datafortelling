@@ -38,7 +38,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 
 import os
 
-from code.datahandler import (
+from datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -48,10 +48,10 @@ from code.datahandler import (
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from code.plots import (
+from plots import (
     dager_siden_siste_oppdatering,
 )
-from code.plots_statistikk import (
+from plots_statistikk import (
     statusflyt,
     gjennomstrømmingstall,
     saker_per_status_per_måned,
@@ -59,13 +59,13 @@ from code.plots_statistikk import (
     aktive_saker_per_kolonne,
     virksomhetsprofil,
 )
-from code.plots_leveranse import (
+from plots_leveranse import (
     antall_leveranser_per_tjeneste,
     begrunnelse_ikke_aktuell,
     leveranse_tjeneste_per_maaned,
 )
-from code.helper import ikke_aktuell_begrunnelse_sortering
-from code.konstanter import ikkeaktuell_hovedgrunn
+from helper import ikke_aktuell_begrunnelse_sortering
+from konstanter import ikkeaktuell_hovedgrunn
 
 
 PROJECT = os.environ['GCP_PROJECT']

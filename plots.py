@@ -2,8 +2,8 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
-from code.datahandler import beregn_siste_oppdatering
-from code.helper import annotate_ikke_offisiell_statistikk
+from datahandler import beregn_siste_oppdatering
+from helper import annotate_ikke_offisiell_statistikk
 
 
 def dager_siden_siste_oppdatering(

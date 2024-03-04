@@ -3,7 +3,7 @@ import json
 import pandas as pd
 from datetime import datetime, timedelta
 
-from code.konstanter import (
+from konstanter import (
     fylker,
     intervall_sortering,
     resultatområder,
@@ -45,14 +45,12 @@ def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
 
 def parse_næring(x):
     try:
-        # Attempt to parse the JSON data
         parsed_json = json.loads(x)
         if isinstance(parsed_json, list) and len(parsed_json) > 0:
             return parsed_json[0]["navn"]
         else:
             return "Mangler hovednæring"
     except Exception as e:
-        # Handle cases where parsing fails
         return "Mangler hovednæring"
 
 

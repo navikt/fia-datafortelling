@@ -27,14 +27,14 @@ import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
 
-from code.datahandler import (
+from datahandler import (
     load_data,
     load_data_deduplicate,
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
 )
-from code.konstanter import statusordre, fylker
+from konstanter import statusordre, fylker
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']

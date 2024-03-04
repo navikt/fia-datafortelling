@@ -3,9 +3,9 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 from datetime import datetime
 
-from code.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
-from code.helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
-from code.konstanter import (
+from datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
+from helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
+from konstanter import (
     statusordre,
     resultatområder,
     intervall_sortering,
