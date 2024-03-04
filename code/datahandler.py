@@ -43,6 +43,19 @@ def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
+def parse_næring(x):
+    try:
+        # Attempt to parse the JSON data
+        parsed_json = json.loads(x)
+        if isinstance(parsed_json, list) and len(parsed_json) > 0:
+            return parsed_json[0]["navn"]
+        else:
+            return "Mangler hovednæring"
+    except Exception as e:
+        # Handle cases where parsing fails
+        return "Mangler hovednæring"
+
+
 def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
     # Sorter basert på endrettidspunkt
     data_statistikk = data_statistikk.sort_values(
@@ -71,13 +84,8 @@ def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
         data_statistikk["fylkesnummer"] == "11", "resultatomrade"
     ] = data_statistikk.kommunenummer.map(rogaland_lund)
 
-    data_statistikk["hoved_nering"] = data_statistikk.neringer.apply(
-        lambda x: json.loads(x)[0]["navn"]
-        if (
-            json.loads(x) and isinstance(json.loads(x), list) and len(json.loads(x)) > 0
-        )
-        else "Mangler hovednæring"
-    )
+    data_statistikk["hoved_nering"] = data_statistikk.neringer.apply(parse_næring)
+
     data_statistikk["hoved_nering_truncated"] = data_statistikk.hoved_nering
     data_statistikk.loc[
         data_statistikk.hoved_nering.str.len() > 50, "hoved_nering_truncated"
@@ -168,7 +176,8 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     data_leveranse = data_leveranse[~data_leveranse.id.isin(slettet_leveranse_id)]
 
     # Frist fra dbdate til datetime
-    data_leveranse.frist = pd.to_datetime(data_leveranse.frist)
+    # data_leveranse.frist = pd.to_datetime(data_leveranse.frist)
+    data_leveranse.loc[:, "frist"] = pd.to_datetime(data_leveranse["frist"])
 
     # Fjern tidssone fra datoene, alt i utc
     data_leveranse = fjern_tidssone(data_leveranse)
