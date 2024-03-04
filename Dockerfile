@@ -17,7 +17,7 @@ RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/rel
     rm -rf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
 
-FROM python:3.12-slim AS runner-image
+FROM python:3.11-slim AS runner-image
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl && \
