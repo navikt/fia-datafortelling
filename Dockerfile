@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     jq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest | jq '.tag_name' | sed -e 's/[\"v]//g') && \
+RUN QUARTO_VERSION=1.3.450 && \
     wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     tar -xvzf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     ln -s quarto-${QUARTO_VERSION} quarto-dist && \
