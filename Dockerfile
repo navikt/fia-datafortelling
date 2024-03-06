@@ -1,4 +1,4 @@
-FROM python:3.11 AS compile-image
+FROM python:3.12 AS compile-image
 
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -17,7 +17,7 @@ RUN QUARTO_VERSION=1.3.450 && \
     rm -rf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
 
-FROM python:3.11-slim AS runner-image
+FROM python:3.12-slim AS runner-image
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl && \
