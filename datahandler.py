@@ -2,6 +2,7 @@ from google.cloud.bigquery import Client
 import json
 import pandas as pd
 from datetime import datetime, timedelta
+import numpy as np
 
 from konstanter import (
     fylker,
@@ -43,15 +44,14 @@ def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def parse_næring(x):
-    try:
-        parsed_json = json.loads(x)
-        if isinstance(parsed_json, list) and len(parsed_json) > 0:
-            return parsed_json[0]["navn"]
-        else:
-            return "Mangler hovednæring"
-    except Exception as e:
-        return "Mangler hovednæring"
+def parse_næring(rad):
+    if type(rad) != np.ndarray:
+        return "Feil ved innhenting av hovednæring, feil format"
+    elif rad.size < 1:
+        # ca 6 tilfeller hvor rad == []
+        return "Feil ved innhenting av hovednæring, mangler næring"
+    else:
+        return rad[0]["navn"]
 
 
 def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
