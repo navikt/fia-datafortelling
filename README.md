@@ -70,7 +70,7 @@ For å regenerere datafortellingen manuelt, gjør følgende:
 
 # Henvendelser
 
-Spørsmål knyttet til koden eller prosjektet kan stilles som issues her på GitHub.
+Spørsmål knyttet til koden eller prosjektet kan stilles som et [issue her på GitHub](https://github.com/navikt/ia-datafortelling/issues).
 
 ## For NAV-ansatte
 

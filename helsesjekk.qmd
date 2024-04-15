@@ -1,0 +1,107 @@
+---
+title: "Fia helsesjekk"
+subtitle: Helsesjekk for Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
+author: Team Pia
+author-title: "Eier"
+execute:
+    echo: false
+    warning: false
+    daemon: false
+format:
+    html:
+        toc: true
+        toc-title: Indeks
+        page-layout: full
+        embed-resources: true
+jupyter: python3
+---
+
+Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
+Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
+Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
+
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
+
+```{python}
+%load_ext autoreload
+%autoreload 2
+
+import os
+
+from datahandler import (
+    load_data_deduplicate,
+    preprocess_data_statistikk,
+    split_data_statistikk,
+    preprocess_data_status,
+    preprocess_data_leveranse,
+)
+
+PROJECT = os.environ["GCP_PROJECT_PROD"]
+DATASET = os.environ["DATASET_PROD"]
+
+raw_data_statistikk = load_data_deduplicate(
+    PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId"
+)
+raw_data_leveranse = load_data_deduplicate(
+    PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status"
+)
+
+data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
+
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+data_status, _ = split_data_statistikk(data_statistikk)
+data_status = preprocess_data_status(data_status)
+```
+
+```{python}
+from helsesjekk import antall_saker_i_vi_bistår, data_denne_perioden
+
+ANTALL_SAKER_I_VI_BISTÅR = antall_saker_i_vi_bistår(data_status=data_status)
+
+(
+    startdato,
+    sluttdato,
+    saker_vi_bistår,
+    fullførte_saker,
+    antall_tjenester,
+) = data_denne_perioden(data_status=data_status, data_leveranse=data_leveranse)
+```
+
+# IA-arbeidet forrige uke
+NAV er i et pågående samarbeid med `{python} ANTALL_SAKER_I_VI_BISTÅR` virksomheter
+Gjelder perioden fra `{python} str(startdato)` til `{python} str(sluttdato)`.
+
+## Antall saker
+I løpet av perioden som var har `{python} saker_vi_bistår` virksomheter blitt satt til «Vi bistår» og `{python} fullførte_saker` virksomheter er satt til fullført
+
+```{python}
+forebyggende_arbeidsmiljøarbeid = antall_tjenester["Forebyggende arbeidsmiljøarbeid"]
+redusere_sykefravær = antall_tjenester["Redusere sykefravær"]
+utvikle_partssamarbeid = antall_tjenester["Utvikle partssamarbeid"]
+helse_i_arbeid = antall_tjenester["HelseIArbeid"]
+```
+
+## Antall IA-tjenester
+Under er hver av IA-tjenestene som har blitt opprettet denne uken, de som har blitt satt som levert og det som kan se ut som etteregistrering. 
+De som er telt som etteregistrerte har blitt opprettet denne uken, så satt til fullført innen 24 timer
+
+| IA-tjeneste | Levert | Opprettet | Etterregistrert |
+|---------|:-----|------:|:------:|
+| Forebyggende arbeidsmiljøarbeid | `{python} forebyggende_arbeidsmiljøarbeid["LEVERT"]` | `{python} forebyggende_arbeidsmiljøarbeid["OPPRETTET"]` | `{python} forebyggende_arbeidsmiljøarbeid["ETTERREGISTRERT"]` |
+| Redusere sykefravær             | `{python} redusere_sykefravær["LEVERT"]`             | `{python} redusere_sykefravær["OPPRETTET"]`             | `{python} redusere_sykefravær["ETTERREGISTRERT"]`             |
+| Utvikle partssamarbeid          | `{python} utvikle_partssamarbeid["LEVERT"]`          | `{python} utvikle_partssamarbeid["OPPRETTET"]`          | `{python} utvikle_partssamarbeid["ETTERREGISTRERT"]`          |
+| HelseIArbeid                    | `{python} helse_i_arbeid["LEVERT"]`                  | `{python} helse_i_arbeid["OPPRETTET"]`                  | `{python} helse_i_arbeid["ETTERREGISTRERT"]`                  |
+
+<!-- # Historiske tall
+```{python}
+from helsesjekk_tall import plot_historiske_data
+
+plot_historiske_data(data_status)
+``` -->
