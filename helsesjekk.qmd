@@ -43,8 +43,8 @@ from datahandler import (
     preprocess_data_leveranse,
 )
 
-PROJECT = os.environ["GCP_PROJECT_PROD"]
-DATASET = os.environ["DATASET_PROD"]
+PROJECT = os.environ['GCP_PROJECT']
+DATASET = os.environ['DATASET']
 
 raw_data_statistikk = load_data_deduplicate(
     PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId"
@@ -105,3 +105,11 @@ from helsesjekk_tall import plot_historiske_data
 
 plot_historiske_data(data_status)
 ``` -->
+
+
+
+```{python}
+#TODO: Fordel på hver måned av året og ikke uke
+#TODO: Vis siste og inneværende måned
+#TODO: Vis siste 30 dager 
+```
