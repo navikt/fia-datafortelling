@@ -114,29 +114,40 @@ def antall_saker_i_vi_bistår(data_status: pd.DataFrame, status="VI_BISTÅR") ->
     return len(data_status[(data_status.status == status) & data_status.aktiv_sak])
 
 
-def start_og_slutt_for_periode(
+def periode_start_slutt_uke(
     dato: datetime,
-    hour: int = 9,
-    minute: int = 0,
-    second: int = 0,
+    hour: int,
+    minute: int,
+    second: int,
 ) -> tuple[datetime, datetime]:
     if dato.weekday() != 4:
         dato = dato + relativedelta(weekday=FR(-1))
 
     startdato = dato.replace(
-        hour=(hour) % 24,
-        minute=(minute) % 60,
-        second=(second) % 60,
-        microsecond=0,
+        hour=hour,
+        minute=minute,
+        second=second,
     ) - timedelta(7)
 
     sluttdato = dato.replace(
-        hour=(hour - 1) % 24,
-        minute=(minute - 1) % 60,
-        second=(second - 1) % 60,
-        microsecond=0,
-    )
+        hour=hour,
+        minute=minute,
+        second=second,
+    ) - timedelta(seconds=1)
 
+    return startdato, sluttdato
+
+
+def periode_start_slutt_måned(
+    dato: datetime,
+    hour: int,
+    minute: int,
+    second: int,
+) -> tuple[datetime, datetime]:
+    startdato = dato.replace(
+        day=1, hour=hour, minute=minute, second=second, microsecond=0
+    )
+    sluttdato = startdato.replace(month=((dato.month + 1) % 12)) - timedelta(seconds=1)
     return startdato, sluttdato
 
 
@@ -157,11 +168,11 @@ def data_denne_perioden(
     data_status: pd.DataFrame,
     data_leveranse: pd.DataFrame,
     dato: datetime = datetime.now(),
-    hour: int = 9,
+    hour: int = 0,
     minute: int = 0,
     second: int = 0,
 ):
-    startdato, sluttdato = start_og_slutt_for_periode(
+    startdato, sluttdato = periode_start_slutt_måned(
         dato=dato, hour=hour, minute=minute, second=second
     )
 
@@ -205,7 +216,7 @@ def plot_historiske_data(
     ut = []
 
     for _ in range(antall_uker):
-        startdato, sluttdato = start_og_slutt_for_periode(dato=startdato)
+        startdato, sluttdato = periode_start_slutt_uke(dato=startdato)
         tid.append(str(sluttdato))
         inn.append(
             antall_saker(
