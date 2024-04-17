@@ -2,7 +2,7 @@ import pandas as pd
 from datetime import datetime, timedelta
 
 from datetime import datetime
-from dateutil.relativedelta import relativedelta, FR
+from dateutil.relativedelta import relativedelta, MO
 from enum import Enum
 
 
@@ -114,41 +114,30 @@ def antall_saker_i_vi_bistår(data_status: pd.DataFrame, status="VI_BISTÅR") ->
     return len(data_status[(data_status.status == status) & data_status.aktiv_sak])
 
 
-def periode_start_slutt_uke(
-    dato: datetime,
-    hour: int,
-    minute: int,
-    second: int,
+def finn_periode(
+    dato: datetime, hour: int, minute: int, second: int, periode: str
 ) -> tuple[datetime, datetime]:
-    if dato.weekday() != 4:
-        dato = dato + relativedelta(weekday=FR(-1))
+    if periode == "uke":
+        if dato.weekday() != 0:
+            dato = dato + relativedelta(weekday=MO(-1))
 
-    startdato = dato.replace(
-        hour=hour,
-        minute=minute,
-        second=second,
-    ) - timedelta(7)
+        dato = dato.replace(hour=hour, minute=minute, second=second, microsecond=0)
 
-    sluttdato = dato.replace(
-        hour=hour,
-        minute=minute,
-        second=second,
-    ) - timedelta(seconds=1)
+        startdato = dato - timedelta(7)
 
-    return startdato, sluttdato
+        sluttdato = dato - timedelta(seconds=1)
 
-
-def periode_start_slutt_måned(
-    dato: datetime,
-    hour: int,
-    minute: int,
-    second: int,
-) -> tuple[datetime, datetime]:
-    startdato = dato.replace(
-        day=1, hour=hour, minute=minute, second=second, microsecond=0
-    )
-    sluttdato = startdato.replace(month=((dato.month + 1) % 12)) - timedelta(seconds=1)
-    return startdato, sluttdato
+        return startdato, sluttdato
+    elif periode == "måned":
+        startdato = dato.replace(
+            day=1, hour=hour, minute=minute, second=second, microsecond=0
+        )
+        sluttdato = startdato.replace(month=((dato.month + 1) % 12)) - timedelta(
+            seconds=1
+        )
+        return startdato, sluttdato
+    else:
+        raise Exception("Noe gikk galt")
 
 
 def antall_tjenester_opprettet_og_fullført_innen_et_døgn(
@@ -171,9 +160,10 @@ def data_denne_perioden(
     hour: int = 0,
     minute: int = 0,
     second: int = 0,
+    periode: str = "måned",
 ):
-    startdato, sluttdato = periode_start_slutt_måned(
-        dato=dato, hour=hour, minute=minute, second=second
+    startdato, sluttdato = finn_periode(
+        dato=dato, hour=hour, minute=minute, second=second, periode=periode
     )
 
     saker_vi_bistår = antall_saker(
@@ -216,7 +206,7 @@ def plot_historiske_data(
     ut = []
 
     for _ in range(antall_uker):
-        startdato, sluttdato = periode_start_slutt_uke(dato=startdato)
+        startdato, sluttdato = finn_periode(dato=startdato)
         tid.append(str(sluttdato))
         inn.append(
             antall_saker(
