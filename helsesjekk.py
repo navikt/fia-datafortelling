@@ -1,9 +1,11 @@
 import pandas as pd
-from datetime import datetime, timedelta
 
-from datetime import datetime
-from dateutil.relativedelta import relativedelta, MO
+from datetime import datetime, timedelta
+from dateutil.relativedelta import relativedelta
 from enum import Enum
+import plotly.graph_objects as go
+
+from helper import annotate_ikke_offisiell_statistikk
 
 
 class SakStatus(Enum):
@@ -114,30 +116,18 @@ def antall_saker_i_vi_bistår(data_status: pd.DataFrame, status="VI_BISTÅR") ->
     return len(data_status[(data_status.status == status) & data_status.aktiv_sak])
 
 
-def finn_periode(
-    dato: datetime, hour: int, minute: int, second: int, periode: str
-) -> tuple[datetime, datetime]:
+def finn_periode(dato: datetime, periode: str) -> tuple[datetime, datetime]:
+    dato = dato.replace(hour=0, minute=0, second=0, microsecond=0)
     if periode == "uke":
-        if dato.weekday() != 0:
-            dato = dato + relativedelta(weekday=MO(-1))
-
-        dato = dato.replace(hour=hour, minute=minute, second=second, microsecond=0)
-
-        startdato = dato - timedelta(7)
-
-        sluttdato = dato - timedelta(seconds=1)
-
-        return startdato, sluttdato
+        mandag = dato - relativedelta(days=dato.weekday())
+        søndag = mandag - relativedelta(seconds=1) + relativedelta(days=7)
+        return mandag, søndag
     elif periode == "måned":
-        startdato = dato.replace(
-            day=1, hour=hour, minute=minute, second=second, microsecond=0
-        )
-        sluttdato = startdato.replace(month=((dato.month + 1) % 12)) - timedelta(
-            seconds=1
-        )
-        return startdato, sluttdato
+        første_dag = dato.replace(day=1)
+        siste_dag = første_dag + relativedelta(months=1) - relativedelta(days=1)
+        return første_dag, siste_dag
     else:
-        raise Exception("Noe gikk galt")
+        raise Exception("Ikke valgt periode")
 
 
 def antall_tjenester_opprettet_og_fullført_innen_et_døgn(
@@ -156,15 +146,10 @@ def antall_tjenester_opprettet_og_fullført_innen_et_døgn(
 def data_denne_perioden(
     data_status: pd.DataFrame,
     data_leveranse: pd.DataFrame,
-    dato: datetime = datetime.now(),
-    hour: int = 0,
-    minute: int = 0,
-    second: int = 0,
-    periode: str = "måned",
+    periode: str,
+    startdato: datetime = datetime.now(),
 ):
-    startdato, sluttdato = finn_periode(
-        dato=dato, hour=hour, minute=minute, second=second, periode=periode
-    )
+    startdato, sluttdato = finn_periode(dato=startdato, periode=periode)
 
     saker_vi_bistår = antall_saker(
         data_status=data_status,
@@ -191,22 +176,19 @@ def data_denne_perioden(
     return (startdato, sluttdato, saker_vi_bistår, fullførte_saker, antall_tjenester)
 
 
-import plotly.graph_objects as go
-
-from helper import annotate_ikke_offisiell_statistikk
-
-
 def plot_historiske_data(
     data_status,
-    antall_uker: int = 52,
-    startdato=datetime.now(),
+    antall_perioder: int,
+    periode: str,
+    startdato: datetime = datetime.now(),
 ):
     tid = []
     inn = []
     ut = []
 
-    for _ in range(antall_uker):
-        startdato, sluttdato = finn_periode(dato=startdato)
+    for _ in range(antall_perioder):
+        startdato, sluttdato = finn_periode(dato=startdato, periode=periode)
+
         tid.append(str(sluttdato))
         inn.append(
             antall_saker(
@@ -227,6 +209,10 @@ def plot_historiske_data(
                 slutt_dato=sluttdato,
             )
         )
+        if periode == "måned":
+            startdato = startdato - relativedelta(months=1)
+        elif periode == "uke":
+            startdato = startdato - relativedelta(days=1)
 
     fig = go.Figure()
 
@@ -249,12 +235,10 @@ def plot_historiske_data(
     )
 
     fig.update_layout(
-        height=500,
-        width=800,
         plot_bgcolor="rgb(255,255,255)",
         yaxis_title="Antall saker",
         xaxis_title_standoff=80,
-        xaxis_title="Per uke",
+        xaxis_title=f"Per {periode}",
         legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=0.3),
     )
 

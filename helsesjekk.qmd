@@ -12,13 +12,10 @@ execute:
     echo: false
     warning: false
     daemon: false
-# format:
-format: dashboard
-    # html:
-    #     toc: true
-    #     toc-title: Indeks
-    #     page-layout: full
-    #     embed-resources: true
+format:
+    dashboard:
+        embed-resources: true
+        scrolling: false
 jupyter: python3
 ---
 
@@ -57,13 +54,15 @@ data_status = preprocess_data_status(data_status)
 ```
 
 ```{python}
-ANTALL_SAKER_I_VI_BISTÅR = antall_saker_i_vi_bistår(data_status=data_status)
+ANTALL_SAKER_I_VI_BISTÅR = len(data_status[(data_status.status == "VI_BISTÅR") & data_status.aktiv_sak])
+```
+```{python}
+ANTALL_SAKER_I_FULLFØRT = len(data_status[(data_status.status == "FULLFØRT")])
 ```
 
 ```{python}
 # Månedstall
-i_dag = datetime.now()
-en_måned_siden = i_dag.replace(month=((i_dag.month - 1) % 12))
+
 (
     startdato,
     sluttdato,
@@ -73,18 +72,33 @@ en_måned_siden = i_dag.replace(month=((i_dag.month - 1) % 12))
 ) = data_denne_perioden(
     data_status=data_status,
     data_leveranse=data_leveranse,
-    dato=en_måned_siden,
-    periode="måned"
+    startdato=datetime.now(),
+    periode="måned",
 )
 ```
 
 ```{python}
-månedsnavn = ["januar", "februar", "mars", "april", "mai", "juni", "juli", "august", "september", "oktober", "november", "desember"]
+månedsnavn = [
+    "januar",
+    "februar",
+    "mars",
+    "april",
+    "mai",
+    "juni",
+    "juli",
+    "august",
+    "september",
+    "oktober",
+    "november",
+    "desember",
+]
+
+farge = "green" if saker_vi_bistår < fullførte_saker else "light"
 ```
 
 # Måned
 ## Row
-Tall for `{python} månedsnavn[startdato.month]` (`{python} str(startdato)` - `{python} str(sluttdato)`)
+Tall for `{python} månedsnavn[(startdato.month-1)]` (`{python} str(startdato)` - `{python} str(sluttdato)`)
 
 ## Row <!-- {height=25%} -->
 
@@ -92,14 +106,22 @@ Tall for `{python} månedsnavn[startdato.month]` (`{python} str(startdato)` - `{
 # | content: valuebox
 # | title: "I samarbeid med NAV"
 dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_VI_BISTÅR)
+
+# TODO: Vis gjennomsnitt
+# TODO: Vis pil opp eller ned sammenlignet med forrige periode
 ```
 
+```{python}
+# | content: valuebox
+# | title: "Fullført samarbeid med NAV"
+dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_FULLFØRT)
 
+```
 
 ```{python}
 # | content: valuebox
 # | title: "Virksomheter satt til vi bistår"
-dict(icon="graph-down", color="light", value=saker_vi_bistår)
+dict(icon="graph-down", color=farge, value=saker_vi_bistår)
 ```
 
 <!-- ::: {.card}
@@ -109,7 +131,7 @@ I løpet av perioden som var har `` virksomheter blitt satt til «Vi bistår» o
 ```{python}
 # | content: valuebox
 # | title: "Virksomheter satt til fullført"
-dict(icon="graph-up", color="light", value=fullførte_saker)
+dict(icon="graph-up", color=farge, value=fullførte_saker)
 ```
 <!-- TODO: TODO: Dobbelsjekk disse. Ser ikke ut til å stemme med gjennomstrømmingstall i fia datafortelling -->
 
@@ -117,8 +139,6 @@ dict(icon="graph-up", color="light", value=fullførte_saker)
 
 
 ## Row
-
-
 
 ```{python}
 forebyggende_arbeidsmiljøarbeid = antall_tjenester["Forebyggende arbeidsmiljøarbeid"]
@@ -137,6 +157,14 @@ helse_i_arbeid = antall_tjenester["HelseIArbeid"]
 | HelseIArbeid                    | `{python} helse_i_arbeid["LEVERT"]`                  | `{python} helse_i_arbeid["OPPRETTET"]`                  | `{python} helse_i_arbeid["ETTERREGISTRERT"]`                  |
 
 
+## Row
+
+```{python}
+from helsesjekk import plot_historiske_data
+
+plot_historiske_data(data_status=data_status, periode="måned", antall_perioder=12)
+```
+
 # Uke
 
 ```{python}
@@ -150,7 +178,7 @@ helse_i_arbeid = antall_tjenester["HelseIArbeid"]
 ) = data_denne_perioden(
     data_status=data_status,
     data_leveranse=data_leveranse,
-    dato=datetime.now(),
+    startdato=datetime.now(),
     periode="uke",
 )
 ```
@@ -204,3 +232,11 @@ helse_i_arbeid = antall_tjenester["HelseIArbeid"]
 | Redusere sykefravær             | `{python} redusere_sykefravær["LEVERT"]`             | `{python} redusere_sykefravær["OPPRETTET"]`             | `{python} redusere_sykefravær["ETTERREGISTRERT"]`             |
 | Utvikle partssamarbeid          | `{python} utvikle_partssamarbeid["LEVERT"]`          | `{python} utvikle_partssamarbeid["OPPRETTET"]`          | `{python} utvikle_partssamarbeid["ETTERREGISTRERT"]`          |
 | HelseIArbeid                    | `{python} helse_i_arbeid["LEVERT"]`                  | `{python} helse_i_arbeid["OPPRETTET"]`                  | `{python} helse_i_arbeid["ETTERREGISTRERT"]`                  |
+
+## Row
+
+```{python}
+from helsesjekk import plot_historiske_data
+
+plot_historiske_data(data_status=data_status, periode="uke", antall_perioder=52)
+```

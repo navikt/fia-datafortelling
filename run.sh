@@ -1,6 +1,6 @@
 #!/bin/bash
 
-quarto render helsesjekk.qmd --to dashboard --execute -M self-contained:True
+quarto render helsesjekk.qmd
 
 curl -X PUT -F index.html=@helsesjekk.html \
     https://${NADA_ENV}/quarto/update/${QUARTO_ID_HELSESJEKK} \
