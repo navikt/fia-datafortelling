@@ -97,14 +97,15 @@ farge = "green" if saker_vi_bistår < fullførte_saker else "light"
 ```
 
 # Måned
-## Row
-Tall for `{python} månedsnavn[(startdato.month-1)]` (`{python} str(startdato)` - `{python} str(sluttdato)`)
 
-## Row <!-- {height=25%} -->
+## Row
+Totalt akkurat nå
+
+## Row
 
 ```{python}
 # | content: valuebox
-# | title: "I samarbeid med NAV"
+# | title: "Antall saker i 'Vi bistår'"
 dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_VI_BISTÅR)
 
 # TODO: Vis gjennomsnitt
@@ -113,32 +114,31 @@ dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_VI_BISTÅR)
 
 ```{python}
 # | content: valuebox
-# | title: "Fullført samarbeid med NAV"
+# | title: "Antall saker i 'Fullført'"
 dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_FULLFØRT)
 
 ```
 
+
+## Row
+Tall for `{python} månedsnavn[(startdato.month-1)]` (`{python} str(startdato)` - `{python} str(sluttdato)`)
+
+## Row
 ```{python}
 # | content: valuebox
-# | title: "Virksomheter satt til vi bistår"
+# | title: "Virksomheter satt til 'Vi bistår' denne måneden"
 dict(icon="graph-down", color=farge, value=saker_vi_bistår)
 ```
 
-<!-- ::: {.card}
-I løpet av perioden som var har `` virksomheter blitt satt til «Vi bistår» og `{python} ` virksomheter er satt til fullført
-::: -->
-
 ```{python}
 # | content: valuebox
-# | title: "Virksomheter satt til fullført"
+# | title: "Virksomheter satt til 'Fullført' denne måneden"
 dict(icon="graph-up", color=farge, value=fullførte_saker)
 ```
 <!-- TODO: TODO: Dobbelsjekk disse. Ser ikke ut til å stemme med gjennomstrømmingstall i fia datafortelling -->
 
-
-
-
 ## Row
+Her er "Etterregistrerte" tjenester som har blitt opprettet og levert innen 24 timer
 
 ```{python}
 forebyggende_arbeidsmiljøarbeid = antall_tjenester["Forebyggende arbeidsmiljøarbeid"]
@@ -149,7 +149,7 @@ helse_i_arbeid = antall_tjenester["HelseIArbeid"]
 
 
 
-| IA-tjeneste | Levert | Opprettet | Etterregistrert |
+| IA-tjeneste | Levert | Opprettet | Etterregistrerte |
 |---------|:-----|------:|:------:|
 | Forebyggende arbeidsmiljøarbeid | `{python} forebyggende_arbeidsmiljøarbeid["LEVERT"]` | `{python} forebyggende_arbeidsmiljøarbeid["OPPRETTET"]` | `{python} forebyggende_arbeidsmiljøarbeid["ETTERREGISTRERT"]` |
 | Redusere sykefravær             | `{python} redusere_sykefravær["LEVERT"]`             | `{python} redusere_sykefravær["OPPRETTET"]`             | `{python} redusere_sykefravær["ETTERREGISTRERT"]`             |
@@ -183,38 +183,42 @@ plot_historiske_data(data_status=data_status, periode="måned", antall_perioder=
 )
 ```
 
+
+## Row
+Totalt akkurat nå
+
+## Row
+
+```{python}
+# | content: valuebox
+# | title: "Antall saker i 'Vi bistår'"
+dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_VI_BISTÅR)
+
+```
+```{python}
+# | content: valuebox
+# | title: "Antall saker i 'Fullført'"
+dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_FULLFØRT)
+```
+
+
 ## Row
 Tall for uke `{python} startdato.isocalendar().week` (`{python} str(startdato)` - `{python} str(sluttdato)`) 
 
-## Row <!-- {height=25%} -->
+## Row
 
 ```{python}
 # | content: valuebox
-# | title: "I samarbeid med NAV"
-dict(icon="bullseye", color="light", value=ANTALL_SAKER_I_VI_BISTÅR)
-```
-
-
-
-```{python}
-# | content: valuebox
-# | title: "Virksomheter satt til vi bistår"
+# | title: "Virksomheter satt til 'Vi bistår' denne uken"
 dict(icon="graph-down", color="light", value=saker_vi_bistår)
 ```
 
-<!-- ::: {.card}
-I løpet av perioden som var har `` virksomheter blitt satt til «Vi bistår» og `{python} ` virksomheter er satt til fullført
-::: -->
-
 ```{python}
 # | content: valuebox
-# | title: "Virksomheter satt til fullført"
+# | title: "Virksomheter satt til 'Fullført' denne uken"
 dict(icon="graph-up", color="light", value=fullførte_saker)
 ```
 <!-- TODO: TODO: Dobbelsjekk disse. Ser ikke ut til å stemme med gjennomstrømmingstall i fia datafortelling -->
-
-
-
 
 ## Row
 ```{python}
@@ -225,8 +229,11 @@ helse_i_arbeid = antall_tjenester["HelseIArbeid"]
 ```
 
 
+## Row
+Her er "Etterregistrerte" tjenester som har blitt opprettet og levert innen 24 timer
 
-| IA-tjeneste | Levert | Opprettet | Etterregistrert |
+
+| IA-tjeneste | Levert | Opprettet | Etterregistrerte |
 |---------|:-----|------:|:------:|
 | Forebyggende arbeidsmiljøarbeid | `{python} forebyggende_arbeidsmiljøarbeid["LEVERT"]` | `{python} forebyggende_arbeidsmiljøarbeid["OPPRETTET"]` | `{python} forebyggende_arbeidsmiljøarbeid["ETTERREGISTRERT"]` |
 | Redusere sykefravær             | `{python} redusere_sykefravær["LEVERT"]`             | `{python} redusere_sykefravær["OPPRETTET"]`             | `{python} redusere_sykefravær["ETTERREGISTRERT"]`             |
