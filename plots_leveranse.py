@@ -79,7 +79,8 @@ def leveranse_tjeneste_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
 def forskjell_frist_fullfort(data_leveranse: pd.DataFrame) -> go.Figure():
     fullfort_leveranser = data_leveranse[data_leveranse.status == "LEVERT"]
     forskjell_frist_fullfort = (
-        fullfort_leveranser.fullfort.dt.normalize() - fullfort_leveranser.frist
+        fullfort_leveranser.fullfort.dt.normalize()
+        - pd.to_datetime(fullfort_leveranser.frist)
     ).dt.days
 
     min_ = forskjell_frist_fullfort.min()
