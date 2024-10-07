@@ -56,7 +56,14 @@ For å regenerere datafortellingen manuelt, gjør følgende:
 - Kjør jobben manuelt ( `kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc` )
 
 # Oppdater avhengigheter
+## Oversikt fra Pia-hub:
+- Script for å finne pythonversjon brukt i
+  dockerfil https://github.com/navikt/pia-hub/blob/main/scripts/pythonversions.sh
+  - Oppdater pythonversjon om nødvendig
+- Script for å finne utdaterte pythonpakker https://github.com/navikt/pia-hub/blob/main/scripts/pythonpackageversions.sh
+  - Oppdater requirements.txt om nødvendig
 
+## Manuelt:
 - Oppdater python:
   - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/).
   - Dersom kom ny versjon, lag et lokalt virtual miljø på nytt.
