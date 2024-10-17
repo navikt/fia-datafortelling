@@ -1,6 +1,6 @@
 ---
-title: "PIA nøkkeltall"
-subtitle: Metrikker team PIA ser på kickstart av uken.
+title: "En datafortelling om de nye løsningene i Fia."
+subtitle: Behovsvurdering, plan og evaluering.
 title-block-banner: true
 title-block-banner-color: white
 date: now
@@ -13,14 +13,15 @@ execute:
     warning: false
     daemon: false
 format:
-    html:
-        toc: true
-        toc-title: Indeks
-        page-layout: full
+    dashboard:
         embed-resources: true
+        scrolling: false
 jupyter: python3
 ---
 
+## Row
+
+::: {.callout-note}
 Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
 Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
 
@@ -29,3 +30,72 @@ Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
 <span style="color:red;">
 NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 </span>
+:::
+
+```{python}
+import pandas as pd
+import plotly.graph_objects as go
+from google.cloud.bigquery import Client
+
+project = "pia-prod-85b2"
+bq_client = Client(project)
+```
+
+## Row
+## Statusflyt i behovsvurdering
+```{python}
+#| title: Statusflyt i behovsvurdering
+#| description: Test
+
+query = """
+    select distinct bv.id, opprettet, paabegynt, avsluttet, slettet
+    from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1` as bv
+        left join
+            (select id, endret as paabegynt from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1` where status="PÅBEGYNT") as bv_paabegynt
+        on bv_paabegynt.id = bv.id
+        left join
+            (select id, endret as avsluttet from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1` where status="AVSLUTTET") as bv_avsluttet
+            on bv_avsluttet.id = bv.id
+        left join
+            (select id, endret as slettet from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1` where status="SLETTET") as bv_slettet
+            on bv_slettet.id = bv.id
+    where status="OPPRETTET"
+"""
+df_bv = bq_client.query(query=query).to_dataframe()
+
+def statusflyt_behovsvurdering(df_bv: pd.DataFrame) -> go.Figure:
+    opprettet = df_bv.shape[0]
+    opprettet_til_paabegynt = (~df_bv.paabegynt.isna()).sum()
+    paabegynt_til_avsluttet = (~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()).sum()
+    avsluttet_til_slettet = (~df_bv.avsluttet.isna() & ~df_bv.slettet.isna()).sum()
+    opprettet_til_slettet = (df_bv.paabegynt.isna() & df_bv.avsluttet.isna() & ~df_bv.slettet.isna()).sum()
+    paabegynt_til_slettet = (~df_bv.paabegynt.isna() & df_bv.avsluttet.isna() & ~df_bv.slettet.isna()).sum()
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Sankey(
+            node=dict(
+                pad=200,
+                label=["Alle", "Opprettet", "Påbegynt", "Avsluttet", "Slettet"],
+                # node position in the open interval (0, 1)
+                x=[0.05, 0.25, 0.5, 0.75, 0.95],
+                y=[0.5, 0.5, 0.75, 0.9, 0.1],
+            ),
+            link=dict(
+                source=[0, 1, 2, 3, 1, 2],
+                target=[1, 2, 3, 4, 4, 4],
+                value=[
+                    opprettet,
+                    opprettet_til_paabegynt,
+                    paabegynt_til_avsluttet,
+                    avsluttet_til_slettet,
+                    opprettet_til_slettet,
+                    paabegynt_til_slettet,
+                    ],
+            ),
+        )
+    )
+    return fig
+
+statusflyt_behovsvurdering(df_bv)
+```
