@@ -15,7 +15,7 @@ execute:
 format:
     dashboard:
         embed-resources: true
-        scrolling: true
+        #scrolling: true
 jupyter: python3
 ---
 
