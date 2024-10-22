@@ -45,20 +45,20 @@ bq_client = Client(project)
 query = """
     select distinct bv.id, opprettet, paabegynt, avsluttet, slettet
     from (select distinct id, opprettet
-            from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`) as bv
+            from `pia-prod-85b2.pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`) as bv
         left join
             (select id, endret as paabegynt
-                from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+                from `pia-prod-85b2.pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
                 where status="PÅBEGYNT") as bv_paabegynt
         on bv_paabegynt.id = bv.id
         left join
             (select id, endret as avsluttet
-                from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+                from `pia-prod-85b2.pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
                 where status="AVSLUTTET") as bv_avsluttet
             on bv_avsluttet.id = bv.id
         left join
             (select id, min(endret) as slettet
-                from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+                from `pia-prod-85b2.pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
                 where status="SLETTET"
                 group by id) as bv_slettet
             on bv_slettet.id = bv.id
