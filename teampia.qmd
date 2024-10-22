@@ -15,7 +15,7 @@ execute:
 format:
     dashboard:
         embed-resources: true
-        #scrolling: true
+        scrolling: true
 jupyter: python3
 ---
 
@@ -71,7 +71,6 @@ df_bv = bq_client.query(query=query).to_dataframe()
 #| component: valuebox
 #| title: Antall gjennomførte behovsvurderinger
 dict(
-    icon = "",
     color = "light",
     value = (~df_bv.avsluttet.isna()).sum()
 )
