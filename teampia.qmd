@@ -72,7 +72,7 @@ df_bv = bq_client.query(query=query).to_dataframe()
 #| title: Antall gjennomførte behovsvurderinger
 dict(
     color = "light",
-    value = (~df_bv.avsluttet.isna()).sum()
+    value = int((~df_bv.avsluttet.isna()).sum())
 )
 ```
 
