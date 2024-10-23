@@ -42,6 +42,11 @@ bq_client = Client(project)
 ```
 
 ```{python}
+query = "select distinct id, opprettet from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`"
+df_bv = bq_client.query(query=query).to_dataframe()
+```
+
+```{python}
 query = """
     select distinct bv.id, opprettet, paabegynt, avsluttet, slettet
     from (select distinct id, opprettet
