@@ -69,11 +69,81 @@ df_bv = bq_client.query(query=query).to_dataframe()
 ## Row
 ```{python}
 #| component: valuebox
-#| title: Antall gjennomførte behovsvurderinger
+#| title: Antall opprettet samarbeider
+query = "select count(distinct id) from `pia_bigquery_sink_v1_dataset_prod.samarbeid-bigquery-v1`"
+antall_samarbeid = next(bq_client.query(query=query).result())[0]
+dict(
+    color = "light",
+    value = antall_samarbeid
+)
+```
+
+```{python}
+#| component: valuebox
+#| title: Antall opprettet behovsvurderinger
+dict(
+    color = "light",
+    value = int(df_bv.shape[0])
+)
+```
+
+```{python}
+#| component: valuebox
+#| title: Antall fullførte behovsvurderinger
 dict(
     color = "light",
     value = int((~df_bv.avsluttet.isna()).sum())
 )
+```
+
+## Row
+```{python}
+#| title: Antall opprettet behovsvurderinger per måned
+query = """
+    select format_datetime('%Y-%m', opprettet) as maaned, count(distinct id)
+    from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+    group by maaned
+    order by maaned
+"""
+opprettet_behovsv_permaaned = bq_client.query(query=query).to_dataframe()
+
+fig = go.Figure()
+fig = fig.add_trace(
+    go.Bar(
+        x=opprettet_behovsv_permaaned.maaned,
+        y=opprettet_behovsv_permaaned.f0_,
+    )
+)
+fig = fig.update_layout(
+    xaxis_title="Opprettet måned",
+    yaxis_title="Antall behovsvurderinger",
+)
+fig.show()
+```
+
+```{python}
+#| title: Antall fullførte behovsvurderinger per måned
+query = """
+    select format_datetime('%Y-%m', endret) as maaned, count(distinct id)
+    from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+    where status="AVSLUTTET"
+    group by maaned
+    order by maaned
+"""
+opprettet_behovsv_permaaned = bq_client.query(query=query).to_dataframe()
+
+fig = go.Figure()
+fig = fig.add_trace(
+    go.Bar(
+        x=opprettet_behovsv_permaaned.maaned,
+        y=opprettet_behovsv_permaaned.f0_,
+    )
+)
+fig = fig.update_layout(
+    xaxis_title="Fullført måned",
+    yaxis_title="Antall behovsvurderinger",
+)
+fig.show()
 ```
 
 ## Row
@@ -122,4 +192,107 @@ def statusflyt_behovsvurdering(df_bv: pd.DataFrame) -> go.Figure:
     return fig
 
 statusflyt_behovsvurdering(df_bv)
+```
+
+## Row
+```{python}
+df_bv["gjennomforingstid"] = df_bv.avsluttet - df_bv.paabegynt
+```
+
+```{python}
+#| component: valuebox
+#| title: Antall fullførte behovsvurderinger med starttidspunkt
+dict(
+    color = "light",
+    value = int((~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()).sum())
+)
+```
+
+```{python}
+#| component: valuebox
+#| title: Median av gjennomføringstid for behovsvurderinger
+dict(
+    color = "light",
+    value = str(
+        round(
+            (
+                df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()]
+                .gjennomforingstid.astype('timedelta64[s]')
+                .astype('int')
+                .median()/60/60
+            ),
+            1,
+        )
+    ) + " timer"
+)
+```
+
+```{python}
+#| component: valuebox
+#| title: Gjennomsnitt av gjennomføringstid for behovsvurderinger
+dict(
+    color = "light",
+    value = str(
+        round(
+            (
+                df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()]
+                .gjennomforingstid.astype('timedelta64[s]')
+                .astype('int')
+                .mean()/60/60
+            ),
+            1,
+        )
+    ) + " timer"
+)
+```
+
+## Row
+```{python}
+#| title: Gjennomføringstid for behovsvurderinger (histogram)
+fig = go.Figure()
+fig = fig.add_trace(
+    go.Histogram(
+        x=(
+            df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()]
+            .gjennomforingstid
+            .astype('timedelta64[s]')
+            .astype('int')/60/60
+        ),
+        nbinsx=100,
+    )
+)
+fig = fig.update_layout(
+    xaxis_title="Antall timer",
+    yaxis_title="Antall bevohsvurderinger",
+)
+fig.show()
+```
+
+```{python}
+def box_plot_tid(series: pd.Series, title) -> go.Figure:
+    fig = go.Figure()
+    fig.add_trace(
+        go.Box(
+            y=(
+                series
+                .astype('timedelta64[s]')
+                .astype('int')/60/60
+            ),
+            boxpoints='all',
+            boxmean=True,
+            name=title
+        )
+    )
+    fig.update_layout(
+        yaxis_title="Antall timer",
+    )
+    return fig
+```
+
+```{python}
+#| title: Gjennomføringstid for behovsvurderinger (boksplott)
+box_plot_tid(
+    df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()].gjennomforingstid,
+    "Gjennomføringstid",
+)
 ```
