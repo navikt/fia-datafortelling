@@ -42,11 +42,6 @@ bq_client = Client(project)
 ```
 
 ```{python}
-query = "select * from `pia_bigquery_sink_v1_dataset_prod.ia-sak-statistikk-v1`"
-df_bv = bq_client.query(query=query).to_dataframe()
-```
-
-```{python}
 query = """
     select distinct bv.id, opprettet, paabegynt, avsluttet, slettet
     from (select distinct id, opprettet
@@ -82,7 +77,6 @@ dict(
 ```
 
 ## Row
-## Statusflyt i behovsvurdering
 ```{python}
 #| title: Statusflyt i behovsvurdering
 

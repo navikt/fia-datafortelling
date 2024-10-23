@@ -1,11 +1,11 @@
 #!/bin/bash
-: '
+
 quarto render helsesjekk.qmd
 
 curl -X PUT -F index.html=@helsesjekk.html \
     https://${NADA_ENV}/quarto/update/${QUARTO_ID_HELSESJEKK} \
     -H "Authorization:Bearer ${QUARTO_TOKEN}"
-    
+: '
 quarto render index.qmd
 
 FILER="-F index.html=@index.html"
