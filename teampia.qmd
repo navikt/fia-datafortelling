@@ -83,7 +83,7 @@ dict(
 #| title: Antall opprettet behovsvurderinger
 dict(
     color = "light",
-    value = int(df_bv.shape[0])
+    value = df_bv.shape[0]
 )
 ```
 
@@ -196,7 +196,8 @@ statusflyt_behovsvurdering(df_bv)
 
 ## Row
 ```{python}
-df_bv["gjennomforingstid"] = df_bv.avsluttet - df_bv.paabegynt
+# gjennomføringstid (fra påbegynt til avsluttet/fullført) i antall timer
+df_bv["gjennomforingstid"] = (df_bv.avsluttet - df_bv.paabegynt).dt.total_seconds()/60/60
 ```
 
 ```{python}
@@ -217,9 +218,8 @@ dict(
         round(
             (
                 df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()]
-                .gjennomforingstid.astype('timedelta64[s]')
-                .astype('int')
-                .median()/60/60
+                .gjennomforingstid
+                .median()
             ),
             1,
         )
@@ -236,9 +236,8 @@ dict(
         round(
             (
                 df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()]
-                .gjennomforingstid.astype('timedelta64[s]')
-                .astype('int')
-                .mean()/60/60
+                .gjennomforingstid
+                .mean()
             ),
             1,
         )
@@ -253,15 +252,17 @@ fig = go.Figure()
 fig = fig.add_trace(
     go.Histogram(
         x=(
-            df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()]
-            .gjennomforingstid
-            .astype('timedelta64[s]')
-            .astype('int')/60/60
+            df_bv[
+                ~df_bv.paabegynt.isna()
+                & ~df_bv.avsluttet.isna()
+                & (df_bv.gjennomforingstid < 24)
+            ].gjennomforingstid
         ),
-        nbinsx=100,
+        nbinsx=23,
     )
 )
 fig = fig.update_layout(
+    title="Vises kun under 24h",
     xaxis_title="Antall timer",
     yaxis_title="Antall bevohsvurderinger",
 )
@@ -273,18 +274,16 @@ def box_plot_tid(series: pd.Series, title) -> go.Figure:
     fig = go.Figure()
     fig.add_trace(
         go.Box(
-            y=(
-                series
-                .astype('timedelta64[s]')
-                .astype('int')/60/60
-            ),
+            y=series,
             boxpoints='all',
             boxmean=True,
             name=title
         )
     )
     fig.update_layout(
+        title=("Vises kun under 24h"),
         yaxis_title="Antall timer",
+        yaxis_range=[0,24],
     )
     return fig
 ```
@@ -295,4 +294,51 @@ box_plot_tid(
     df_bv[~df_bv.paabegynt.isna() & ~df_bv.avsluttet.isna()].gjennomforingstid,
     "Gjennomføringstid",
 )
+```
+
+## Row
+```{python}
+#| title: Gjennomføringstid for behovsvurderinger (gruppert)
+col = "gjennomforingstid_intervall"
+df_bv.loc[df_bv.gjennomforingstid < 0.25, col] = "<15min"
+df_bv.loc[df_bv.gjennomforingstid.between(0.25, 5), col] = "15min-30min"
+df_bv.loc[df_bv.gjennomforingstid.between(0.5, 1), col] = "30min-1t"
+df_bv.loc[df_bv.gjennomforingstid.between(1, 1.5), col] = "1-1.5t"
+df_bv.loc[df_bv.gjennomforingstid.between(1.5, 2), col] = "1.5-2t"
+df_bv.loc[df_bv.gjennomforingstid.between(2, 3), col] = "2-3t"
+df_bv.loc[df_bv.gjennomforingstid.between(3, 6), col] = "3-6t"
+df_bv.loc[df_bv.gjennomforingstid.between(6, 12), col] = "6-12t"
+df_bv.loc[df_bv.gjennomforingstid.between(12, 24), col] = "12-24t"
+df_bv.loc[df_bv.gjennomforingstid.between(24, 48), col] = "24-48t"
+df_bv.loc[df_bv.gjennomforingstid.between(48, 7*24), col] = "24t-1uke"
+df_bv.loc[df_bv.gjennomforingstid.between(7*24, 2*7*24), col] = "1uke-2uker"
+df_bv.loc[df_bv.gjennomforingstid>=2*7*24, col] = ">=2uker"
+
+intervaller = (
+    df_bv.sort_values("gjennomforingstid", ascending=True)
+    .gjennomforingstid_intervall
+    .unique()
+)
+bv_per_intervall = (
+    df_bv[~df_bv.gjennomforingstid.isna()]
+    .groupby("gjennomforingstid_intervall")
+    .id.nunique()
+    .reset_index()
+)
+fig = go.Figure()
+fig = fig.add_trace(
+    go.Bar(
+        x=bv_per_intervall[col],
+        y=bv_per_intervall.id,
+        text=bv_per_intervall.id,
+    )
+)
+fig = fig.update_layout(
+    height=500,
+    width=800,
+    xaxis_title="Gjennomføringstid intervall (fra og med, til)",
+    yaxis_title="Antall saker",
+)
+fig = fig.update_xaxes(categoryorder="array", categoryarray=intervaller)
+fig.show()
 ```
