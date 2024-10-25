@@ -1,0 +1,53 @@
+# Samarbeid
+
+```{python}
+df_smb_sistoppdatering = load_data_deduplicate(project, dataset, table_samarbeid, distinct_colunms="id")
+```
+
+## Row
+
+```{python}
+#| component: valuebox
+#| title: Antall opprettet samarbeider
+dict(
+    color = "light",
+    value = df_smb_sistoppdatering.id.nunique()
+)
+```
+
+```{python}
+#| component: valuebox
+#| title: Antall aktive samarbeider
+dict(
+    color = "light",
+    value = df_smb_sistoppdatering[df_smb_sistoppdatering.status == "AKTIV"].id.nunique()
+)
+```
+
+```{python}
+#| component: valuebox
+#| title: Antall saker med aktive samarbeider
+dict(
+    color = "light",
+    value = df_smb_sistoppdatering[df_smb_sistoppdatering.status == "AKTIV"].saksnummer.nunique()
+)
+```
+
+```{python}
+#| component: valuebox
+#| title: Antall flyttet samarbeider
+query = f"""
+    select count(distinct id)
+    from (
+        select id, count(distinct saksnummer) as antall_saker
+        from `{dataset}.{table_samarbeid}`
+        group by id
+    )
+    where antall_saker > 1
+"""
+antall_flyttet = next(bq_client.query(query=query).result())[0]
+dict(
+    color = "light",
+    value = antall_flyttet
+)
+```
