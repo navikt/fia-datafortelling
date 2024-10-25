@@ -32,3 +32,32 @@ dict(
     value = df_smb_sistoppdatering[df_smb_sistoppdatering.status == "AKTIV"].saksnummer.nunique()
 )
 ```
+
+## Row
+```{python}
+#| title: Antall saker per antall samarbeider
+query = f"""
+    select antall_samarbeid, count(distinct saksnummer) as antall_saker
+    from (select saksnummer, count(distinct id) as antall_samarbeid
+        from `{dataset}.{table_samarbeid}`
+        where status = "AKTIV"
+        group by saksnummer
+        order by antall_samarbeid desc)
+    group by antall_samarbeid
+"""
+antall_saker_per_antall_samarbeider = bq_client.query(query=query).to_dataframe()
+
+fig = go.Figure()
+fig = fig.add_trace(
+    go.Bar(
+        x=antall_saker_per_antall_samarbeider.antall_samarbeid,
+        y=antall_saker_per_antall_samarbeider.antall_saker,
+    )
+)
+fig = fig.update_layout(
+    xaxis_title="Antall samarbeider",
+    yaxis_title="Antall saker",
+)
+fig = fig.update_xaxes(type='category')
+fig.show()
+```
