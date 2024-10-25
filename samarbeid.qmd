@@ -2,6 +2,7 @@
 
 ```{python}
 df_smb_sistoppdatering = load_data_deduplicate(project, dataset, table_samarbeid, distinct_colunms="id")
+df_bv_sistoppdatering = load_data_deduplicate(project, dataset, table_behovsvurdering, distinct_colunms="id")
 ```
 
 ## Row
@@ -33,6 +34,15 @@ dict(
 )
 ```
 
+```{python}
+#| component: valuebox
+#| title: Antall samarbeider som har behovsvurdering
+dict(
+    color = "light",
+    value = df_bv_sistoppdatering[df_bv_sistoppdatering.status=="AVSLUTTET"].samarbeidId.nunique()
+)
+```
+
 ## Row
 ```{python}
 #| title: Antall saker per antall aktive samarbeider
@@ -57,6 +67,32 @@ fig = fig.add_trace(
 fig = fig.update_layout(
     xaxis_title="Antall aktive samarbeider",
     yaxis_title="Antall saker",
+)
+fig = fig.update_xaxes(type='category')
+fig.show()
+```
+
+```{python}
+#| title: Antall samarbeider per antall fullførte behovsvurderinger
+antall_smb_per_antall_bv = (
+    df_bv_sistoppdatering[df_bv_sistoppdatering.status=="AVSLUTTET"]
+    .groupby("samarbeidId")
+    .id
+    .count()
+    .value_counts()
+    .sort_index()
+)
+
+fig = go.Figure()
+fig = fig.add_trace(
+    go.Bar(
+        x=antall_smb_per_antall_bv.index,
+        y=antall_smb_per_antall_bv.values,
+    )
+)
+fig = fig.update_layout(
+    xaxis_title="Antall fullførte behovsvurderinger",
+    yaxis_title="Antall samarbeider",
 )
 fig = fig.update_xaxes(type='category')
 fig.show()
