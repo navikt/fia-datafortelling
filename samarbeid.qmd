@@ -27,6 +27,22 @@ dict(
 
 ```{python}
 #| component: valuebox
+#| title: Antall aktive samarbeider uten navn
+dict(
+    color = "light",
+    value = df_smb_sistoppdatering[
+        (df_smb_sistoppdatering.status == "AKTIV")
+        & ~(
+            (df_smb_sistoppdatering.navn.notnull())
+            & (df_smb_sistoppdatering.navn != "")
+            & (df_smb_sistoppdatering.navn != "Samarbeid uten navn")
+        )
+    ].id.nunique()
+)
+```
+
+```{python}
+#| component: valuebox
 #| title: Antall saker med aktive samarbeider
 dict(
     color = "light",
@@ -36,7 +52,7 @@ dict(
 
 ```{python}
 #| component: valuebox
-#| title: Antall samarbeider som har behovsvurdering
+#| title: Antall samarbeider som har fullført behovsvurdering
 dict(
     color = "light",
     value = df_bv_sistoppdatering[df_bv_sistoppdatering.status=="AVSLUTTET"].samarbeidId.nunique()
@@ -54,6 +70,7 @@ query = f"""
         group by saksnummer
         order by antall_samarbeid desc)
     group by antall_samarbeid
+    order by antall_saker desc
 """
 antall_saker_per_antall_samarbeider = bq_client.query(query=query).to_dataframe()
 
