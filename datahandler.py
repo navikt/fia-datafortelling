@@ -110,7 +110,7 @@ def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
 
 def split_data_statistikk(
     data_statistikk: pd.DataFrame,
-) -> (pd.DataFrame, pd.DataFrame):
+) -> (pd.DataFrame, pd.DataFrame, pd.DataFrame):
     """
     Splitter data_statistikk inn i data_status og data_eierskap
     """
@@ -119,10 +119,14 @@ def split_data_statistikk(
 
     # Split data_statistikk inn i data_status og data_eierskap
     eierskap = data_statistikk.hendelse == "TA_EIERSKAP_I_SAK"
-    data_status = data_statistikk[~eierskap].reset_index(drop=True)
+    prosess = data_statistikk.hendelse.isin(
+        ["NY_PROSESS", "ENDRE_PROSESS", "SLETT_PROSESS"]
+    )
+    data_status = data_statistikk[~eierskap & ~prosess].reset_index(drop=True)
     data_eierskap = data_statistikk[eierskap].reset_index(drop=True)
+    data_prosess = data_statistikk[prosess].reset_index(drop=True)
 
-    return data_status, data_eierskap
+    return data_status, data_eierskap, data_prosess
 
 
 def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:

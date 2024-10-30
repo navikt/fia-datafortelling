@@ -74,7 +74,7 @@ raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
-data_status, data_eierskap = split_data_statistikk(data_statistikk)
+data_status, data_eierskap, data_prosess = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
 data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
