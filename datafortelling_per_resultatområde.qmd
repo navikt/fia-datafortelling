@@ -90,7 +90,7 @@ raw_data_leveranse = raw_data_leveranse.merge(
     on='saksnummer',
 )
 
-data_status, data_eierskap = split_data_statistikk(data_statistikk)
+data_status, data_eierskap, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
 data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
