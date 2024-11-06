@@ -382,11 +382,11 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
     fig.add_trace(
         go.Sankey(
             node=dict(
-                pad=200,
+                # pad=200,
                 label=status_label,
                 # node position in the open interval (0, 1)
-                x=[0.001, 0.2, 0.4, 0.6, 0.8, 0.999, 0.999],
-                y=[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.001],
+                x=[0.02, 0.2, 0.4, 0.6, 0.8, 0.98, 0.98],
+                y=[0.5, 0.5, 0.55, 0.6, 0.6, 0.6, 0.14],
             ),
             link=dict(
                 source=source_status,
@@ -395,7 +395,8 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
             ),
         )
     )
-    return annotate_ikke_offisiell_statistikk(fig, y=1.2)
+    fig.update_layout(margin=dict(l=20, r=20, t=20, b=20))
+    return annotate_ikke_offisiell_statistikk(fig)
 
 
 def gjennomstrømmingstall(data_status: pd.DataFrame, status="VI_BISTÅR") -> go.Figure:
