@@ -3,7 +3,7 @@ from datetime import datetime
 import plotly.graph_objects as go
 
 
-def annotate_ikke_offisiell_statistikk(fig: go.Figure, x=0.5, y=1.1) -> go.Figure:
+def annotate_ikke_offisiell_statistikk(fig: go.Figure, x=0.5, y=1.05) -> go.Figure:
     """
     Legger til en annotasjon om at dette ikke er offisiell statistikk
     """
