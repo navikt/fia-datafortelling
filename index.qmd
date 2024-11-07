@@ -48,9 +48,7 @@ from datahandler import (
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots import (
-    dager_siden_siste_oppdatering,
-)
+from plots import dager_siden_siste_oppdatering
 from plots_statistikk import (
     statusflyt,
     gjennomstrømmingstall,
@@ -59,11 +57,7 @@ from plots_statistikk import (
     aktive_saker_per_kolonne,
     virksomhetsprofil,
 )
-from plots_leveranse import (
-    antall_leveranser_per_tjeneste,
-    begrunnelse_ikke_aktuell,
-    leveranse_tjeneste_per_maaned,
-)
+from plots_leveranse import begrunnelse_ikke_aktuell
 from helper import ikke_aktuell_begrunnelse_sortering
 from konstanter import ikkeaktuell_hovedgrunn
 
@@ -171,33 +165,11 @@ dager_siden_siste_oppdatering(
 :::
 
 
-## IA-tjenester
-Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester som er under arbeid eller levert.
-En sak kan ikke gå videre til status "Fullført" før alle registrerte IA-tjenester er satt som levert eller er slettet.
-Slettet IA-tjenester vises ikke i grafene under.
+## Leveranser
 
-```{python}
-# Filtrerer bort saker avsluttet for over ett år siden
-data_status_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
-data_leveranse_sistestatus_siste_år = data_leveranse_sistestatus[data_leveranse_sistestatus.saksnummer.isin(data_status_siste_år.saksnummer.unique())]
-```
-
-::: {.panel-tabset}
-
-## Levert per måned
-```{python}
-leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_siste_år)
-```
-
-## Antall saker per IA-tjeneste
-Antall saker som er registrert med IA-tjenester, fordelt etter IA-tjeneste og dens status.
-```{python}
-antall_leveranser_per_tjeneste(data_leveranse_sistestatus_siste_år)
-```
-
-:::
-
-{{< include includes/leveransestatus-forklaring.qmd >}}
+IA-tjenester er faset ut og erstattet med samarbeidsplanen i Fia.
+Du kan finne de gamle dataene om IA-tjenester [her](ia_tjenester.html).
+Info om samarbeidsplan kommer senere.
 
 
 ## Virksomhetsprofil

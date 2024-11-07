@@ -7,8 +7,11 @@ curl -X PUT -F index.html=@helsesjekk.html \
     -H "Authorization:Bearer ${QUARTO_TOKEN}"
 
 quarto render index.qmd
-
 FILER="-F index.html=@index.html"
+
+quarto render ia_tjenester.qmd
+FILER="$FILER -F ia_tjenester.html=@ia_tjenester.html"
+
 for RESULTATOMRADE in "Oslo" "Rogaland" "Møre og Romsdal" "Nordland" "Vest-Viken" "Øst-Viken" "Innlandet" "Vestfold og Telemark" "Agder" "Vestland" "Trøndelag" "Troms og Finnmark"
 do
     export RESULTATOMRADE
