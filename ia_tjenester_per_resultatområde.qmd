@@ -45,31 +45,15 @@ from datahandler import (
     preprocess_data_status,
     preprocess_data_leveranse,
     hent_leveranse_sistestatus,
-    explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
-)
-from plots import dager_siden_siste_oppdatering
-from plots_statistikk import (
-    statusflyt,
-    gjennomstrømmingstall,
-    saker_per_status_per_måned,
-    antall_saker_per_status,
-    virksomhetsprofil,
 )
 from plots_leveranse import (
     antall_leveranser_per_tjeneste,
-    begrunnelse_ikke_aktuell,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
-from helper import (
-    ikke_aktuell_begrunnelse_sortering,
-    iatjeneste_og_status_sortering,
-)
-from konstanter import (
-    ikkeaktuell_hovedgrunn,
-    resultatområder,
-)
+from helper import iatjeneste_og_status_sortering
+from konstanter import resultatområder
 
 
 PROJECT = os.environ['GCP_PROJECT']
