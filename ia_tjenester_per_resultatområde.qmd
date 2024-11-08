@@ -1,0 +1,214 @@
+---
+title: "Fia datafortelling for {{< env RESULTATOMRADE >}}"
+subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
+author: Team Pia
+author-title: "Eier"
+execute:
+    echo: false
+    warning: false
+    daemon: false
+format:
+    html:
+        toc: true
+        toc-title: Indeks
+        page-layout: full
+        embed-resources: true
+jupyter: python3
+---
+
+**Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen i [Porten](https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362).**
+
+Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
+Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
+
+Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
+
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
+
+```{python}
+%load_ext autoreload
+%autoreload 2
+
+import os
+
+from datahandler import (
+    load_data_deduplicate,
+    preprocess_data_statistikk,
+    split_data_statistikk,
+    preprocess_data_status,
+    preprocess_data_leveranse,
+    hent_leveranse_sistestatus,
+    explode_ikke_aktuell_begrunnelse,
+    filtrer_bort_saker_på_avsluttet_tidspunkt,
+)
+from plots import dager_siden_siste_oppdatering
+from plots_statistikk import (
+    statusflyt,
+    gjennomstrømmingstall,
+    saker_per_status_per_måned,
+    antall_saker_per_status,
+    virksomhetsprofil,
+)
+from plots_leveranse import (
+    antall_leveranser_per_tjeneste,
+    begrunnelse_ikke_aktuell,
+    leveranse_per_maaned,
+    leveranse_tjeneste_per_maaned,
+)
+from helper import (
+    ikke_aktuell_begrunnelse_sortering,
+    iatjeneste_og_status_sortering,
+)
+from konstanter import (
+    ikkeaktuell_hovedgrunn,
+    resultatområder,
+)
+
+
+PROJECT = os.environ['GCP_PROJECT']
+DATASET = os.environ['DATASET']
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
+
+navn = os.environ['RESULTATOMRADE']
+if navn in resultatområder.values():
+    resultatområde = navn
+
+
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+
+raw_data_leveranse = raw_data_leveranse.merge(
+    data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram", "resultatomrade"]],
+    how='left',
+    on='saksnummer',
+)
+
+data_status, _, _ = split_data_statistikk(data_statistikk)
+data_status = preprocess_data_status(data_status)
+data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
+data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
+
+data_status_resultatområde = data_status[data_status.resultatomrade == resultatområde]
+data_leveranse_resultatområde = data_leveranse[data_leveranse.resultatomrade == resultatområde]
+data_leveranse_sistestatus_resultatområde = data_leveranse_sistestatus[data_leveranse_sistestatus.resultatomrade == resultatområde]
+```
+
+## Leveranser
+Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester som er under arbeid eller levert.
+En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
+Slettet leveranser vises ikke i grafene under.
+
+
+#### Antall fullførte leveranser
+PS: En sak kan ha flere leveranser.
+
+::: {.panel-tabset}
+# Totalt
+```{python}
+leveranse_per_maaned(data_leveranse_sistestatus_resultatområde)
+```
+# Per tjeneste
+```{python}
+leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_resultatområde)
+```
+:::
+
+
+#### Antall saker som har leveranser registrert med IA-tjenester
+```{python}
+# Filtrerer bort saker avsluttet for over ett år siden
+data_status_resultatområde_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status_resultatområde)
+data_leveranse_sistestatus_resultatområde_siste_år = data_leveranse_sistestatus_resultatområde[
+    data_leveranse_sistestatus_resultatområde.saksnummer.isin(data_status_resultatområde_siste_år.saksnummer.unique())
+]
+
+alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_leveranse_sistestatus)
+```
+
+::: {.panel-tabset}
+# Alle virksomheter
+PS: Én sak kan ha leveranser i flere tjenester.
+```{python}
+antall_leveranser_per_tjeneste(data_leveranse_sistestatus_resultatområde_siste_år, alle_iatjenester_og_status)
+```
+
+# Per bransjeprogram
+PS: Én sak kan ha leveranser i flere tjenester.
+
+::: {.panel-tabset}
+# Barnehager
+```{python}
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="BARNEHAGER"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
+```
+
+# Sykehjem
+```{python}
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="SYKEHJEM"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
+```
+
+# Sykehus
+```{python}
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="SYKEHUS"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
+```
+
+# Næringsmiddelindustri
+```{python}
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
+```
+
+# Bygg og anlegg
+```{python}
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram.isin(["BYGG", "ANLEGG"])
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
+```
+
+# Transport
+```{python}
+data = data_leveranse_sistestatus_resultatområde_siste_år[
+    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="TRANSPORT"
+]
+if data.empty:
+    print("Det finnes ikke registerte leveranser i denne bransjen")
+else:
+    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
+```
+:::
+:::
+
+{{< include includes/leveransestatus-forklaring.qmd >}}

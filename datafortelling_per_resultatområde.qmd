@@ -178,118 +178,14 @@ dager_siden_siste_oppdatering(
 
 
 ## Leveranser
-Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester som er under arbeid eller levert.
-En sak kan ikke gå videre til status "Fullført" før alle registrerte leveranser er satt som levert eller er slettet.
-Slettet leveranser vises ikke i grafene under.
 
-
-#### Antall fullførte leveranser
-PS: En sak kan ha flere leveranser.
-
-::: {.panel-tabset}
-# Totalt
 ```{python}
-leveranse_per_maaned(data_leveranse_sistestatus_resultatområde)
-```
-# Per tjeneste
-```{python}
-leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_resultatområde)
-```
-:::
-
-
-#### Antall saker som har leveranser registrert med IA-tjenester
-```{python}
-# Filtrerer bort saker avsluttet for over ett år siden
-data_status_resultatområde_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status_resultatområde)
-data_leveranse_sistestatus_resultatområde_siste_år = data_leveranse_sistestatus_resultatområde[
-    data_leveranse_sistestatus_resultatområde.saksnummer.isin(data_status_resultatområde_siste_år.saksnummer.unique())
-]
-
-alle_iatjenester_og_status = iatjeneste_og_status_sortering(data_leveranse_sistestatus)
+lenke_til_ia_tjenester = f"ia_tjenester_per_resultatområde_{navn.replace(' ', '_')}.html"
 ```
 
-::: {.panel-tabset}
-# Alle virksomheter
-PS: Én sak kan ha leveranser i flere tjenester.
-```{python}
-antall_leveranser_per_tjeneste(data_leveranse_sistestatus_resultatområde_siste_år, alle_iatjenester_og_status)
-```
-
-# Per bransjeprogram
-PS: Én sak kan ha leveranser i flere tjenester.
-
-::: {.panel-tabset}
-# Barnehager
-```{python}
-data = data_leveranse_sistestatus_resultatområde_siste_år[
-    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="BARNEHAGER"
-]
-if data.empty:
-    print("Det finnes ikke registerte leveranser i denne bransjen")
-else:
-    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
-```
-
-# Sykehjem
-```{python}
-data = data_leveranse_sistestatus_resultatområde_siste_år[
-    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="SYKEHJEM"
-]
-if data.empty:
-    print("Det finnes ikke registerte leveranser i denne bransjen")
-else:
-    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
-```
-
-# Sykehus
-```{python}
-data = data_leveranse_sistestatus_resultatområde_siste_år[
-    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="SYKEHUS"
-]
-if data.empty:
-    print("Det finnes ikke registerte leveranser i denne bransjen")
-else:
-    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
-```
-
-# Næringsmiddelindustri
-```{python}
-data = data_leveranse_sistestatus_resultatområde_siste_år[
-    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="NÆRINGSMIDDELINDUSTRI"
-]
-if data.empty:
-    print("Det finnes ikke registerte leveranser i denne bransjen")
-else:
-    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
-```
-
-# Bygg og anlegg
-```{python}
-data = data_leveranse_sistestatus_resultatområde_siste_år[
-    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram.isin(["BYGG", "ANLEGG"])
-]
-if data.empty:
-    print("Det finnes ikke registerte leveranser i denne bransjen")
-else:
-    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
-```
-
-# Transport
-```{python}
-data = data_leveranse_sistestatus_resultatområde_siste_år[
-    data_leveranse_sistestatus_resultatområde_siste_år.bransjeprogram=="TRANSPORT"
-]
-if data.empty:
-    print("Det finnes ikke registerte leveranser i denne bransjen")
-else:
-    antall_leveranser_per_tjeneste(data, alle_iatjenester_og_status).show()
-```
-:::
-:::
-
-{{< include includes/leveransestatus-forklaring.qmd >}}
-
+IA-tjenester er faset ut og erstattet med samarbeidsplanen i Fia.
+Du kan finne de gamle dataene om IA-tjenester i din fylke [her](`{python} lenke_til_ia_tjenester`).
+Info om samarbeidsplan kommer senere.
 
 ## Virksomhetsprofil
 Her vises profilen til virksomheter som er registrert i Fia.
