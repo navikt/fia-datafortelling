@@ -184,7 +184,7 @@ lenke_til_ia_tjenester = f"ia_tjenester_per_resultatområde_{navn.replace(' ', '
 ```
 
 IA-tjenester er faset ut og erstattet med samarbeidsplanen i Fia.
-Du kan finne de gamle dataene om IA-tjenester i din fylke [her](`{python} lenke_til_ia_tjenester`).
+Du kan finne de gamle dataene om IA-tjenester i ditt fylke [her](`{python} lenke_til_ia_tjenester`).
 Info om samarbeidsplan kommer senere.
 
 ## Virksomhetsprofil
