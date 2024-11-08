@@ -173,6 +173,9 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
 
 
 def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
+    # Filtrere bort endret av Fia systemet
+    data_leveranse = data_leveranse[data_leveranse.sistEndretAv != "Fia system"]
+
     # Fjern slettede leveranser
     slettet_leveranse_id = data_leveranse[data_leveranse.status == "SLETTET"].id
     data_leveranse = data_leveranse[~data_leveranse.id.isin(slettet_leveranse_id)]
