@@ -1,5 +1,5 @@
-google-auth==2.35.0
-google-cloud-bigquery==3.26.0
+google-auth==2.36.0
+google-cloud-bigquery==3.27.0
 pandas==2.2.3
 plotly==5.24.1
 jupyter==1.1.1
