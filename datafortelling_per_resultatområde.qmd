@@ -48,7 +48,6 @@ from datahandler import (
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots import dager_siden_siste_oppdatering
 from plots_statistikk import (
     statusflyt,
     gjennomstrømmingstall,
@@ -129,53 +128,6 @@ gjennomstrømmingstall(data_status_resultatområde)
 
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
-
-## Dager siden siste oppdatering i Fia
-Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
-En oppdatering er at noen har tatt eierskap til en sak, en endring av status eller en leveranse som er lagt til eller satt til levert.
-Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke dette som oppdatering.
-Vi viser disse tallene fordelt på status, siden statusene kan ha ulik varighet.
-Grafene gir en indikasjon på hvor mange saker som ligger urørt i Fia.
-
-::: {.panel-tabset}
-## Alle aktive saker
-```{python}
-dager_siden_siste_oppdatering(data_status_resultatområde, data_eierskap_resultatområde, data_leveranse_resultatområde)
-```
-## Vurderes
-```{python}
-dager_siden_siste_oppdatering(
-    data_status_resultatområde[data_status_resultatområde.siste_status=="VURDERES"],
-    data_eierskap_resultatområde,
-    data_leveranse_resultatområde
-)
-```
-## Kontaktes
-```{python}
-dager_siden_siste_oppdatering(
-    data_status_resultatområde[data_status_resultatområde.siste_status=="KONTAKTES"],
-    data_eierskap_resultatområde,
-    data_leveranse_resultatområde
-)
-```
-## Kartlegges
-```{python}
-dager_siden_siste_oppdatering(
-    data_status_resultatområde[data_status_resultatområde.siste_status=="KARTLEGGES"],
-    data_eierskap_resultatområde,
-    data_leveranse_resultatområde
-)
-```
-## Vi bistår
-```{python}
-dager_siden_siste_oppdatering(
-    data_status_resultatområde[data_status_resultatområde.siste_status=="VI_BISTÅR"],
-    data_eierskap_resultatområde,
-    data_leveranse_resultatområde
-)
-```
-:::
-
 
 ## Leveranser
 

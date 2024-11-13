@@ -42,7 +42,10 @@ from datahandler import (
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
-from plots import urørt_saker_over_tid
+from plots import (
+    urørt_saker_over_tid,
+    dager_siden_siste_oppdatering,
+)
 from plots_statistikk import (
     saker_per_status_over_tid,
     dager_mellom_statusendringer,
@@ -251,6 +254,53 @@ median_og_gjennomsnitt_av_tid_mellom_statusendringer(
 )
 ```
 :::
+:::
+
+
+## Dager siden siste oppdatering i Fia
+Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
+En oppdatering er at noen har tatt eierskap til en sak, en endring av status eller en leveranse som er lagt til eller satt til levert.
+Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke dette som oppdatering.
+Vi viser disse tallene fordelt på status, siden statusene kan ha ulik varighet.
+Grafene gir en indikasjon på hvor mange saker som ligger urørt i Fia.
+
+::: {.panel-tabset}
+## Alle aktive saker
+```{python}
+dager_siden_siste_oppdatering(data_status, data_eierskap, data_leveranse)
+```
+## Vurderes
+```{python}
+dager_siden_siste_oppdatering(
+    data_status[data_status.siste_status=="VURDERES"],
+    data_eierskap,
+    data_leveranse
+)
+```
+## Kontaktes
+```{python}
+dager_siden_siste_oppdatering(
+    data_status[data_status.siste_status=="KONTAKTES"],
+    data_eierskap,
+    data_leveranse
+)
+```
+## Kartlegges
+```{python}
+dager_siden_siste_oppdatering(
+    data_status[data_status.siste_status=="KARTLEGGES"],
+    data_eierskap,
+    data_leveranse
+)
+```
+## Vi bistår
+```{python}
+dager_siden_siste_oppdatering(
+    data_status[data_status.siste_status=="VI_BISTÅR"],
+    data_eierskap,
+    data_leveranse
+)
+```
 :::
 
 
