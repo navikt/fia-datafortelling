@@ -190,6 +190,32 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     return data_leveranse
 
 
+def preprocess_data_samarbeid(
+    data_samarbeid: pd.DataFrame, data_statistikk: pd.DataFrame
+) -> pd.DataFrame:
+    # Legge til antall personer i samarbeid-tabellen
+    antall_personer = data_statistikk.sort_values("endretTidspunkt")[
+        ["saksnummer", "antallPersoner"]
+    ].drop_duplicates("saksnummer", keep="last")
+    data_samarbeid = data_samarbeid.merge(antall_personer, on="saksnummer", how="left")
+
+    return data_samarbeid
+
+
+def legg_til_resultatområde(
+    data: pd.DataFrame, data_statistikk: pd.DataFrame
+) -> pd.DataFrame:
+    """
+    Legger til resultatområde basert på data_statistikk.
+    Vi filtrerer på resultatområde for å lage en datafortelling per resultatområde.
+    """
+    resultatomrade = data_statistikk.sort_values("endretTidspunkt")[
+        ["saksnummer", "resultatomrade"]
+    ].drop_duplicates("saksnummer", keep="last")
+    data = data.merge(resultatomrade, on="saksnummer", how="left")
+    return data
+
+
 def hent_leveranse_sistestatus(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     """
     Henter siste status for hver leveranse

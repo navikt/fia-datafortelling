@@ -44,6 +44,7 @@ from datahandler import (
     split_data_statistikk,
     preprocess_data_status,
     preprocess_data_leveranse,
+    preprocess_data_samarbeid,
     hent_leveranse_sistestatus,
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
@@ -63,15 +64,23 @@ from konstanter import ikkeaktuell_hovedgrunn
 
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
-raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
+# Henter data om hendelser og statusendringer
+# med statistikk: sykefravær, bransje, antall ansatte, osv.
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_status, data_eierskap, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
+
+# Henter data om IA-tjenester
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
 data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
-ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
+
+# Henter data om samarbeid/prosess
+raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
+data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, raw_data_statistikk)
 ```
 
 
