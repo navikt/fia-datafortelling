@@ -63,6 +63,7 @@ from plots_leveranse import (
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
+from plots_samarbeid import plot_antall_saker_per_antall_samarbeid
 from helper import (
     ikke_aktuell_begrunnelse_sortering,
     iatjeneste_og_status_sortering,
@@ -108,6 +109,7 @@ data_eierskap_resultatområde = data_eierskap[data_eierskap.resultatomrade == re
 data_leveranse_resultatområde = data_leveranse[data_leveranse.resultatomrade == resultatområde]
 data_leveranse_sistestatus_resultatområde = data_leveranse_sistestatus[data_leveranse_sistestatus.resultatomrade == resultatområde]
 ikke_aktuell_resultatområde = ikke_aktuell[ikke_aktuell.resultatomrade == resultatområde]
+data_samarbeid_resultatområde = data_samarbeid[data_samarbeid.resultatomrade == resultatområde]
 ```
 
 
@@ -135,6 +137,20 @@ gjennomstrømmingstall(data_status_resultatområde)
 
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
+
+## Antall samarbeider per virksomhet
+::: {.panel-tabset}
+# Andel
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid_resultatområde, normalisert=True)
+```
+
+# Antall
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid_resultatområde)
+```
+:::
+
 
 ## Leveranser
 

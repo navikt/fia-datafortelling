@@ -58,6 +58,7 @@ from plots_statistikk import (
     virksomhetsprofil,
 )
 from plots_leveranse import begrunnelse_ikke_aktuell
+from plots_samarbeid import plot_antall_saker_per_antall_samarbeid
 from helper import ikke_aktuell_begrunnelse_sortering
 from konstanter import ikkeaktuell_hovedgrunn
 
@@ -120,10 +121,23 @@ gjennomstrømmingstall(data_status)
 
 
 ## Antall aktive saker per resultatområde
-
 ```{python}
 aktive_saker_per_kolonne(data_status, "resultatomrade")
 ```
+
+
+## Antall samarbeider per virksomhet
+::: {.panel-tabset}
+# Andel
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
+```
+
+# Antall
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid)
+```
+:::
 
 
 ## Leveranser
