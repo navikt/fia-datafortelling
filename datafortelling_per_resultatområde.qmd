@@ -77,39 +77,32 @@ from konstanter import (
 PROJECT = os.environ['GCP_PROJECT']
 DATASET = os.environ['DATASET']
 
-# Henter data om hendelser og statusendringer
-# med statistikk: sykefravær, bransje, antall ansatte, osv.
-raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
-data_status, data_eierskap, _ = split_data_statistikk(data_statistikk)
-data_status = preprocess_data_status(data_status)
-ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
-
-# Henter data om IA-tjenester
-raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
-data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
-data_leveranse = legg_til_resultatområde(data_leveranse, data_statistikk)
-data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
-
-# Henter data om samarbeid/prosess
-raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
-data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, raw_data_statistikk)
-data_samarbeid = legg_til_resultatområde(data_samarbeid, data_statistikk)
-
-# Filtrere på resultatområde
 navn = os.environ['RESULTATOMRADE']
 if navn in resultatområder.values():
     resultatområde = navn
 else:
     raise ValueError(f"Resultatområde '{navn}' er ikke gyldig.")
 
+# Henter data om hendelser og statusendringer
+# med statistikk: sykefravær, bransje, antall ansatte, osv.
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_statistikk_resultatområde = data_statistikk[data_statistikk.resultatomrade == resultatområde]
-data_status_resultatområde = data_status[data_status.resultatomrade == resultatområde]
-data_eierskap_resultatområde = data_eierskap[data_eierskap.resultatomrade == resultatområde]
-data_leveranse_resultatområde = data_leveranse[data_leveranse.resultatomrade == resultatområde]
-data_leveranse_sistestatus_resultatområde = data_leveranse_sistestatus[data_leveranse_sistestatus.resultatomrade == resultatområde]
-ikke_aktuell_resultatområde = ikke_aktuell[ikke_aktuell.resultatomrade == resultatområde]
-data_samarbeid_resultatområde = data_samarbeid[data_samarbeid.resultatomrade == resultatområde]
+data_status_resultatområde, data_eierskap_resultatområde, _ = split_data_statistikk(data_statistikk_resultatområde)
+data_status_resultatområde = preprocess_data_status(data_status_resultatområde)
+ikke_aktuell_resultatområde = explode_ikke_aktuell_begrunnelse(data_status_resultatområde)
+
+# Henter data om IA-tjenester
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
+raw_data_leveranse = legg_til_resultatområde(raw_data_leveranse, data_statistikk)
+raw_data_leveranse_resultatområde = raw_data_leveranse[raw_data_leveranse.resultatomrade == resultatområde]
+data_leveranse_resultatområde = preprocess_data_leveranse(raw_data_leveranse_resultatområde)
+data_leveranse_sistestatus_resultatområde = hent_leveranse_sistestatus(data_leveranse_resultatområde)
+
+# Henter data om samarbeid/prosess
+raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
+raw_data_samarbeid_resultatområde = legg_til_resultatområde(raw_data_samarbeid, data_statistikk)
+data_samarbeid_resultatområde = preprocess_data_samarbeid(raw_data_samarbeid_resultatområde, data_statistikk_resultatområde)
 ```
 
 
@@ -118,7 +111,7 @@ data_samarbeid_resultatområde = data_samarbeid[data_samarbeid.resultatomrade ==
 ::: {.panel-tabset}
 # Nåsituasjon
 ```{python}
-antall_saker_per_status(data_status_resultatområde[data_status.aktiv_sak])
+antall_saker_per_status(data_status_resultatområde[data_status_resultatområde.aktiv_sak])
 ```
 
 # Historikk
@@ -215,7 +208,7 @@ Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så
 og derfor kan andelssummen være større enn 100%.
 
 ```{python}
-begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
+begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell_resultatområde)
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
     ikke_aktuell_resultatområde[ikke_aktuell_resultatområde.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())]
 )
