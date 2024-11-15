@@ -131,7 +131,7 @@ gjennomstrømmingstall(data_status_resultatområde)
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
 
-## Antall samarbeider per virksomhet
+## Antall samarbeid per virksomhet
 ::: {.panel-tabset}
 # Andel
 ```{python}
