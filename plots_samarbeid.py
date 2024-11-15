@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
@@ -87,3 +88,58 @@ def plot_antall_saker_per_antall_samarbeid(
         fig = fig.update_yaxes(tickformat=",.1%")
 
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def indicator_antall_samarbeid(
+    data_samarbeid: pd.DataFrame, data_behovsvurdering: pd.DataFrame
+) -> go.Figure:
+    antall_aktive_samarbeid = data_samarbeid[
+        data_samarbeid.status == "AKTIV"
+    ].id.nunique()
+
+    data = data_behovsvurdering.merge(
+        data_samarbeid[["id", "status"]],
+        left_on="samarbeidId",
+        right_on="id",
+        how="left",
+        suffixes=("_behovsvurdering", "_samarbeid"),
+    )
+    antall_aktive_samarbeid_med_fullfort_behovsvurdering = data[
+        (data.status_samarbeid == "AKTIV")
+        & (data.status_behovsvurdering == "AVSLUTTET")
+    ].id_samarbeid.nunique()
+
+    fig = go.Figure()
+
+    fig = fig.add_trace(
+        go.Indicator(
+            title_text="Antall aktive samarbeid",
+            value=antall_aktive_samarbeid,
+            domain={"row": 0, "column": 0},
+        )
+    )
+    fig = fig.add_trace(
+        go.Indicator(
+            title_text="Antall aktive samarbeid<br>med fullført behovsvurdering",
+            value=antall_aktive_samarbeid_med_fullfort_behovsvurdering,
+            domain={"row": 0, "column": 1},
+        )
+    )
+    fig = fig.add_trace(
+        go.Indicator(
+            title_text="Antall aktive samarbeid<br>med opprettet samarbeidsplan<br><span style='font-size:0.8em;color:gray'>(kommer snart)</span>",
+            value=np.nan,
+            domain={"row": 1, "column": 0},
+        )
+    )
+    fig = fig.add_trace(
+        go.Indicator(
+            title_text="Antall aktive samarbeid<br>med fullført evaluering<br><span style='font-size:0.8em;color:gray'>(kommer senere)</span>",
+            value=np.nan,
+            domain={"row": 1, "column": 1},
+        )
+    )
+
+    fig = fig.update_layout(height=600, grid={"rows": 2, "columns": 2})
+
+    return fig

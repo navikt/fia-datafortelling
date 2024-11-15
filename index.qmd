@@ -58,7 +58,10 @@ from plots_statistikk import (
     virksomhetsprofil,
 )
 from plots_leveranse import begrunnelse_ikke_aktuell
-from plots_samarbeid import plot_antall_saker_per_antall_samarbeid
+from plots_samarbeid import (
+    plot_antall_saker_per_antall_samarbeid,
+    indicator_antall_samarbeid,
+)
 from helper import ikke_aktuell_begrunnelse_sortering
 from konstanter import ikkeaktuell_hovedgrunn
 
@@ -82,6 +85,9 @@ data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 # Henter data om samarbeid/prosess
 raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
 data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, raw_data_statistikk)
+
+# Henter data om behovsvurdering
+data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "behovsvurdering-bigquery-v1", distinct_colunms="id")
 ```
 
 
@@ -123,6 +129,12 @@ gjennomstrømmingstall(data_status)
 ## Antall aktive saker per resultatområde
 ```{python}
 aktive_saker_per_kolonne(data_status, "resultatomrade")
+```
+
+
+## Antall samarbeid
+```{python}
+indicator_antall_samarbeid(data_samarbeid, data_behovsvurdering)
 ```
 
 
