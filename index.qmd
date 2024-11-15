@@ -126,7 +126,7 @@ aktive_saker_per_kolonne(data_status, "resultatomrade")
 ```
 
 
-## Antall samarbeider per virksomhet
+## Antall samarbeid per virksomhet
 ::: {.panel-tabset}
 # Andel
 ```{python}

@@ -72,7 +72,7 @@ def plot_antall_saker_per_antall_samarbeid(
     fig = fig.update_layout(
         width=850,
         height=400,
-        xaxis_title="Antall samarbeider",
+        xaxis_title="Antall samarbeid",
         yaxis_title="Andel virksomheter" if normalisert else "Antall virksomheter",
         legend=dict(
             yanchor="top",
