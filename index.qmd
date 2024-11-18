@@ -99,14 +99,14 @@ indicator_antall_samarbeid(data_samarbeid, data_behovsvurdering)
 
 ## Antall samarbeid per virksomhet
 ::: {.panel-tabset}
-# Andel
-```{python}
-plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
-```
-
 # Antall
 ```{python}
 plot_antall_saker_per_antall_samarbeid(data_samarbeid)
+```
+
+# Andel
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 ```
 :::
 
