@@ -120,6 +120,26 @@ data_behovsvurdering_resultatområde = data_behovsvurdering[data_behovsvurdering
 ```
 
 
+## Antall samarbeid
+```{python}
+indicator_antall_samarbeid(data_samarbeid_resultatområde, data_behovsvurdering_resultatområde)
+```
+
+
+## Antall samarbeid per virksomhet
+::: {.panel-tabset}
+# Andel
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid_resultatområde, normalisert=True)
+```
+
+# Antall
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid_resultatområde)
+```
+:::
+
+
 ## Antall saker per status
 
 ::: {.panel-tabset}
@@ -144,26 +164,6 @@ gjennomstrømmingstall(data_status_resultatområde)
 
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
-
-
-## Antall samarbeid
-```{python}
-indicator_antall_samarbeid(data_samarbeid_resultatområde, data_behovsvurdering_resultatområde)
-```
-
-
-## Antall samarbeid per virksomhet
-::: {.panel-tabset}
-# Andel
-```{python}
-plot_antall_saker_per_antall_samarbeid(data_samarbeid_resultatområde, normalisert=True)
-```
-
-# Antall
-```{python}
-plot_antall_saker_per_antall_samarbeid(data_samarbeid_resultatområde)
-```
-:::
 
 
 ## Leveranser
