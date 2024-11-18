@@ -63,7 +63,10 @@ from plots_leveranse import (
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
-from plots_samarbeid import plot_antall_saker_per_antall_samarbeid
+from plots_samarbeid import (
+    plot_antall_saker_per_antall_samarbeid,
+    indicator_antall_samarbeid,
+)
 from helper import (
     ikke_aktuell_begrunnelse_sortering,
     iatjeneste_og_status_sortering,
@@ -101,8 +104,19 @@ data_leveranse_sistestatus_resultatområde = hent_leveranse_sistestatus(data_lev
 
 # Henter data om samarbeid/prosess
 raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
-raw_data_samarbeid_resultatområde = legg_til_resultatområde(raw_data_samarbeid, data_statistikk)
+raw_data_samarbeid = legg_til_resultatområde(raw_data_samarbeid, data_statistikk)
+raw_data_samarbeid_resultatområde = raw_data_samarbeid[raw_data_samarbeid.resultatomrade == resultatområde]
 data_samarbeid_resultatområde = preprocess_data_samarbeid(raw_data_samarbeid_resultatområde, data_statistikk_resultatområde)
+
+# Henter data om behovsvurdering
+data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "behovsvurdering-bigquery-v1", distinct_colunms="id")
+# behovsvurderingstabellen har ikke saksnummer enda, så vi må legge det til
+data_behovsvurdering = data_behovsvurdering.merge(
+    raw_data_samarbeid[["id", "saksnummer"]].rename({"id": "samarbeidId"}, axis = 1),
+    how="left", on="samarbeidId",
+)
+data_behovsvurdering = legg_til_resultatområde(data_behovsvurdering, data_statistikk)
+data_behovsvurdering_resultatområde = data_behovsvurdering[data_behovsvurdering.resultatomrade == resultatområde]
 ```
 
 
@@ -130,6 +144,13 @@ gjennomstrømmingstall(data_status_resultatområde)
 
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
+
+
+## Antall samarbeid
+```{python}
+indicator_antall_samarbeid(data_samarbeid_resultatområde, data_behovsvurdering_resultatområde)
+```
+
 
 ## Antall samarbeid per virksomhet
 ::: {.panel-tabset}
