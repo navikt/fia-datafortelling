@@ -60,7 +60,7 @@ from plots_statistikk import (
 from plots_leveranse import begrunnelse_ikke_aktuell
 from plots_samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
-    indicator_antall_samarbeid,
+    trakt_antall_samarbeid,
 )
 from helper import ikke_aktuell_begrunnelse_sortering
 from konstanter import ikkeaktuell_hovedgrunn
@@ -96,7 +96,7 @@ data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bi
 
 ## Antall samarbeid
 ```{python}
-indicator_antall_samarbeid(data_samarbeid, data_behovsvurdering, data_samarbeidsplan)
+trakt_antall_samarbeid(data_samarbeid, data_behovsvurdering, data_samarbeidsplan)
 ```
 
 

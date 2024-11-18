@@ -90,7 +90,7 @@ def plot_antall_saker_per_antall_samarbeid(
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def indicator_antall_samarbeid(
+def trakt_antall_samarbeid(
     data_samarbeid: pd.DataFrame,
     data_behovsvurdering: pd.DataFrame,
     data_samarbeidsplan: pd.DataFrame,
@@ -100,6 +100,11 @@ def indicator_antall_samarbeid(
 
     # Antall aktive samarbeid
     antall_aktive_samarbeid = len(aktive_samarbeid)
+
+    # Antall aktive samarbeid med opprettet behovsvurdering
+    antall_aktive_samarbeid_med_behovsvurdering = data_behovsvurdering[
+        data_behovsvurdering.samarbeidId.isin(aktive_samarbeid)
+    ].samarbeidId.nunique()
 
     # Antall aktive samarbeid med fullført behovsvurdering
     antall_aktive_samarbeid_med_fullfort_behovsvurdering = data_behovsvurdering[
@@ -112,37 +117,28 @@ def indicator_antall_samarbeid(
         data_samarbeidsplan.samarbeidId.isin(aktive_samarbeid)
     ].samarbeidId.nunique()
 
-    fig = go.Figure()
-
-    fig = fig.add_trace(
-        go.Indicator(
-            title_text="Antall aktive samarbeid",
-            value=antall_aktive_samarbeid,
-            domain={"row": 0, "column": 0},
+    fig = go.Figure(
+        go.Funnel(
+            y=[
+                "Antall aktive samarbeid",
+                "Antall aktive samarbeid<br>med opprettet behovsvurdering",
+                "Antall aktive samarbeid<br>med fullført behovsvudering",
+                "Antall aktive samarbeid<br>med opprettet samarbeidsplan",
+            ],
+            x=[
+                antall_aktive_samarbeid,
+                antall_aktive_samarbeid_med_behovsvurdering,
+                antall_aktive_samarbeid_med_fullfort_behovsvurdering,
+                antall_aktive_samarbeid_med_samarbeidsplan,
+            ],
+            textposition="inside",
+            textinfo="value+percent initial",
+            hoverinfo="x+y+text+percent initial+percent previous",
         )
     )
-    fig = fig.add_trace(
-        go.Indicator(
-            title_text="Antall aktive samarbeid<br>med fullført behovsvurdering",
-            value=antall_aktive_samarbeid_med_fullfort_behovsvurdering,
-            domain={"row": 0, "column": 1},
-        )
-    )
-    fig = fig.add_trace(
-        go.Indicator(
-            title_text="Antall aktive samarbeid<br>med opprettet samarbeidsplan",
-            value=antall_aktive_samarbeid_med_samarbeidsplan,
-            domain={"row": 1, "column": 0},
-        )
-    )
-    fig = fig.add_trace(
-        go.Indicator(
-            title_text="Antall aktive samarbeid med<br>fullført evaluering <span style='font-size:0.8em;color:gray'>(kommer senere)</span>",
-            value=np.nan,
-            domain={"row": 1, "column": 1},
-        )
+    fig.update_layout(
+        height=400,
+        plot_bgcolor="rgba(0,0,0,0)",
     )
 
-    fig = fig.update_layout(height=500, grid={"rows": 2, "columns": 2})
-
-    return fig
+    return annotate_ikke_offisiell_statistikk(fig)
