@@ -88,12 +88,15 @@ data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, raw_data_statisti
 
 # Henter data om behovsvurdering
 data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "behovsvurdering-bigquery-v1", distinct_colunms="id")
+
+# Henter data om samarbeidsplan
+data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bigquery-v1", distinct_colunms="id")
 ```
 
 
 ## Antall samarbeid
 ```{python}
-indicator_antall_samarbeid(data_samarbeid, data_behovsvurdering)
+indicator_antall_samarbeid(data_samarbeid, data_behovsvurdering, data_samarbeidsplan)
 ```
 
 

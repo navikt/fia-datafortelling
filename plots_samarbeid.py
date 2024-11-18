@@ -91,23 +91,26 @@ def plot_antall_saker_per_antall_samarbeid(
 
 
 def indicator_antall_samarbeid(
-    data_samarbeid: pd.DataFrame, data_behovsvurdering: pd.DataFrame
+    data_samarbeid: pd.DataFrame,
+    data_behovsvurdering: pd.DataFrame,
+    data_samarbeidsplan: pd.DataFrame,
 ) -> go.Figure:
-    antall_aktive_samarbeid = data_samarbeid[
-        data_samarbeid.status == "AKTIV"
-    ].id.nunique()
+    # Aktive samarbeid
+    aktive_samarbeid = data_samarbeid[data_samarbeid.status == "AKTIV"].id.unique()
 
-    data = data_behovsvurdering.merge(
-        data_samarbeid[["id", "status"]],
-        left_on="samarbeidId",
-        right_on="id",
-        how="left",
-        suffixes=("_behovsvurdering", "_samarbeid"),
-    )
-    antall_aktive_samarbeid_med_fullfort_behovsvurdering = data[
-        (data.status_samarbeid == "AKTIV")
-        & (data.status_behovsvurdering == "AVSLUTTET")
-    ].id_samarbeid.nunique()
+    # Antall aktive samarbeid
+    antall_aktive_samarbeid = len(aktive_samarbeid)
+
+    # Antall aktive samarbeid med fullført behovsvurdering
+    antall_aktive_samarbeid_med_fullfort_behovsvurdering = data_behovsvurdering[
+        data_behovsvurdering.samarbeidId.isin(aktive_samarbeid)
+        & (data_behovsvurdering.status == "AVSLUTTET")
+    ].samarbeidId.nunique()
+
+    # Antall aktive samarbeid med opprettet samarbeidsplan
+    antall_aktive_samarbeid_med_samarbeidsplan = data_samarbeidsplan[
+        data_samarbeidsplan.samarbeidId.isin(aktive_samarbeid)
+    ].samarbeidId.nunique()
 
     fig = go.Figure()
 
@@ -127,19 +130,19 @@ def indicator_antall_samarbeid(
     )
     fig = fig.add_trace(
         go.Indicator(
-            title_text="Antall aktive samarbeid<br>med opprettet samarbeidsplan<br><span style='font-size:0.8em;color:gray'>(kommer snart)</span>",
-            value=np.nan,
+            title_text="Antall aktive samarbeid<br>med opprettet samarbeidsplan",
+            value=antall_aktive_samarbeid_med_samarbeidsplan,
             domain={"row": 1, "column": 0},
         )
     )
     fig = fig.add_trace(
         go.Indicator(
-            title_text="Antall aktive samarbeid<br>med fullført evaluering<br><span style='font-size:0.8em;color:gray'>(kommer senere)</span>",
+            title_text="Antall aktive samarbeid med<br>fullført evaluering <span style='font-size:0.8em;color:gray'>(kommer senere)</span>",
             value=np.nan,
             domain={"row": 1, "column": 1},
         )
     )
 
-    fig = fig.update_layout(height=600, grid={"rows": 2, "columns": 2})
+    fig = fig.update_layout(height=500, grid={"rows": 2, "columns": 2})
 
     return fig

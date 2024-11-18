@@ -117,12 +117,26 @@ data_behovsvurdering = data_behovsvurdering.merge(
 )
 data_behovsvurdering = legg_til_resultatområde(data_behovsvurdering, data_statistikk)
 data_behovsvurdering_resultatområde = data_behovsvurdering[data_behovsvurdering.resultatomrade == resultatområde]
+
+# Henter data om samarbeidsplan
+data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bigquery-v1", distinct_colunms="id")
+# samarbeidsplantabellen har ikke saksnummer enda, så vi må legge det til
+data_samarbeidsplan = data_samarbeidsplan.merge(
+    raw_data_samarbeid[["id", "saksnummer"]].rename({"id": "samarbeidId"}, axis = 1),
+    how="left", on="samarbeidId",
+)
+data_samarbeidsplan = legg_til_resultatområde(data_samarbeidsplan, data_statistikk)
+data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.resultatomrade == resultatområde]
 ```
 
 
 ## Antall samarbeid
 ```{python}
-indicator_antall_samarbeid(data_samarbeid_resultatområde, data_behovsvurdering_resultatområde)
+indicator_antall_samarbeid(
+    data_samarbeid_resultatområde,
+    data_behovsvurdering_resultatområde,
+    data_samarbeidsplan_resultatområde,
+)
 ```
 
 
