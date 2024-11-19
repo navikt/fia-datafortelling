@@ -101,11 +101,6 @@ def trakt_antall_samarbeid(
     # Antall aktive samarbeid
     antall_aktive_samarbeid = len(aktive_samarbeid)
 
-    # Antall aktive samarbeid med opprettet behovsvurdering
-    antall_aktive_samarbeid_med_behovsvurdering = data_behovsvurdering[
-        data_behovsvurdering.samarbeidId.isin(aktive_samarbeid)
-    ].samarbeidId.nunique()
-
     # Antall aktive samarbeid med fullført behovsvurdering
     antall_aktive_samarbeid_med_fullfort_behovsvurdering = data_behovsvurdering[
         data_behovsvurdering.samarbeidId.isin(aktive_samarbeid)
@@ -121,13 +116,11 @@ def trakt_antall_samarbeid(
         go.Funnel(
             y=[
                 "Antall aktive samarbeid",
-                "Antall aktive samarbeid<br>med opprettet behovsvurdering",
                 "Antall aktive samarbeid<br>med fullført behovsvudering",
                 "Antall aktive samarbeid<br>med opprettet samarbeidsplan",
             ],
             x=[
                 antall_aktive_samarbeid,
-                antall_aktive_samarbeid_med_behovsvurdering,
                 antall_aktive_samarbeid_med_fullfort_behovsvurdering,
                 antall_aktive_samarbeid_med_samarbeidsplan,
             ],
