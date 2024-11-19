@@ -1,0 +1,21 @@
+::: {.callout-note collapse="true"}
+## Forklaring av begrepene
+
+<span style="color:red;">Under arbeid</span>
+
+*   Aktiv samarbeid
+
+    Samarbeid som ikke er slettet eller under en sak som er avsluttet.
+
+*   Fullført behovsvurdering
+
+    Behovsvurdering som har blitt fullført i Fia.
+
+*   Opprettet samarbeidsplan
+
+    Samarbeidsplan som har blitt opprettet i Fia, planlagt, under arbeid eller fullført.
+
+*   Fullført evaluering
+
+    Evaluering som har blitt fullført i Fia.
+:::
