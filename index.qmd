@@ -95,6 +95,15 @@ data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bi
 
 
 ## Antall samarbeid
+
+Ny logikk er innført i Fia. IA-tjenester er fjernet og erstattet av “samarbeid” og “plan for samarbeid” med alternativer for å “planlegge”, “pågår”, “avbryt” og “fullføre” leveranser. 
+
+Med denne nye logikken vil ikke lenger status “vi bistår” vise hvor mange og hvilke virksomheter som blir gitt “prioritert bistand”. 
+
+Hvilke virksomheter og hvilke underavdelinger som er i aktivt samarbeid med NAV vil denne illustrasjon isteden vise. I Illustrasjonen vises både hvor mange samarbeid vi har opprettet og hvor mange samarbeid som har fått utarbeidet en “plan for samarbeid”.  
+
+Tallene for “plan for samarbeid” gir nå isteden en indikasjon på hvor mange “samarbeid” vi har en aktiv og planlagt satsning på, altså blir gitt en prioritert bistand. Illustrasjonen viser også hvor mange “behovsvurderinger” som er fullført. Etter hvert vil også “fullførte evalueringer” innkomme i illustrasjonen.    
+
 ```{python}
 trakt_antall_samarbeid(data_samarbeid, data_behovsvurdering, data_samarbeidsplan)
 ```
