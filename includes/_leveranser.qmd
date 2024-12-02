@@ -1,0 +1,3 @@
+IA-tjenester er faset ut og erstattet med samarbeidsplanen i Fia.
+Du kan finne de gamle dataene om IA-tjenester [her](ia_tjenester.html).
+Info om samarbeidsplan kommer senere.

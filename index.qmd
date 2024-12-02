@@ -73,6 +73,7 @@ DATASET = os.environ['DATASET']
 # med statistikk: sykefravær, bransje, antall ansatte, osv.
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+
 data_status, data_eierskap, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
@@ -95,26 +96,22 @@ data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bi
 
 
 ## Antall samarbeid
-
-Ny logikk er innført i Fia. IA-tjenester er fjernet og erstattet av “samarbeid” og “plan for samarbeid” med alternativer for å “planlegge”, “pågår”, “avbryt” og “fullføre” leveranser. 
-
-Med denne nye logikken vil ikke lenger status “vi bistår” vise hvor mange og hvilke virksomheter som blir gitt “prioritert bistand”. 
-
-Hvilke virksomheter og hvilke underavdelinger som er i aktivt samarbeid med NAV vil denne illustrasjon isteden vise. I Illustrasjonen vises både hvor mange samarbeid vi har opprettet og hvor mange samarbeid som har fått utarbeidet en “plan for samarbeid”.  
-
-Tallene for “plan for samarbeid” gir nå isteden en indikasjon på hvor mange “samarbeid” vi har en aktiv og planlagt satsning på, altså blir gitt en prioritert bistand. Illustrasjonen viser også hvor mange “behovsvurderinger” som er fullført. Etter hvert vil også “fullførte evalueringer” innkomme i illustrasjonen.    
+{{< include includes/_antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
-trakt_antall_samarbeid(data_samarbeid, data_behovsvurdering, data_samarbeidsplan)
+trakt_antall_samarbeid(
+    data_samarbeid,
+    data_behovsvurdering,
+    data_samarbeidsplan,
+)
 ```
 
 {{< include includes/begrep-forklaring.qmd >}}
 
 
 ## Antall samarbeid per virksomhet
-Grafen nedenfor viser antall og andel virksomheter fordelt på antall ansatte som har et visst antall samarbeid. De fleste virksomhetene har kun ett samarbeid. Jo større virksomheten er, jo flere samarbeid kan de ha.
 
-Du kan filtrere grafen ved å klikke og dra for å markere et område i grafen.
+{{< include includes/_antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -130,14 +127,14 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 
 
 ## Statusflyt i Fia
-Grafen nedenfor viser antall statusendringer som er registrert i Fia.
-Vi filtrerer bort saker som ble satt til “Fullført” eller “Ikke aktuell” for over ett år siden.
-Gjelder ikke slettede saker og angret statusendringer.
+
+{{< include includes/_statusflyt_i_fia_forklaring.qmd >}}
 
 ```{python}
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 statusflyt(data_input)
 ```
+
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
 
@@ -172,19 +169,12 @@ aktive_saker_per_kolonne(data_status, "resultatomrade")
 
 ## Leveranser
 
-IA-tjenester er faset ut og erstattet med samarbeidsplanen i Fia.
-Du kan finne de gamle dataene om IA-tjenester [her](ia_tjenester.html).
-Info om samarbeidsplan kommer senere.
+{{< include includes/_leveranser.qmd >}}
 
 
 ## Virksomhetsprofil
-Her vises profilen til virksomheter som er registrert i Fia.
-Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
-Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
 
-PS: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
-
-Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).
+{{< include includes/_virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -224,10 +214,8 @@ virksomhetsprofil(data_input)
 
 
 ## Begrunnelse på ikke aktuell
-Her vises andel og antall saker per begrunnelse på ikke aktuell.
-Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
-Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser,
-og derfor kan andelssummen være større enn 100%.
+
+{{< include includes/_begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)

@@ -131,6 +131,8 @@ data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.re
 
 
 ## Antall samarbeid
+{{< include includes/_antall_samarbeid_forklaring.qmd >}}
+
 ```{python}
 trakt_antall_samarbeid(
     data_samarbeid_resultatområde,
@@ -143,9 +145,8 @@ trakt_antall_samarbeid(
 
 
 ## Antall samarbeid per virksomhet
-Grafen nedenfor viser antall og andel virksomheter fordelt på antall ansatte som har et visst antall samarbeid. De fleste virksomhetene har kun ett samarbeid. Jo større virksomheten er, jo flere samarbeid kan de ha.
 
-Du kan filtrere grafen ved å klikke og dra for å markere et område i grafen.
+{{< include includes/_antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -161,7 +162,6 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid_resultatområde, normalise
 
 
 ## Antall saker per status
-
 ::: {.panel-tabset}
 # Nåsituasjon
 ```{python}
@@ -197,13 +197,8 @@ Du kan finne de gamle dataene om IA-tjenester i ditt fylke [her](`{python} lenke
 Info om samarbeidsplan kommer senere.
 
 ## Virksomhetsprofil
-Her vises profilen til virksomheter som er registrert i Fia.
-Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
-Alle tallene er basert på informasjon vi hadde da de relevante statusendringene skjedde.
 
-PS: En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
-
-Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).
+{{< include includes/_virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -243,10 +238,8 @@ virksomhetsprofil(data_input)
 
 
 ## Begrunnelse på ikke aktuell
-Her vises andel og antall saker per begrunnelse på ikke aktuell.
-Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
-Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser,
-og derfor kan andelssummen være større enn 100%.
+
+{{< include includes/_begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell_resultatområde)

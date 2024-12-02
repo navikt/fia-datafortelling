@@ -1,0 +1,4 @@
+Her vises andel og antall saker per begrunnelse på ikke aktuell.
+Gjelder bare saker med nåværende status "Ikke aktuell", og ikke de sakene som ble angret (ved bruk av tilbake-knappen).
+Når en sak settes til "Ikke aktuell" må eieren velge minst en begrunnelse, så en sak kan telles i flere begrunnelser,
+og derfor kan andelssummen være større enn 100%.

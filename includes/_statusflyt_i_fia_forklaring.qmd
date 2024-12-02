@@ -1,0 +1,3 @@
+Grafen nedenfor viser antall statusendringer som er registrert i Fia.
+Vi filtrerer bort saker som ble satt til “Fullført” eller “Ikke aktuell” for over ett år siden.
+Gjelder ikke slettede saker og angret statusendringer.
