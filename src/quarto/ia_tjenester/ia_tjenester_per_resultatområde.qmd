@@ -31,7 +31,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 
 import os
 
-from datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -40,13 +40,13 @@ from datahandler import (
     hent_leveranse_sistestatus,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots_leveranse import (
+from src.plots.plots_leveranse import (
     antall_leveranser_per_tjeneste,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
-from helper import iatjeneste_og_status_sortering
-from konstanter import resultatområder
+from src.utils.helper import iatjeneste_og_status_sortering
+from src.utils.konstanter import resultatområder
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -188,4 +188,4 @@ else:
 :::
 :::
 
-{{< include includes/leveransestatus-forklaring.qmd >}}
+{{< include ../includes/leveransestatus-forklaring.qmd >}}

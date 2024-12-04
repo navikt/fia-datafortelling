@@ -37,7 +37,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from google.cloud.bigquery import Client
 
-from datahandler import load_data_deduplicate
+from src.utils.datahandler import load_data_deduplicate
 
 project = "pia-prod-85b2"
 bq_client = Client(project)
@@ -47,6 +47,6 @@ table_behovsvurdering = "behovsvurdering-bigquery-v1"
 table_samarbeid = "samarbeid-bigquery-v1"
 ```
 
-{{< include behovsvurdering.qmd >}}
+{{< include ../includes/behovsvurdering.qmd >}}
 
-{{< include samarbeid.qmd >}}
+{{< include ../includes/samarbeid.qmd >}}

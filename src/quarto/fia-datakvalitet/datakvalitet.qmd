@@ -32,7 +32,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 ```{python}
 import os
 
-from datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -43,11 +43,11 @@ from datahandler import (
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
-from plots import (
+from src.plots.plots import (
     urørt_saker_over_tid,
     dager_siden_siste_oppdatering,
 )
-from plots_statistikk import (
+from src.plots.plots_statistikk import (
     saker_per_status_over_tid,
     dager_mellom_statusendringer,
     median_og_gjennomsnitt_av_tid_mellom_statusendringer,
@@ -59,7 +59,7 @@ from plots_statistikk import (
     andel_superbrukere,
     andel_statusendringer_gjort_av_superbrukere,
 )
-from plots_leveranse import (
+from src.plots.plots_leveranse import (
     forskjell_frist_fullfort,
     andel_leveranseregistreringer_gjort_av_superbrukere,
 )

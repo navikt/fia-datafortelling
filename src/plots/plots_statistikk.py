@@ -1,38 +1,34 @@
+from datetime import datetime
+
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from datetime import datetime
 
-from datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
-from helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
-from konstanter import (
-    statusordre,
-    resultatområder,
+from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
+from src.utils.helper import (
+    alle_måneder_mellom_datoer,
+    annotate_ikke_offisiell_statistikk,
+)
+from src.utils.konstanter import (
     intervall_sortering,
     plotly_colors,
+    resultatområder,
+    statusordre,
 )
 
 
 def saker_per_status_per_måned(data_status: pd.DataFrame) -> go.Figure:
-    data_status = filtrer_bort_saker_på_avsluttet_tidspunkt(
-        data_status, antall_dager=365
-    )
+    data_status = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status, antall_dager=365)
 
     alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
     statuser = [status for status in statusordre if status != "NY"]
 
     status_per_måned = dict(zip(statuser, [[0]] * len(statuser)))
     for måned in alle_måneder:
-        data_måned = data_status[
-            data_status.endretTidspunkt.dt.strftime("%Y-%m") == måned
-        ]
+        data_måned = data_status[data_status.endretTidspunkt.dt.strftime("%Y-%m") == måned]
         for status in statuser:
             sist_count = status_per_måned[status][-1]
-            count = (
-                sist_count
-                - sum(data_måned.forrige_status == status)
-                + sum(data_måned.status == status)
-            )
+            count = sist_count - sum(data_måned.forrige_status == status) + sum(data_måned.status == status)
             status_per_måned[status] = status_per_måned[status] + [count]
 
     fig = go.Figure()
@@ -56,9 +52,7 @@ def saker_per_status_per_måned(data_status: pd.DataFrame) -> go.Figure:
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def saker_per_status_over_tid(
-    data_status: pd.DataFrame, valgte_resultatområder=None
-) -> go.Figure:
+def saker_per_status_over_tid(data_status: pd.DataFrame, valgte_resultatområder=None) -> go.Figure:
     første_dato = data_status.endretTidspunkt.min()
     siste_dato = datetime.now()
     alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
@@ -70,11 +64,7 @@ def saker_per_status_over_tid(
             data_dato = data[data.endretTidspunkt.dt.date == dato.date()]
             for status in statuser:
                 sist_count = status_per_dato[status][-1]
-                count = (
-                    sist_count
-                    - sum(data_dato.forrige_status == status)
-                    + sum(data_dato.status == status)
-                )
+                count = sist_count - sum(data_dato.forrige_status == status) + sum(data_dato.status == status)
                 status_per_dato[status] = status_per_dato[status] + [count]
         return status_per_dato
 
@@ -97,9 +87,7 @@ def saker_per_status_over_tid(
 
     # En strek for hver kombinasjon av fylke og status
     for resultatområde in valgte_resultatområder:
-        status_per_dato = beregn_status_per_dato(
-            data_status[data_status.resultatomrade == resultatområde], alle_datoer
-        )
+        status_per_dato = beregn_status_per_dato(data_status[data_status.resultatomrade == resultatområde], alle_datoer)
         for status in statuser:
             fig.add_trace(
                 go.Scatter(
@@ -118,8 +106,8 @@ def saker_per_status_over_tid(
     # [1, 1, 0, 0, 0, 0], [0, 0, 1, 1, 0, 0], [0, 0, 0, 0, 1, 1]
     knapper_navn = ["Alle resultatområder"] + valgte_resultatområder
     knapper = [
-        dict(
-            args=[
+        {
+            "args": [
                 {
                     "visible": [
                         trace_index // len(statuser) == knapp_index
@@ -127,9 +115,9 @@ def saker_per_status_over_tid(
                     ]
                 }
             ],
-            label=knappe_navn,
-            method="update",
-        )
+            "label": knappe_navn,
+            "method": "update",
+        }
         for knapp_index, knappe_navn in enumerate(knapper_navn)
     ]
     fig.update_layout(
@@ -139,16 +127,16 @@ def saker_per_status_over_tid(
         yaxis_title="Antall saker",
         hovermode="x unified",
         updatemenus=[
-            dict(
-                active=0,
-                direction="down",
-                buttons=knapper,
-                showactive=True,
-                xanchor="left",
-                yanchor="top",
-                x=0,
-                y=1.3,
-            ),
+            {
+                "active": 0,
+                "direction": "down",
+                "buttons": knapper,
+                "showactive": True,
+                "xanchor": "left",
+                "yanchor": "top",
+                "x": 0,
+                "y": 1.3,
+            },
         ],
     )
 
@@ -169,12 +157,8 @@ def aktive_saker_per_kolonne(data_status: pd.DataFrame, kolonne: str) -> go.Figu
         .groupby([kolonne, "siste_status"])
         .saksnummer.nunique()
         .reset_index()
-        .sort_values(
-            by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e))
-        )
-        .sort_values(
-            by=kolonne, key=lambda col: -col.map(lambda e: kolonne_ordre.index(e))
-        )
+        .sort_values(by="siste_status", key=lambda col: col.map(lambda e: statusordre.index(e)))
+        .sort_values(by=kolonne, key=lambda col: -col.map(lambda e: kolonne_ordre.index(e)))
     )
 
     fig = go.Figure()
@@ -206,18 +190,14 @@ def antall_saker_per_status(data_status: pd.DataFrame) -> go.Figure:
         data_status.groupby("siste_status")
         .saksnummer.nunique()
         .reset_index()
-        .sort_values(
-            by="siste_status", key=lambda col: -col.map(lambda e: statusordre.index(e))
-        )
+        .sort_values(by="siste_status", key=lambda col: -col.map(lambda e: statusordre.index(e)))
         .reset_index()
     )
 
     fig = go.Figure(
         data=[
             go.Bar(
-                y=saker_per_status["siste_status"]
-                .str.capitalize()
-                .str.replace("_", " "),
+                y=saker_per_status["siste_status"].str.capitalize().str.replace("_", " "),
                 x=saker_per_status["saksnummer"],
                 text=saker_per_status["saksnummer"],
                 orientation="h",
@@ -231,9 +211,9 @@ def antall_saker_per_status(data_status: pd.DataFrame) -> go.Figure:
 
 
 def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
-    data = data_input.sort_values(
-        ["saksnummer", "endretTidspunkt"], ascending=True
-    ).drop_duplicates(["saksnummer"], keep="last")
+    data = data_input.sort_values(["saksnummer", "endretTidspunkt"], ascending=True).drop_duplicates(
+        ["saksnummer"], keep="last"
+    )
 
     specs = [
         [{}, {}],
@@ -264,9 +244,7 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
     )
 
     # Antall arbeidsforhold
-    saker_per_storrelsesgruppe = (
-        data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
-    )
+    saker_per_storrelsesgruppe = data.groupby("antallPersoner_gruppe").saksnummer.nunique().reset_index()
     fig.add_trace(
         go.Bar(
             x=saker_per_storrelsesgruppe.antallPersoner_gruppe,
@@ -277,9 +255,7 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
         col=1,
     )
     fig.update_yaxes(visible=False, row=1, col=1)
-    storrelse_sortering = (
-        data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
-    )
+    storrelse_sortering = data.groupby("antallPersoner_gruppe").antallPersoner.min().sort_values().index
     fig.update_xaxes(categoryorder="array", categoryarray=storrelse_sortering)
 
     # Sykefraværsprosent
@@ -298,9 +274,7 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
     )
 
     # Sektor
-    virksomheter_per_sektor = (
-        data.groupby("sektor").saksnummer.nunique().reset_index().sort_values("sektor")
-    )
+    virksomheter_per_sektor = data.groupby("sektor").saksnummer.nunique().reset_index().sort_values("sektor")
     fig.add_trace(
         go.Pie(
             labels=virksomheter_per_sektor.sektor,
@@ -335,10 +309,7 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
 
     # Hoved næring
     virksomheter_per_nering = (
-        data.groupby("hoved_nering")
-        .saksnummer.nunique()
-        .sort_values(ascending=True)
-        .reset_index()
+        data.groupby("hoved_nering").saksnummer.nunique().sort_values(ascending=True).reset_index()
     )
     show_n_neringer = 10
     truncation_map = dict(zip(data.hoved_nering, data.hoved_nering_truncated))
@@ -381,21 +352,21 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
     fig = go.Figure()
     fig.add_trace(
         go.Sankey(
-            node=dict(
+            node={
                 # pad=200,
-                label=status_label,
+                "label": status_label,
                 # node position in the open interval (0, 1)
-                x=[0.02, 0.2, 0.4, 0.6, 0.8, 0.98, 0.98],
-                y=[0.5, 0.5, 0.55, 0.6, 0.6, 0.6, 0.14],
-            ),
-            link=dict(
-                source=source_status,
-                target=target_status,
-                value=count_endringer,
-            ),
+                "x": [0.02, 0.2, 0.4, 0.6, 0.8, 0.98, 0.98],
+                "y": [0.5, 0.5, 0.55, 0.6, 0.6, 0.6, 0.14],
+            },
+            link={
+                "source": source_status,
+                "target": target_status,
+                "value": count_endringer,
+            },
         )
     )
-    fig.update_layout(margin=dict(l=20, r=20, t=20, b=20))
+    fig.update_layout(margin={"l": 20, "r": 20, "t": 20, "b": 20})
     return annotate_ikke_offisiell_statistikk(fig)
 
 
@@ -430,11 +401,7 @@ def gjennomstrømmingstall(data_status: pd.DataFrame, status="VI_BISTÅR") -> go
 
 
 def dager_mellom_statusendringer(data_status: pd.DataFrame) -> go.Figure:
-    saker_per_intervall = (
-        data_status.groupby("intervall_tid_siden_siste_endring")
-        .saksnummer.nunique()
-        .reset_index()
-    )
+    saker_per_intervall = data_status.groupby("intervall_tid_siden_siste_endring").saksnummer.nunique().reset_index()
 
     fig = go.Figure()
     fig.add_trace(
@@ -458,22 +425,12 @@ def dager_mellom_statusendringer(data_status: pd.DataFrame) -> go.Figure:
 def median_og_gjennomsnitt_av_tid_mellom_statusendringer(
     data_status: pd.DataFrame,
 ) -> go.Figure:
-    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime(
-        "%Y-%m"
-    )
-    data_status["dager_siden_siste_endring"] = (
-        data_status.tid_siden_siste_endring.dt.total_seconds() / 60 / 60 / 24
-    )
+    data_status["endretTidspunkt_måned"] = data_status.endretTidspunkt.dt.strftime("%Y-%m")
+    data_status["dager_siden_siste_endring"] = data_status.tid_siden_siste_endring.dt.total_seconds() / 60 / 60 / 24
 
-    gjennomsnitt = data_status.groupby(
-        "endretTidspunkt_måned"
-    ).dager_siden_siste_endring.mean()
-    median = data_status.groupby(
-        "endretTidspunkt_måned"
-    ).dager_siden_siste_endring.median()
-    antall_saker = data_status.groupby(
-        "endretTidspunkt_måned"
-    ).dager_siden_siste_endring.count()
+    gjennomsnitt = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.mean()
+    median = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.median()
+    antall_saker = data_status.groupby("endretTidspunkt_måned").dager_siden_siste_endring.count()
 
     fig = make_subplots(specs=[[{"secondary_y": True}]])
 
@@ -524,13 +481,7 @@ def antall_saker_per_eier(data_status: pd.DataFrame) -> go.Figure():
         .saksnummer.nunique()
     )
 
-    fig = go.Figure(
-        data=[
-            go.Histogram(
-                x=saker_per_eier, xbins=dict(start=1, end=saker_per_eier.max())
-            )
-        ]
-    )
+    fig = go.Figure(data=[go.Histogram(x=saker_per_eier, xbins={"start": 1, "end": saker_per_eier.max()})])
 
     gjennomsnitt = saker_per_eier.mean()
     fig.add_vline(
@@ -554,11 +505,7 @@ def antall_saker_per_eier(data_status: pd.DataFrame) -> go.Figure():
 
 
 def fullført_per_måned(data_status: pd.DataFrame) -> go.Figure():
-    fullført_per_måned = (
-        data_status[data_status.status == "FULLFØRT"]
-        .endretTidspunkt_måned.value_counts()
-        .sort_index()
-    )
+    fullført_per_måned = data_status[data_status.status == "FULLFØRT"].endretTidspunkt_måned.value_counts().sort_index()
 
     fig = go.Figure()
     fig.add_trace(
@@ -579,9 +526,7 @@ def fullført_per_måned(data_status: pd.DataFrame) -> go.Figure():
 
 
 def antall_brukere_per_resultatområde(data_statistikk: pd.DataFrame) -> go.Figure():
-    bruker_per_resultatområde = (
-        data_statistikk.groupby("resultatomrade").endretAv.nunique().sort_values()
-    )
+    bruker_per_resultatområde = data_statistikk.groupby("resultatomrade").endretAv.nunique().sort_values()
 
     fig = go.Figure()
     fig.add_trace(
@@ -604,21 +549,9 @@ def antall_brukere_per_resultatområde(data_statistikk: pd.DataFrame) -> go.Figu
 def antall_brukere_per_resultatområde_og_nav_enhet(
     data_statistikk: pd.DataFrame,
 ) -> go.Figure():
-    data_statistikk["resultatomrade"] = data_statistikk.fylkesnummer.map(
-        resultatområder
-    )
-    resultatområdeordre = (
-        data_statistikk.groupby("resultatomrade")
-        .endretAv.nunique()
-        .sort_values()
-        .index.tolist()
-    )
-    enhetsordre = (
-        data_statistikk.groupby("enhetsnavn")
-        .endretAv.nunique()
-        .sort_values(ascending=False)
-        .index.tolist()
-    )
+    data_statistikk["resultatomrade"] = data_statistikk.fylkesnummer.map(resultatområder)
+    resultatområdeordre = data_statistikk.groupby("resultatomrade").endretAv.nunique().sort_values().index.tolist()
+    enhetsordre = data_statistikk.groupby("enhetsnavn").endretAv.nunique().sort_values(ascending=False).index.tolist()
 
     første_register_navenhet = data_statistikk[
         (data_statistikk.enhetsnavn != "Ukjent") & (~data_statistikk.enhetsnavn.isna())
@@ -635,8 +568,7 @@ def antall_brukere_per_resultatområde_og_nav_enhet(
     for kol in resultatområdeordre:
         for enhet in enhetsordre:
             filtert = bruker_per_navenhet[
-                (bruker_per_navenhet["resultatomrade"] == kol)
-                & (bruker_per_navenhet.enhetsnavn == enhet)
+                (bruker_per_navenhet["resultatomrade"] == kol) & (bruker_per_navenhet.enhetsnavn == enhet)
             ]
             fig.add_trace(
                 go.Bar(
@@ -663,9 +595,7 @@ def antall_brukere_per_resultatområde_og_nav_enhet(
 
 
 def antall_brukere_per_måned(data_statistikk: pd.DataFrame) -> go.Figure():
-    antall_brukere_per_måned = data_statistikk.groupby(
-        "endretTidspunkt_måned"
-    ).endretAv.nunique()
+    antall_brukere_per_måned = data_statistikk.groupby("endretTidspunkt_måned").endretAv.nunique()
 
     fig = go.Figure()
     fig.add_trace(
@@ -688,14 +618,10 @@ def andel_statusendringer_gjort_av_superbrukere(
     data_statistikk: pd.DataFrame,
 ) -> go.Figure():
     antall_endringer_superbrukere_per_måned = (
-        data_statistikk[data_statistikk.endretAvRolle == "SUPERBRUKER"]
-        .groupby("endretTidspunkt_måned")
-        .endretAv.size()
+        data_statistikk[data_statistikk.endretAvRolle == "SUPERBRUKER"].groupby("endretTidspunkt_måned").endretAv.size()
     )
 
-    antall_endringer_per_måned = data_statistikk.groupby(
-        "endretTidspunkt_måned"
-    ).endretAv.size()
+    antall_endringer_per_måned = data_statistikk.groupby("endretTidspunkt_måned").endretAv.size()
 
     andel_endringer_superbrukere_per_måned = (
         antall_endringer_superbrukere_per_måned / antall_endringer_per_måned
@@ -726,13 +652,9 @@ def andel_superbrukere(data_statistikk: pd.DataFrame) -> go.Figure():
         .endretAv.nunique()
     )
 
-    antall_brukere_per_måned = data_statistikk.groupby(
-        "endretTidspunkt_måned"
-    ).endretAv.nunique()
+    antall_brukere_per_måned = data_statistikk.groupby("endretTidspunkt_måned").endretAv.nunique()
 
-    andel_superbrukere_per_måned = (
-        antall_superbrukere_per_måned / antall_brukere_per_måned
-    ).dropna()
+    andel_superbrukere_per_måned = (antall_superbrukere_per_måned / antall_brukere_per_måned).dropna()
 
     fig = go.Figure()
     fig.add_trace(

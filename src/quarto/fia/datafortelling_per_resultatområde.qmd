@@ -38,7 +38,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 
 import os
 
-from datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -50,28 +50,28 @@ from datahandler import (
     filtrer_bort_saker_på_avsluttet_tidspunkt,
     legg_til_resultatområde,
 )
-from plots_statistikk import (
+from src.plots.plots_statistikk import (
     statusflyt,
     gjennomstrømmingstall,
     saker_per_status_per_måned,
     antall_saker_per_status,
     virksomhetsprofil,
 )
-from plots_leveranse import (
+from src.plots.plots_leveranse import (
     antall_leveranser_per_tjeneste,
     begrunnelse_ikke_aktuell,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
-from plots_samarbeid import (
+from src.plots.plots_samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
     trakt_antall_samarbeid,
 )
-from helper import (
+from src.utils.helper import (
     ikke_aktuell_begrunnelse_sortering,
     iatjeneste_og_status_sortering,
 )
-from konstanter import (
+from src.utils.konstanter import (
     ikkeaktuell_hovedgrunn,
     resultatområder,
 )
@@ -110,11 +110,7 @@ data_samarbeid_resultatområde = preprocess_data_samarbeid(raw_data_samarbeid_re
 
 # Henter data om behovsvurdering
 data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "behovsvurdering-bigquery-v1", distinct_colunms="id")
-# behovsvurderingstabellen har ikke saksnummer enda, så vi må legge det til
-data_behovsvurdering = data_behovsvurdering.merge(
-    raw_data_samarbeid[["id", "saksnummer"]].rename({"id": "samarbeidId"}, axis = 1),
-    how="left", on="samarbeidId",
-)
+
 data_behovsvurdering = legg_til_resultatområde(data_behovsvurdering, data_statistikk)
 data_behovsvurdering_resultatområde = data_behovsvurdering[data_behovsvurdering.resultatomrade == resultatområde]
 
@@ -131,7 +127,7 @@ data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.re
 
 
 ## Antall samarbeid
-{{< include includes/_antall_samarbeid_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -141,12 +137,12 @@ trakt_antall_samarbeid(
 )
 ```
 
-{{< include includes/begrep-forklaring.qmd >}}
+{{< include ../includes/begrep-forklaring.qmd >}}
 
 
 ## Antall samarbeid per virksomhet
 
-{{< include includes/_antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -182,8 +178,8 @@ gjennomstrømmingstall(data_status_resultatområde)
 ```
 :::
 
-{{< include includes/sak-forklaring.qmd >}}
-{{< include includes/saksstatus-forklaring.qmd >}}
+{{< include ../includes/sak-forklaring.qmd >}}
+{{< include ../includes/saksstatus-forklaring.qmd >}}
 
 
 ## Leveranser
@@ -198,7 +194,7 @@ Info om samarbeidsplan kommer senere.
 
 ## Virksomhetsprofil
 
-{{< include includes/_virksomhetsprofil_forklaring.qmd >}}
+{{< include ../includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -239,7 +235,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include includes/_begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include ../includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell_resultatområde)
@@ -249,6 +245,6 @@ data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
-{{< include includes/ikke-aktuell-forklaring.qmd >}}
+{{< include ../includes/ikke-aktuell-forklaring.qmd >}}
 
 Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).

@@ -2,8 +2,11 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
-from konstanter import plotly_colors, ikkeaktuell_hovedgrunn
+from src.utils.helper import (
+    alle_måneder_mellom_datoer,
+    annotate_ikke_offisiell_statistikk,
+)
+from src.utils.konstanter import ikkeaktuell_hovedgrunn, plotly_colors
 
 
 def leveranse_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
@@ -51,9 +54,7 @@ def leveranse_tjeneste_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
 
     for tjeneste in saker_per_tjeneste_og_måned.iaTjenesteNavn.unique():
         filtrert = (
-            saker_per_tjeneste_og_måned[
-                saker_per_tjeneste_og_måned.iaTjenesteNavn == tjeneste
-            ]
+            saker_per_tjeneste_og_måned[saker_per_tjeneste_og_måned.iaTjenesteNavn == tjeneste]
             .set_index("fullfort_yearmonth")
             .reindex(alle_måneder, fill_value=0)
         )
@@ -79,8 +80,7 @@ def leveranse_tjeneste_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:
 def forskjell_frist_fullfort(data_leveranse: pd.DataFrame) -> go.Figure():
     fullfort_leveranser = data_leveranse[data_leveranse.status == "LEVERT"]
     forskjell_frist_fullfort = (
-        fullfort_leveranser.fullfort.dt.normalize()
-        - pd.to_datetime(fullfort_leveranser.frist)
+        fullfort_leveranser.fullfort.dt.normalize() - pd.to_datetime(fullfort_leveranser.frist)
     ).dt.days
 
     min_ = forskjell_frist_fullfort.min()
@@ -101,11 +101,11 @@ def forskjell_frist_fullfort(data_leveranse: pd.DataFrame) -> go.Figure():
         height=500,
         width=850,
         yaxis_title="Antall fullførte IA-tjenester",
-        xaxis=dict(
-            title="Antall dager",
-            rangeslider=dict(visible=True),
-            range=[max(min_, -100), min(max_, 100)],
-        ),
+        xaxis={
+            "title": "Antall dager",
+            "rangeslider": {"visible": True},
+            "range": [max(min_, -100), min(max_, 100)],
+        },
     )
 
     return annotate_ikke_offisiell_statistikk(fig)
@@ -117,18 +117,13 @@ def andel_leveranseregistreringer_gjort_av_superbrukere(
     data_leveranse["sistEndret_måned"] = data_leveranse.sistEndret.dt.strftime("%Y-%m")
 
     antall_registreringer_superbrukere_per_måned = (
-        data_leveranse[
-            (data_leveranse.status == "LEVERT")
-            & (data_leveranse.sistEndretAvRolle == "SUPERBRUKER")
-        ]
+        data_leveranse[(data_leveranse.status == "LEVERT") & (data_leveranse.sistEndretAvRolle == "SUPERBRUKER")]
         .groupby("sistEndret_måned")
         .sistEndretAv.size()
     )
 
     antall_registreringer_per_måned = (
-        data_leveranse[data_leveranse.status == "LEVERT"]
-        .groupby("sistEndret_måned")
-        .sistEndretAv.size()
+        data_leveranse[data_leveranse.status == "LEVERT"].groupby("sistEndret_måned").sistEndretAv.size()
     )
 
     andel_registreringer_superbrukere_per_måned = (
@@ -153,9 +148,7 @@ def andel_leveranseregistreringer_gjort_av_superbrukere(
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def begrunnelse_ikke_aktuell(
-    ikke_aktuell: pd.DataFrame, begrunnelse_sortering: list
-) -> go.Figure:
+def begrunnelse_ikke_aktuell(ikke_aktuell: pd.DataFrame, begrunnelse_sortering: list) -> go.Figure:
     fig = make_subplots(
         rows=1,
         cols=2,
@@ -171,12 +164,8 @@ def begrunnelse_ikke_aktuell(
 
     # Hovedgrunn
 
-    ikke_aktuell["hovedgrunn"] = ikke_aktuell.ikkeAktuelBegrunnelse.map(
-        ikkeaktuell_hovedgrunn
-    )
-    antall_hovedgrunn = ikke_aktuell.hovedgrunn.value_counts().sort_values(
-        ascending=True
-    )
+    ikke_aktuell["hovedgrunn"] = ikke_aktuell.ikkeAktuelBegrunnelse.map(ikkeaktuell_hovedgrunn)
+    antall_hovedgrunn = ikke_aktuell.hovedgrunn.value_counts().sort_values(ascending=True)
     fig.add_trace(
         go.Pie(
             labels=antall_hovedgrunn.index,
@@ -191,9 +180,7 @@ def begrunnelse_ikke_aktuell(
 
     # Detaljert begrunnelse
 
-    antall_saker_ikke_aktuell = ikke_aktuell.drop_duplicates(
-        "saksnummer", keep="last"
-    ).shape[0]
+    antall_saker_ikke_aktuell = ikke_aktuell.drop_duplicates("saksnummer", keep="last").shape[0]
 
     ikke_aktuell_per_begrunnelse = (
         ikke_aktuell.groupby("ikkeAktuelBegrunnelse_lesbar")
@@ -205,27 +192,19 @@ def begrunnelse_ikke_aktuell(
         )
         .reset_index()
     )
-    andel = [
-        x * 100 / antall_saker_ikke_aktuell
-        for x in ikke_aktuell_per_begrunnelse.saksnummer
-    ]
+    andel = [x * 100 / antall_saker_ikke_aktuell for x in ikke_aktuell_per_begrunnelse.saksnummer]
     fig.add_trace(
         go.Bar(
             y=ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar,
             x=andel,
-            text=[
-                f"{andel[i]:.2f}%, {ikke_aktuell_per_begrunnelse.saksnummer[i]}"
-                for i in range(len(andel))
-            ],
+            text=[f"{andel[i]:.2f}%, {ikke_aktuell_per_begrunnelse.saksnummer[i]}" for i in range(len(andel))],
             marker_color=plotly_colors,
             orientation="h",
         ),
         row=1,
         col=2,
     )
-    for idx, begrunnelse in enumerate(
-        ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar
-    ):
+    for idx, begrunnelse in enumerate(ikke_aktuell_per_begrunnelse.ikkeAktuelBegrunnelse_lesbar):
         fig.add_annotation(
             x=0,
             y=idx - 0.4,
@@ -242,9 +221,7 @@ def begrunnelse_ikke_aktuell(
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)
 
 
-def antall_leveranser_per_tjeneste(
-    data_leveranse: pd.DataFrame, alle_iatjenester_og_status=None
-) -> go.Figure:
+def antall_leveranser_per_tjeneste(data_leveranse: pd.DataFrame, alle_iatjenester_og_status=None) -> go.Figure:
     leveranser_per_tjeneste = (
         data_leveranse.drop_duplicates(["saksnummer", "iaTjenesteId"], keep="last")
         .groupby(["iaTjenesteNavn", "status"])
@@ -252,18 +229,14 @@ def antall_leveranser_per_tjeneste(
         .sort_values(ascending=True)
     )
     if alle_iatjenester_og_status is not None:
-        leveranser_per_tjeneste = leveranser_per_tjeneste.reindex(
-            alle_iatjenester_og_status, fill_value=0
-        )
+        leveranser_per_tjeneste = leveranser_per_tjeneste.reindex(alle_iatjenester_og_status, fill_value=0)
 
     leveranser_per_tjeneste = leveranser_per_tjeneste.reset_index()
 
     fig = go.Figure()
 
     for status in leveranser_per_tjeneste.status.unique():
-        leveranser_per_tjeneste_filtered = leveranser_per_tjeneste[
-            leveranser_per_tjeneste.status == status
-        ]
+        leveranser_per_tjeneste_filtered = leveranser_per_tjeneste[leveranser_per_tjeneste.status == status]
         fig.add_trace(
             go.Bar(
                 y=leveranser_per_tjeneste_filtered["iaTjenesteNavn"],
@@ -281,7 +254,13 @@ def antall_leveranser_per_tjeneste(
         xaxis_showticklabels=False,
         xaxis_title="Antall saker",
         xaxis_title_standoff=80,
-        legend=dict(orientation="h", yanchor="bottom", y=0, xanchor="right", x=1),
+        legend={
+            "orientation": "h",
+            "yanchor": "bottom",
+            "xanchor": "right",
+            "y": 0,
+            "x": 1,
+        },
     )
 
     return annotate_ikke_offisiell_statistikk(fig, y=1.2)

@@ -1,11 +1,11 @@
-import pandas as pd
-
 from datetime import datetime, timedelta
-from dateutil.relativedelta import relativedelta
 from enum import Enum
-import plotly.graph_objects as go
 
-from helper import annotate_ikke_offisiell_statistikk
+import pandas as pd
+import plotly.graph_objects as go
+from dateutil.relativedelta import relativedelta
+
+from src.utils.helper import annotate_ikke_offisiell_statistikk
 
 
 class SakStatus(Enum):
@@ -55,9 +55,7 @@ def antall_tjenester_denne_perioden(
         kolonne_tid="fullfort",
     )
 
-    levert_denne_perioden = filtrer_på_kolonne_status(
-        df=levert_denne_perioden, status=TjenesteStatus.LEVERT
-    )
+    levert_denne_perioden = filtrer_på_kolonne_status(df=levert_denne_perioden, status=TjenesteStatus.LEVERT)
 
     opprettet_denne_perioden = filtrer_på_kolonne_tid(
         df=data_leveranse,
@@ -73,18 +71,10 @@ def antall_tjenester_denne_perioden(
     for tjeneste in tjenester:
         data[tjeneste] = {}
 
-        data[tjeneste]["LEVERT"] = len(
-            levert_denne_perioden[levert_denne_perioden.iaTjenesteNavn == tjeneste]
-        )
-        data[tjeneste]["OPPRETTET"] = len(
-            opprettet_denne_perioden[
-                opprettet_denne_perioden.iaTjenesteNavn == tjeneste
-            ]
-        )
+        data[tjeneste]["LEVERT"] = len(levert_denne_perioden[levert_denne_perioden.iaTjenesteNavn == tjeneste])
+        data[tjeneste]["OPPRETTET"] = len(opprettet_denne_perioden[opprettet_denne_perioden.iaTjenesteNavn == tjeneste])
         data[tjeneste]["ETTERREGISTRERT"] = len(
-            etterregistrerte_tjenester[
-                etterregistrerte_tjenester.iaTjenesteNavn == tjeneste
-            ]
+            etterregistrerte_tjenester[etterregistrerte_tjenester.iaTjenesteNavn == tjeneste]
         )
 
     return data
@@ -105,9 +95,7 @@ def antall_saker(
     )
 
     if status_sak is not None:
-        filtrerte_saker = filtrer_på_kolonne_status(
-            df=filtrerte_saker, status=status_sak
-        )
+        filtrerte_saker = filtrer_på_kolonne_status(df=filtrerte_saker, status=status_sak)
 
     return len(filtrerte_saker)
 
@@ -135,9 +123,7 @@ def antall_tjenester_opprettet_og_fullført_innen_et_døgn(
     antall_timer: int = 24,
 ):
     # Kun de levert
-    df = filtrer_på_kolonne_status(
-        df=opprettet_denne_perioden, status=TjenesteStatus.LEVERT
-    )
+    df = filtrer_på_kolonne_status(df=opprettet_denne_perioden, status=TjenesteStatus.LEVERT)
     df["diff"] = df["fullfort"] - df["opprettetTidspunkt"]
     df[df["diff"] < timedelta(hours=antall_timer)]
     return df

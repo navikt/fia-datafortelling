@@ -1,21 +1,19 @@
-from google.cloud.bigquery import Client
-import json
-import pandas as pd
 from datetime import datetime, timedelta
-import numpy as np
 
-from konstanter import (
+import numpy as np
+import pandas as pd
+from google.cloud.bigquery import Client
+
+from src.utils.konstanter import (
     fylker,
     intervall_sortering,
     resultatområder,
-    viken_akershus,
     rogaland_lund,
+    viken_akershus,
 )
 
 
-def load_data_deduplicate(
-    project: str, dataset: str, table: str, distinct_colunms: str
-) -> pd.DataFrame:
+def load_data_deduplicate(project: str, dataset: str, table: str, distinct_colunms: str) -> pd.DataFrame:
     """
     Henter data fra BigQuery og fjerner duplikater med å beholde siste tidsstempel av repeterende distinct_colunms.
     """
@@ -45,7 +43,7 @@ def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def parse_næring(rad):
-    if type(rad) != np.ndarray:
+    if type(rad) is not np.ndarray:
         return "Feil ved innhenting av hovednæring, feil format"
     elif rad.size < 1:
         # ca 6 tilfeller hvor rad == []
@@ -56,52 +54,40 @@ def parse_næring(rad):
 
 def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
     # Sorter basert på endrettidspunkt
-    data_statistikk = data_statistikk.sort_values(
-        "endretTidspunkt", ascending=True
-    ).reset_index(drop=True)
+    data_statistikk = data_statistikk.sort_values("endretTidspunkt", ascending=True).reset_index(drop=True)
 
     # Måned til endrettidspunkt
-    data_statistikk[
-        "endretTidspunkt_måned"
-    ] = data_statistikk.endretTidspunkt.dt.strftime("%Y-%m")
+    data_statistikk["endretTidspunkt_måned"] = data_statistikk.endretTidspunkt.dt.strftime("%Y-%m")
 
     # Fylkesnavn
     data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
 
     # Resultatområde
-    data_statistikk["resultatomrade"] = data_statistikk.fylkesnummer.map(
-        resultatområder
-    )
+    data_statistikk["resultatomrade"] = data_statistikk.fylkesnummer.map(resultatområder)
 
     # Del akershus på øst og vest-viken
-    data_statistikk.loc[
-        data_statistikk["fylkesnummer"] == "32", "resultatomrade"
-    ] = data_statistikk.kommunenummer.map(viken_akershus)
+    data_statistikk.loc[data_statistikk["fylkesnummer"] == "32", "resultatomrade"] = data_statistikk.kommunenummer.map(
+        viken_akershus
+    )
     # Flytt Lund kommune i Rogaland til Agder da de er der de blir fulgt opp
-    data_statistikk.loc[
-        data_statistikk["fylkesnummer"] == "11", "resultatomrade"
-    ] = data_statistikk.kommunenummer.map(rogaland_lund)
+    data_statistikk.loc[data_statistikk["fylkesnummer"] == "11", "resultatomrade"] = data_statistikk.kommunenummer.map(
+        rogaland_lund
+    )
 
     data_statistikk["hoved_nering"] = data_statistikk.neringer.apply(parse_næring)
 
     data_statistikk["hoved_nering_truncated"] = data_statistikk.hoved_nering
-    data_statistikk.loc[
-        data_statistikk.hoved_nering.str.len() > 50, "hoved_nering_truncated"
-    ] = (data_statistikk.hoved_nering.str[:47] + "...")
+    data_statistikk.loc[data_statistikk.hoved_nering.str.len() > 50, "hoved_nering_truncated"] = (
+        data_statistikk.hoved_nering.str[:47] + "..."
+    )
 
     # Gruppering av virksomheter per antall ansatte
     col_name = "antallPersoner_gruppe"
     data_statistikk.loc[data_statistikk.antallPersoner == 0, col_name] = "0"
     data_statistikk.loc[data_statistikk.antallPersoner.between(1, 4), col_name] = "1-4"
-    data_statistikk.loc[
-        data_statistikk.antallPersoner.between(5, 19), col_name
-    ] = "5-19"
-    data_statistikk.loc[
-        data_statistikk.antallPersoner.between(20, 49), col_name
-    ] = "20-49"
-    data_statistikk.loc[
-        data_statistikk.antallPersoner.between(50, 99), col_name
-    ] = "50-99"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(5, 19), col_name] = "5-19"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(20, 49), col_name] = "20-49"
+    data_statistikk.loc[data_statistikk.antallPersoner.between(50, 99), col_name] = "50-99"
     data_statistikk.loc[data_statistikk.antallPersoner >= 100, col_name] = "100+"
     data_statistikk.loc[data_statistikk.antallPersoner.isna(), col_name] = "Ukjent"
 
@@ -119,9 +105,7 @@ def split_data_statistikk(
 
     # Split data_statistikk inn i data_status og data_eierskap
     eierskap = data_statistikk.hendelse == "TA_EIERSKAP_I_SAK"
-    prosess = data_statistikk.hendelse.isin(
-        ["NY_PROSESS", "ENDRE_PROSESS", "SLETT_PROSESS"]
-    )
+    prosess = data_statistikk.hendelse.isin(["NY_PROSESS", "ENDRE_PROSESS", "SLETT_PROSESS"])
     data_status = data_statistikk[~eierskap & ~prosess].reset_index(drop=True)
     data_eierskap = data_statistikk[eierskap].reset_index(drop=True)
     data_prosess = data_statistikk[prosess].reset_index(drop=True)
@@ -131,9 +115,7 @@ def split_data_statistikk(
 
 def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
     # Sorter basert på sak og endret tidspunkt
-    data_status = data_status.sort_values(
-        ["saksnummer", "endretTidspunkt"], ascending=True
-    ).reset_index(drop=True)
+    data_status = data_status.sort_values(["saksnummer", "endretTidspunkt"], ascending=True).reset_index(drop=True)
 
     # Fjern rader som var angret med bruk av tilbake-knappen
     tilbake_rader = data_status[data_status.hendelse == "TILBAKE"].index.tolist()
@@ -190,29 +172,25 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     return data_leveranse
 
 
-def preprocess_data_samarbeid(
-    data_samarbeid: pd.DataFrame, data_statistikk: pd.DataFrame
-) -> pd.DataFrame:
+def preprocess_data_samarbeid(data_samarbeid: pd.DataFrame, data_statistikk: pd.DataFrame) -> pd.DataFrame:
     # Legge til antall personer i samarbeid-tabellen
-    antall_personer = data_statistikk.sort_values("endretTidspunkt")[
-        ["saksnummer", "antallPersoner"]
-    ].drop_duplicates("saksnummer", keep="last")
+    antall_personer = data_statistikk.sort_values("endretTidspunkt")[["saksnummer", "antallPersoner"]].drop_duplicates(
+        "saksnummer", keep="last"
+    )
     data_samarbeid = data_samarbeid.merge(antall_personer, on="saksnummer", how="left")
 
     return data_samarbeid
 
 
-def legg_til_resultatområde(
-    data: pd.DataFrame, data_statistikk: pd.DataFrame
-) -> pd.DataFrame:
+def legg_til_resultatområde(data: pd.DataFrame, data_statistikk: pd.DataFrame) -> pd.DataFrame:
     """
     Legger til resultatområde basert på data_statistikk.
     Vi filtrerer på resultatområde for å lage en datafortelling per resultatområde.
     """
-    resultatomrade = data_statistikk.sort_values("endretTidspunkt")[
-        ["saksnummer", "resultatomrade"]
-    ].drop_duplicates("saksnummer", keep="last")
-    data = data.merge(resultatomrade, on="saksnummer", how="left")
+    resultatomrade = data_statistikk.sort_values("endretTidspunkt")[["saksnummer", "resultatomrade"]].drop_duplicates(
+        "saksnummer", keep="last"
+    )
+    data = data.merge(resultatomrade, on="saksnummer", how="left")  # TODO: Her skjer det en feil
     return data
 
 
@@ -220,9 +198,9 @@ def hent_leveranse_sistestatus(data_leveranse: pd.DataFrame) -> pd.DataFrame:
     """
     Henter siste status for hver leveranse
     """
-    return data_leveranse.sort_values(
-        ["saksnummer", "sistEndret"], ascending=True
-    ).drop_duplicates(["saksnummer", "iaTjenesteId", "iaModulId"], keep="last")
+    return data_leveranse.sort_values(["saksnummer", "sistEndret"], ascending=True).drop_duplicates(
+        ["saksnummer", "iaTjenesteId", "iaModulId"], keep="last"
+    )
 
 
 def beregn_siste_oppdatering(
@@ -273,12 +251,8 @@ def beregn_siste_oppdatering(
     )
 
     # Merge datasettene
-    siste_oppdatering = siste_oppdatering_status.merge(
-        siste_oppdatering_eierskap, on="saksnummer", how="left"
-    )
-    siste_oppdatering = siste_oppdatering.merge(
-        siste_oppdatering_leveranse, on="saksnummer", how="left"
-    )
+    siste_oppdatering = siste_oppdatering_status.merge(siste_oppdatering_eierskap, on="saksnummer", how="left")
+    siste_oppdatering = siste_oppdatering.merge(siste_oppdatering_leveranse, on="saksnummer", how="left")
 
     # Beregne siste oppdatering av alle datasettene
     siste_oppdatering["siste_oppdatering"] = siste_oppdatering[
@@ -290,15 +264,11 @@ def beregn_siste_oppdatering(
     ].max(axis=1, numeric_only=False)
 
     # Beregne antall dager siden siste oppdatering til berengningsdato
-    siste_oppdatering["dager_siden_siste_oppdatering"] = (
-        beregningsdato - siste_oppdatering.siste_oppdatering
-    ).dt.days
+    siste_oppdatering["dager_siden_siste_oppdatering"] = (beregningsdato - siste_oppdatering.siste_oppdatering).dt.days
 
     # Hente informasjon/kolonner fra data_status
     siste_oppdatering = siste_oppdatering.merge(
-        data_status[["saksnummer", "status_beregningsdato"]].drop_duplicates(
-            "saksnummer"
-        ),
+        data_status[["saksnummer", "status_beregningsdato"]].drop_duplicates("saksnummer"),
         on="saksnummer",
         how="left",
     )
@@ -307,24 +277,16 @@ def beregn_siste_oppdatering(
 
 
 def beregn_intervall_tid_siden_siste_endring(data_status: pd.DataFrame) -> pd.DataFrame:
-    data_status["tid_siden_siste_endring"] = (
-        data_status.endretTidspunkt - data_status.forrige_endretTidspunkt
-    )
+    data_status["tid_siden_siste_endring"] = data_status.endretTidspunkt - data_status.forrige_endretTidspunkt
     seconds = data_status.tid_siden_siste_endring.dt.seconds
     days = data_status.tid_siden_siste_endring.dt.days
 
     col_name = "intervall_tid_siden_siste_endring"
     data_status.loc[seconds < 60, col_name] = intervall_sortering[0]
     data_status.loc[seconds.between(60, 60 * 10), col_name] = intervall_sortering[1]
-    data_status.loc[seconds.between(60 * 10, 60 * 60), col_name] = intervall_sortering[
-        2
-    ]
-    data_status.loc[
-        seconds.between(60 * 60, 60 * 60 * 8), col_name
-    ] = intervall_sortering[3]
-    data_status.loc[
-        seconds.between(60 * 60 * 8, 60 * 60 * 24), col_name
-    ] = intervall_sortering[4]
+    data_status.loc[seconds.between(60 * 10, 60 * 60), col_name] = intervall_sortering[2]
+    data_status.loc[seconds.between(60 * 60, 60 * 60 * 8), col_name] = intervall_sortering[3]
+    data_status.loc[seconds.between(60 * 60 * 8, 60 * 60 * 24), col_name] = intervall_sortering[4]
     data_status.loc[days.between(1, 10), col_name] = intervall_sortering[5]
     data_status.loc[days.between(10, 30), col_name] = intervall_sortering[6]
     data_status.loc[days.between(30, 100), col_name] = intervall_sortering[7]
@@ -338,31 +300,21 @@ def explode_ikke_aktuell_begrunnelse(data_status: pd.DataFrame) -> pd.DataFrame:
     """
     Splitter ikkeAktuelBegrunnelse inn i flere rader, en rad per begrunnelse.
     """
-    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates(
-        "saksnummer", keep="last"
-    )
-    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip(
-        "[]"
-    ).str.split(",")
+    ikke_aktuell = data_status[data_status.status == "IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
+    ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip("[]").str.split(",")
     ikke_aktuell = ikke_aktuell.explode("ikkeAktuelBegrunnelse")
     ikke_aktuell.ikkeAktuelBegrunnelse = ikke_aktuell.ikkeAktuelBegrunnelse.str.strip()
     ikke_aktuell["ikkeAktuelBegrunnelse_lesbar"] = (
-        ikke_aktuell.ikkeAktuelBegrunnelse.str.replace("_", " ")
-        .str.capitalize()
-        .str.replace("bht", "BHT")
+        ikke_aktuell.ikkeAktuelBegrunnelse.str.replace("_", " ").str.capitalize().str.replace("bht", "BHT")
     )
 
     return ikke_aktuell
 
 
-def filtrer_bort_saker_på_avsluttet_tidspunkt(
-    data: pd.DataFrame, antall_dager=365
-) -> pd.DataFrame:
+def filtrer_bort_saker_på_avsluttet_tidspunkt(data: pd.DataFrame, antall_dager=365) -> pd.DataFrame:
     """
     Filtrerer bort saker avsluttet for over "x" antall dager siden
     """
     dato_some_time_ago = datetime.now() - timedelta(days=antall_dager)
-    saker_some_time_ago = data[
-        data.avsluttetTidspunkt < dato_some_time_ago
-    ].saksnummer.unique()
+    saker_some_time_ago = data[data.avsluttetTidspunkt < dato_some_time_ago].saksnummer.unique()
     return data[~data.saksnummer.isin(saker_some_time_ago)]

@@ -16,7 +16,122 @@ Som en god praksis, opprett et virtuelt pythonmiljø i root til prosjektet:\
 
 Installer requirements med `pip3 install -r requirements.txt`.
 
-### Git pre-commit hooks
+# Komme i gang (Poetry)
+## Installasjon
+
+Poetry kan installeres via [homebrew](https://formulae.brew.sh/formula/poetry)
+```bash
+brew install poetry
+```
+
+Andre alternativer finnes også i Poetry sin [dokumentasjon](https://python-poetry.org/docs/#installation)
+
+## Opprette virtuelt miljø i prosjektet
+Anbefaler å konfigurere poetry til å lage virtuelt miljø i prosjektmappen så det ikke legges i cache, det gjør man ved å bruke kommandoen:
+
+```bash
+poetry config virtualenvs.in-project true
+```
+
+Deretter kan man opprette virtuelt miljø med kommandoen:
+
+```bash
+poetry install
+```
+Denne lager virtuelt miljø basert på `pyproject.toml`-filen i prosjektet.
+
+For å få informasjon om hvilken python versjon som brukes og hvor den ligger (det virtuelle miljøet) kan du skrive: `poetry env info`
+
+## Ta i bruk virtuelt miljø:
+
+
+### Shell
+For å åpne et shell i det virtuelle miljøet bruker du kommandoen:
+
+```bash
+poetry shell
+```
+
+Fra shell i virtuelt miljø kan du f.eks. kjøre tester med:
+```bash
+pytest
+```
+
+eller lage notebooks med:
+
+```bash
+jupyter notebook
+```
+
+For å komme deg ut av shell for det virtuelle miljøet bruker du:
+```bash
+exit
+```
+
+
+### Kjør fra Poetry
+`Poetry run` lar deg også kjøre kommandoer i virtuelt miljø, f.eks:
+
+```bash
+poetry run python -V
+```
+
+Scripts definert under [`[tool.poetry.scripts]`](https://python-poetry.org/docs/cli/#run) i `pyproject.toml` kan også kjøres med 
+
+```bash
+poetry run my-script
+```
+
+## Administrere avhengigheter:
+
+### Legge til
+Avhengigheter kan legges til med:
+
+```bash
+poetry add numpy
+```
+Avhengigheter legges automatisk til i `pyproject.toml` med versjon lik `numpy = "^2.1.3"`. Det finnes flere alternativer [i dokumentasjonen](https://python-poetry.org/docs/cli/#add) som eksplisitt versjon med `poetry add numpy==2.1.3`
+
+For å legge til dependency i en optional gruppe av avhengigheter som f.eks. dev eller testing kan man bruke:
+
+```bash
+poetry add --group test pytest
+```
+eller 
+
+```bash
+poetry add --group dev notebook
+```
+
+### Fjerne
+Avhengigheter kan fjernes med:
+
+```bash
+poetry remove numpy
+```
+
+## Oppdatere avhengigheter
+Man kan liste ut alle avhengigheter og nyeste tilgjengelige versjon:
+```bash
+poetry show --latest
+```
+
+for å oppdatere pakker innenfor constraints på versjonsnummer kan man bruke:
+```bash
+poetry update
+```
+
+For å oppdatere avhengighet og constraint bruker man:
+```bash
+poetry add jupyterlab@latest
+```
+
+For en full oversikt av alle avhengigheter kan man også bruke:
+```bash
+poetry show --tree
+``` 
+
+# Git pre-commit hooks
 
 Installer pre-commit pakke med `pip3 install pre-commit`.
 
@@ -74,6 +189,19 @@ For å regenerere datafortellingen manuelt, gjør følgende:
   - Kjør datafortellingene lokalt på nytt og sammenlign med prod
 
 ---
+
+# Linting & formatering
+Bruker [Ruff](https://docs.astral.sh/ruff/) som skal ha "drop-in parity" med flake8, isort og Black
+
+Kjør linting med:
+```bash
+ruff check --fix
+```
+
+Formater prosjekt med:
+```bash
+ruff format
+```
 
 # Henvendelser
 

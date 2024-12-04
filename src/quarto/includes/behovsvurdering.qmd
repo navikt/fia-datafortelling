@@ -48,6 +48,7 @@ dict(
 ## Row
 ```{python}
 #| title: Antall opprettet behovsvurderinger per måned
+
 query = """
     select format_datetime('%Y-%m', opprettet) as maaned, count(distinct id)
     from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
@@ -98,6 +99,7 @@ fig.show()
 ## Row
 ```{python}
 #| title: Statusflyt i behovsvurdering
+import pandas as pd
 
 def statusflyt_behovsvurdering(df_bv: pd.DataFrame) -> go.Figure:
     opprettet = df_bv.shape[0]

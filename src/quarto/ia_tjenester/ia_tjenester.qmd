@@ -31,7 +31,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 
 import os
 
-from datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -40,7 +40,7 @@ from datahandler import (
     hent_leveranse_sistestatus,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots_leveranse import (
+from src.plots.plots_leveranse import (
     antall_leveranser_per_tjeneste,
     leveranse_tjeneste_per_maaned,
 )
@@ -84,4 +84,4 @@ antall_leveranser_per_tjeneste(data_leveranse_sistestatus_siste_år)
 
 :::
 
-{{< include includes/leveransestatus-forklaring.qmd >}}
+{{< include ../includes/leveransestatus-forklaring.qmd >}}

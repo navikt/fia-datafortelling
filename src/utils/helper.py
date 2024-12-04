@@ -1,5 +1,6 @@
-import pandas as pd
 from datetime import datetime
+
+import pandas as pd
 import plotly.graph_objects as go
 
 
@@ -59,15 +60,11 @@ def ikke_aktuell_begrunnelse_sortering(ikke_aktuell: pd.DataFrame) -> list:
     return begrunnelse_sortering
 
 
-def alle_måneder_mellom_datoer(
-    første_dato: str, siste_dato=datetime.now()
-) -> pd.Series:
+def alle_måneder_mellom_datoer(første_dato: str, siste_dato=datetime.now()) -> pd.Series:
     """
     Returnerer alle måneder mellom to datoer
     """
-    alle_datoer: pd.DatetimeIndex = pd.date_range(
-        første_dato, siste_dato, freq="d", normalize=True
-    )
+    alle_datoer: pd.DatetimeIndex = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
     alle_måneder: pd.Series = alle_datoer.strftime("%Y-%m").drop_duplicates()
     return alle_måneder
 

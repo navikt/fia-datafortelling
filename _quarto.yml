@@ -1,0 +1,10 @@
+project:
+  output-dir: output
+  render:
+    - "src/quarto/fia"
+    - "src/quarto/fia-datakvalitet"
+    - "src/quarto/helsesjekk"
+    - "src/quarto/ia_tjenester"
+    - "src/quarto/pia"
+    - "src/quarto/resultatområde"
+    # hvilke filer som skal renderes når man kaller quarto render uten å spesifisere en fil

@@ -38,7 +38,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 
 import os
 
-from datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -49,7 +49,7 @@ from datahandler import (
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots_statistikk import (
+from src.plots.plots_statistikk import (
     statusflyt,
     gjennomstrømmingstall,
     saker_per_status_per_måned,
@@ -57,13 +57,13 @@ from plots_statistikk import (
     aktive_saker_per_kolonne,
     virksomhetsprofil,
 )
-from plots_leveranse import begrunnelse_ikke_aktuell
-from plots_samarbeid import (
+from src.plots.plots_leveranse import begrunnelse_ikke_aktuell
+from src.plots.plots_samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
     trakt_antall_samarbeid,
 )
-from helper import ikke_aktuell_begrunnelse_sortering
-from konstanter import ikkeaktuell_hovedgrunn
+from src.utils.helper import ikke_aktuell_begrunnelse_sortering
+from src.utils.konstanter import ikkeaktuell_hovedgrunn
 
 
 PROJECT = os.environ['GCP_PROJECT']
@@ -96,7 +96,7 @@ data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bi
 
 
 ## Antall samarbeid
-{{< include includes/_antall_samarbeid_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -106,12 +106,12 @@ trakt_antall_samarbeid(
 )
 ```
 
-{{< include includes/begrep-forklaring.qmd >}}
+{{< include ../includes/begrep-forklaring.qmd >}}
 
 
 ## Antall samarbeid per virksomhet
 
-{{< include includes/_antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -128,15 +128,15 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 
 ## Statusflyt i Fia
 
-{{< include includes/_statusflyt_i_fia_forklaring.qmd >}}
+{{< include ../includes/statusflyt_i_fia_forklaring.qmd >}}
 
 ```{python}
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 statusflyt(data_input)
 ```
 
-{{< include includes/sak-forklaring.qmd >}}
-{{< include includes/saksstatus-forklaring.qmd >}}
+{{< include ../includes/sak-forklaring.qmd >}}
+{{< include ../includes/saksstatus-forklaring.qmd >}}
 
 
 ## Antall saker per status
@@ -169,12 +169,12 @@ aktive_saker_per_kolonne(data_status, "resultatomrade")
 
 ## Leveranser
 
-{{< include includes/_leveranser.qmd >}}
+{{< include ../includes/leveranser.qmd >}}
 
 
 ## Virksomhetsprofil
 
-{{< include includes/_virksomhetsprofil_forklaring.qmd >}}
+{{< include ../includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -215,7 +215,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include includes/_begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include ../includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
@@ -278,10 +278,10 @@ begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 
 :::
 
-{{< include includes/ikke-aktuell-forklaring.qmd >}}
+{{< include ../includes/ikke-aktuell-forklaring.qmd >}}
 
 ---
 
-{{< include includes/datafortellinger_per_resultatområde.qmd >}}
+{{< include ../includes/datafortellinger_per_resultatområde.qmd >}}
 
 Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).
