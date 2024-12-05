@@ -109,7 +109,9 @@ raw_data_samarbeid_resultatområde = raw_data_samarbeid[raw_data_samarbeid.resul
 data_samarbeid_resultatområde = preprocess_data_samarbeid(raw_data_samarbeid_resultatområde, data_statistikk_resultatområde)
 
 # Henter data om behovsvurdering
-data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "behovsvurdering-bigquery-v1", distinct_colunms="id")
+
+tabell_spørreundersøkelse="sporreundersokelse-v1"
+data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, tabell_spørreundersøkelse, distinct_colunms="id")
 
 data_behovsvurdering = legg_til_resultatområde(data_behovsvurdering, data_statistikk)
 data_behovsvurdering_resultatområde = data_behovsvurdering[data_behovsvurdering.resultatomrade == resultatområde]

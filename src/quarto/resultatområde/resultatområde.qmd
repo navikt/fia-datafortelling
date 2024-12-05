@@ -1,7 +1,0 @@
-```{python}
-print("Dette er en test-fil")
-```
-
-```{python}
-print("Dette er en test-fil")
-```

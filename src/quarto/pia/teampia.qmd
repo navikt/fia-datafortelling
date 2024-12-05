@@ -43,7 +43,7 @@ project = "pia-prod-85b2"
 bq_client = Client(project)
 
 dataset = "pia_bigquery_sink_v1_dataset_prod"
-table_behovsvurdering = "behovsvurdering-bigquery-v1"
+table_behovsvurdering = "sporreundersokelse-v1"
 table_samarbeid = "samarbeid-bigquery-v1"
 ```
 

@@ -88,7 +88,8 @@ raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery
 data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, raw_data_statistikk)
 
 # Henter data om behovsvurdering
-data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "behovsvurdering-bigquery-v1", distinct_colunms="id")
+tabell_spørreundersøkelse="sporreundersokelse-v1"
+data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "sporreundersokelse-v1", distinct_colunms="id")
 
 # Henter data om samarbeidsplan
 data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bigquery-v1", distinct_colunms="id")
