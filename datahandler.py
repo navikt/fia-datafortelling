@@ -1,15 +1,15 @@
-from google.cloud.bigquery import Client
-import json
-import pandas as pd
 from datetime import datetime, timedelta
+
 import numpy as np
+import pandas as pd
+from google.cloud.bigquery import Client
 
 from konstanter import (
     fylker,
     intervall_sortering,
     resultatområder,
-    viken_akershus,
     rogaland_lund,
+    viken_akershus,
 )
 
 

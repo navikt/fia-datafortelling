@@ -140,3 +140,7 @@ dmypy.json
 
 # Local files
 local-files/
+
+.quarto
+.venv
+*.quarto_ipynb
