@@ -1,5 +1,5 @@
 ---
-title: "IA-tjenester i Fia for {{< env RESULTATOMRADE >}}"
+title: "IA-tjenester i Fia for {{< env RESULTATOMRADE}}"
 subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
 title-block-banner: true
 title-block-banner-color: white

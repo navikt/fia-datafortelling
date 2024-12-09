@@ -25,12 +25,12 @@ jupyter: python3
 %autoreload 2
 
 import os
-from src.utils.helsesjekk import antall_saker_i_vi_bistår, data_denne_perioden
+from utils.helsesjekk import antall_saker_i_vi_bistår, data_denne_perioden
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from src.utils.datahandler import (
+from utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,

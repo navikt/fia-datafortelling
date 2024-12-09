@@ -1,5 +1,4 @@
 project:
-  output-dir: output
   render:
     - "src/quarto/fia"
     - "src/quarto/fia-datakvalitet"

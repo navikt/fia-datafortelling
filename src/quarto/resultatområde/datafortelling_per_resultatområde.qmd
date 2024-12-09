@@ -1,5 +1,5 @@
 ---
-title: "Fia datafortelling for {{< env RESULTATOMRADE >}}"
+title: "Fia datafortelling for {{< env RESULTATOMRADE}}"
 subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
