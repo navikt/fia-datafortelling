@@ -108,11 +108,11 @@ raw_data_samarbeid = legg_til_resultatområde(raw_data_samarbeid, data_statistik
 raw_data_samarbeid_resultatområde = raw_data_samarbeid[raw_data_samarbeid.resultatomrade == resultatområde]
 data_samarbeid_resultatområde = preprocess_data_samarbeid(raw_data_samarbeid_resultatområde, data_statistikk_resultatområde)
 
-# Henter data om behovsvurdering
-# TODO: Bytt til sporreundersokelse-v1 og hent ut behovsvurdering og evaluering
-data_behovsvurdering = load_data_deduplicate(PROJECT, DATASET, "behovsvurdering-bigquery-v1", distinct_colunms="id")
-data_behovsvurdering = legg_til_resultatområde(data_behovsvurdering, data_statistikk)
-data_behovsvurdering_resultatområde = data_behovsvurdering[data_behovsvurdering.resultatomrade == resultatområde]
+
+# Henter data om spørreundersøkelser
+data_spørreundersøkelse = load_data_deduplicate(PROJECT, DATASET, "sporreundersokelse-v1", distinct_colunms="id")
+data_spørreundersøkelse = legg_til_resultatområde(data_spørreundersøkelse, data_statistikk)
+data_spørreundersøkelse_resultatområde = data_spørreundersøkelse[data_spørreundersøkelse.resultatomrade == resultatområde]
 
 # Henter data om samarbeidsplan
 data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bigquery-v1", distinct_colunms="id")
@@ -132,7 +132,7 @@ data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.re
 ```{python}
 trakt_antall_samarbeid(
     data_samarbeid_resultatområde,
-    data_behovsvurdering_resultatområde,
+    data_spørreundersøkelse_resultatområde,
     data_samarbeidsplan_resultatområde,
 )
 ```

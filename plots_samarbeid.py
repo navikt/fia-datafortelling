@@ -1,13 +1,10 @@
-import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
 from helper import annotate_ikke_offisiell_statistikk
 
 
-def plot_antall_saker_per_antall_samarbeid(
-    data_samarbeid: pd.DataFrame, normalisert=False
-) -> go.Figure:
+def plot_antall_saker_per_antall_samarbeid(data_samarbeid: pd.DataFrame, normalisert=False) -> go.Figure:
     fig = go.Figure()
 
     def legg_til_trace(fig, data_samarbeid, filter, trace_name, normalisert):
@@ -28,9 +25,7 @@ def plot_antall_saker_per_antall_samarbeid(
         # Beregne andel
         if normalisert:
             totalt = antall_saker_per_antall_samarbeid.sum()
-            antall_saker_per_antall_samarbeid = (
-                antall_saker_per_antall_samarbeid / totalt
-            )
+            antall_saker_per_antall_samarbeid = antall_saker_per_antall_samarbeid / totalt
 
         # Legger til trace
         fig = fig.add_trace(
@@ -43,9 +38,7 @@ def plot_antall_saker_per_antall_samarbeid(
         return fig
 
     små_bedrifter = data_samarbeid.antallPersoner <= 20
-    mellomstore_bedrifter = (data_samarbeid.antallPersoner > 20) & (
-        data_samarbeid.antallPersoner <= 100
-    )
+    mellomstore_bedrifter = (data_samarbeid.antallPersoner > 20) & (data_samarbeid.antallPersoner <= 100)
     store_bedrifter = data_samarbeid.antallPersoner > 100
 
     fig = legg_til_trace(
@@ -92,7 +85,7 @@ def plot_antall_saker_per_antall_samarbeid(
 
 def trakt_antall_samarbeid(
     data_samarbeid: pd.DataFrame,
-    data_behovsvurdering: pd.DataFrame,
+    data_spørreundersøkelse: pd.DataFrame,
     data_samarbeidsplan: pd.DataFrame,
 ) -> go.Figure:
     # Aktive samarbeid
@@ -102,9 +95,18 @@ def trakt_antall_samarbeid(
     antall_aktive_samarbeid = len(aktive_samarbeid)
 
     # Antall aktive samarbeid med fullført behovsvurdering
-    antall_aktive_samarbeid_med_fullfort_behovsvurdering = data_behovsvurdering[
-        data_behovsvurdering.samarbeidId.isin(aktive_samarbeid)
-        & (data_behovsvurdering.status == "AVSLUTTET")
+    antall_aktive_samarbeid_med_fullfort_behovsvurdering = data_spørreundersøkelse[
+        data_spørreundersøkelse.samarbeidId.isin(aktive_samarbeid)
+        & (data_spørreundersøkelse.status == "AVSLUTTET")
+        & (data_spørreundersøkelse.type == "Behovsvurdering")
+        & (data_spørreundersøkelse.harMinstEttSvar)
+    ].samarbeidId.nunique()
+
+    antall_aktive_samarbeid_med_fullfort_evaluering = data_spørreundersøkelse[
+        data_spørreundersøkelse.samarbeidId.isin(aktive_samarbeid)
+        & (data_spørreundersøkelse.status == "AVSLUTTET")
+        & (data_spørreundersøkelse.type == "Evaluering")
+        & (data_spørreundersøkelse.harMinstEttSvar)
     ].samarbeidId.nunique()
 
     # Antall aktive samarbeid med opprettet samarbeidsplan
@@ -112,17 +114,21 @@ def trakt_antall_samarbeid(
         data_samarbeidsplan.samarbeidId.isin(aktive_samarbeid)
     ].samarbeidId.nunique()
 
+    # TODO: hvordan fjerne null?
+
     fig = go.Figure(
         go.Funnel(
             y=[
                 "Antall samarbeid",
                 "Antall samarbeid med<br>fullført behovsvudering",
                 "Antall aktive samarbeid<br>med opprettet samarbeidsplan",
+                "Antall samarbeid med<br>fullført evaluering",
             ],
             x=[
                 antall_aktive_samarbeid,
                 antall_aktive_samarbeid_med_fullfort_behovsvurdering,
                 antall_aktive_samarbeid_med_samarbeidsplan,
+                antall_aktive_samarbeid_med_fullfort_evaluering,
             ],
             textposition="inside",
             textinfo="value+percent initial",
