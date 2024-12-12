@@ -53,10 +53,10 @@ månedsnavn = [
     "desember",
 ]
 
-# PROJECT = os.environ['GCP_PROJECT']
-PROJECT = "pia-prod-85b2"
-# DATASET = os.environ['DATASET']
-DATASET = "pia_bigquery_sink_v1_dataset_prod"
+PROJECT = os.environ['GCP_PROJECT']
+# PROJECT = "pia-prod-85b2"
+DATASET = os.environ['DATASET']
+# DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
 raw_data_statistikk = load_data_deduplicate(
     PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId"

@@ -182,7 +182,7 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
 
     # Frist fra dbdate til datetime
     # data_leveranse.frist = pd.to_datetime(data_leveranse.frist)
-    data_leveranse.loc[:, "frist"] = pd.to_datetime(data_leveranse["frist"])
+    data_leveranse.loc[:, "frist"] = pd.to_datetime(data_leveranse["frist"], errors = 'coerce')
 
     # Fjern tidssone fra datoene, alt i utc
     data_leveranse = fjern_tidssone(data_leveranse)

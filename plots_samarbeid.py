@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.graph_objects as go
+import numbers
 
 from helper import annotate_ikke_offisiell_statistikk
 
@@ -17,9 +18,12 @@ def plot_antall_saker_per_antall_samarbeid(data_samarbeid: pd.DataFrame, normali
             .sort_index()
         )
 
+        maxIndex = antall_saker_per_antall_samarbeid.index.max()
+        if not isinstance(maxIndex, numbers.Number) : maxIndex = 0
+
         # Fyller inn manglende verdier
         antall_saker_per_antall_samarbeid = antall_saker_per_antall_samarbeid.reindex(
-            range(1, antall_saker_per_antall_samarbeid.index.max() + 1), fill_value=0
+            range(1, maxIndex + 1), fill_value=0
         )
 
         # Beregne andel
