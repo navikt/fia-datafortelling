@@ -1,4 +1,4 @@
-FROM python:3.12 AS compile-image
+FROM python:3.13 AS compile-image
 
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
@@ -10,19 +10,22 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
     jq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN QUARTO_VERSION=1.6.33 && \
+
+RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest | jq '.tag_name' | sed -e 's/[\"v]//g') && \
     wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     tar -xvzf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz && \
     ln -s quarto-${QUARTO_VERSION} quarto-dist && \
     rm -rf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
-
-FROM python:3.12-slim AS runner-image
+FROM python:3.13-slim AS runner-image
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
-    curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+      curl \
+    && apt-get upgrade -y curl \
+    && apt-get purge -y imagemagick git-man golang libexpat1-dev \
+    && apt-get -y autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1069 python && \
     useradd -r -u 1069 -g python python
