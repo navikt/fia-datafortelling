@@ -32,6 +32,28 @@ Kjør opp datafortellingene lokalt med følgende kommandoer:
 
 `export RESULTATOMRADE="<resultatområde>" && export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render datafortelling_per_resultatområde.qmd --output "datafortelling_per_resultatområde_$RESULTATOMRADE.html"`
 
+### Test datafortelling i docker lokalt
+
+For å teste at datafortellingen kjører i docker lokalt kan man kjøre `rundock.sh`.
+Denne kommandoen forsøker å bygge et image fra `Dockerfile` og kjøre imaget opp mot bigquery i dev.
+For at dette skal gå vil man måtte supplere imaget med en Application Default Credentials (ADC) fil.
+Denne genererer man på forhånd og limer inn i variabelen `ADC` i scriptet.
+
+1. Sett riktig prosjekt for gcloud
+```bash
+gcloud config set project <PROSJEKT> 
+```
+2. Generer ADC
+```bash
+gcloud auth application-default login
+```
+3. Lim inn path til `ADC` (output fra kommando over) inn i variabelen ADC i scriptet rundock.sh
+4. Oppdater evt variablene `GCP_PROJECT` og `DATASET`
+5. Kjør scriptet rundock.sh. Dette vil generere alle fortellingene, uten å laste de opp til nada.
+```bash
+./rundock.sh
+```
+
 ### Bygg docker image på M1:
 
 `docker build . --platform=linux/amd64`
