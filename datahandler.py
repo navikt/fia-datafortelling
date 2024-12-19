@@ -135,7 +135,20 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
         ["saksnummer", "endretTidspunkt"], ascending=True
     ).reset_index(drop=True)
 
+    # Fjern rader når tilbake-knappen ikke funket
+    data_status.loc[
+        data_status.saksnummer == data_status.saksnummer.shift(1),
+        "forrige_status_med_tilbake",
+    ] = data_status.status.shift(1)
+    feil_tilbake = (data_status.hendelse == "TILBAKE") & (data_status.status == data_status.forrige_status_med_tilbake)
+    # Det er forventet kun 2 rader, mer enn dette er en ny bug
+    if feil_tilbake.sum() > 2:
+        raise ValueError(f"Fant {feil_tilbake.sum()} rader som ikke endret status etter bruk av tilbake-knappen")
+    data_status = data_status[~feil_tilbake]
+    data_status.drop(['forrige_status_med_tilbake'], axis=1, inplace=True)
+
     # Fjern rader som var angret med bruk av tilbake-knappen
+    data_status.reset_index(drop=True, inplace=True)
     tilbake_rader = data_status[data_status.hendelse == "TILBAKE"].index.tolist()
     fjern_rader = set(tilbake_rader)
     for index in tilbake_rader:
