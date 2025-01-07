@@ -4,24 +4,25 @@
 ```{python}
 query = """
     select distinct bv.id, opprettet, paabegynt, avsluttet, slettet
-    from (select distinct id, opprettet
-            from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`) as bv
+    from (select distinct id, opprettet, type
+            from `pia_bigquery_sink_v1_dataset_prod.sporreundersokelse-v1`) as bv
         left join
             (select id, endret as paabegynt
-                from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+                from `pia_bigquery_sink_v1_dataset_prod.sporreundersokelse-v1`
                 where status="PÅBEGYNT") as bv_paabegynt
         on bv_paabegynt.id = bv.id
         left join
             (select id, endret as avsluttet
-                from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+                from `pia_bigquery_sink_v1_dataset_prod.sporreundersokelse-v1`
                 where status="AVSLUTTET") as bv_avsluttet
             on bv_avsluttet.id = bv.id
         left join
             (select id, min(endret) as slettet
-                from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+                from `pia_bigquery_sink_v1_dataset_prod.sporreundersokelse-v1`
                 where status="SLETTET"
                 group by id) as bv_slettet
             on bv_slettet.id = bv.id
+    where type="Behovsvurdering"
 """
 df_bv = bq_client.query(query=query).to_dataframe()
 ```
@@ -50,7 +51,8 @@ dict(
 #| title: Antall opprettet behovsvurderinger per måned
 query = """
     select format_datetime('%Y-%m', opprettet) as maaned, count(distinct id)
-    from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
+    from `pia_bigquery_sink_v1_dataset_prod.sporreundersokelse-v1`
+    where type="Behovsvurdering"
     group by maaned
     order by maaned
 """
@@ -74,8 +76,8 @@ fig.show()
 #| title: Antall fullførte behovsvurderinger per måned
 query = """
     select format_datetime('%Y-%m', endret) as maaned, count(distinct id)
-    from `pia_bigquery_sink_v1_dataset_prod.behovsvurdering-bigquery-v1`
-    where status="AVSLUTTET"
+    from `pia_bigquery_sink_v1_dataset_prod.sporreundersokelse-v1`
+    where status="AVSLUTTET" and type="Behovsvurdering"
     group by maaned
     order by maaned
 """
