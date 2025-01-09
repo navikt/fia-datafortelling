@@ -1,0 +1,100 @@
+---
+title: "Fia datafortelling"
+subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
+title-block-banner: true
+title-block-banner-color: white
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Oppdatert"
+author: Team Pia
+author-title: "Eier"
+execute:
+    echo: false
+    warning: false
+    daemon: false
+format:
+    html:
+        toc: true
+        toc-title: Indeks
+        page-layout: full
+        embed-resources: true
+jupyter: python3
+---
+
+**Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen i [Porten](https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362).**
+
+Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
+Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
+
+Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
+
+<span style="color:red;">
+NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
+</span>
+
+```{python}
+import pandas as pd
+import numpy as np
+import pandas as pd
+from kart import last_kart, plot_kart
+from datahandler import (
+    load_data_deduplicate,
+    preprocess_data_statistikk,
+    preprocess_data_samarbeid
+)
+
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
+```
+
+
+```{python}
+# Hent data
+adm_enheter = pd.read_csv("administrative_enheter.csv", dtype=str)
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, data_statistikk)
+kommunedata = data_samarbeid.groupby("kommunenummer").id.count().reset_index().rename(columns={"id": "antall_samarbeid"})
+
+# antall samarbeid per kommune
+adm_enheter = adm_enheter.merge(kommunedata, on="kommunenummer", how="left")
+adm_enheter["antall_samarbeid"] = adm_enheter["antall_samarbeid"].fillna(value=0)
+
+# antall samarbeid per resultatområde
+resultatområdedata = adm_enheter.groupby("resultatområde").agg(antall_samarbeid_resultatområde=("antall_samarbeid", "sum"))
+adm_enheter = adm_enheter.merge(resultatområdedata, on="resultatområde", how="left")
+
+# antall samarbeid per fylke
+fylkesdata = adm_enheter.groupby("fylkesnavn").agg(antall_samarbeid_fylke=("antall_samarbeid", "sum"))
+adm_enheter = adm_enheter.merge(fylkesdata, on="fylkesnavn", how="left")
+
+```
+
+
+# Nye tjenester
+
+```{python}
+# Last inn kart
+kommunekart = last_kart()
+```
+
+::: {.panel-tabset}
+
+## Per kommune
+```{python}
+plot_kart(data=adm_enheter, kartdata=kommunekart, label="antall_samarbeid", colormap="mint")
+```
+
+## Per resultatområde
+
+```{python}
+plot_kart(data=adm_enheter, kartdata=kommunekart, label="antall_samarbeid_resultatområde", colormap="mint")
+```
+
+## Per fylke
+```{python}
+plot_kart(data=adm_enheter, kartdata=kommunekart, label="antall_samarbeid_fylke", colormap="mint")
+```
+
+:::
