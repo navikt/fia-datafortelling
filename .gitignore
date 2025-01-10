@@ -101,8 +101,7 @@ celerybeat.pid
 # SageMath parsed files
 *.sage.py
 
-# Environments
-.env
+# Virtual environments
 .venv
 env/
 venv/
@@ -130,6 +129,9 @@ dmypy.json
 
 # IntelliJ
 .idea/
+
+# VS Code
+.vscode/
 
 # Lokalt genererte fortellinger
 *.html

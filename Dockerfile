@@ -1,9 +1,6 @@
-FROM python:3.13 AS compile-image
+ARG PYTHON_VERSION=3.13.1
 
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+FROM python:${PYTHON_VERSION} AS compile-image
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl \
@@ -17,7 +14,13 @@ RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/rel
     ln -s quarto-${QUARTO_VERSION} quarto-dist && \
     rm -rf quarto-${QUARTO_VERSION}-linux-amd64.tar.gz
 
-FROM python:3.13-slim AS runner-image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+COPY uv.lock pyproject.toml ./
+
+RUN uv sync --frozen
+
+FROM python:${PYTHON_VERSION}-slim AS runner-image
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
       curl \
@@ -30,24 +33,25 @@ RUN apt-get update && apt-get install -yq --no-install-recommends \
 RUN groupadd -g 1069 python && \
     useradd -r -u 1069 -g python python
 
-WORKDIR /quarto
-COPY --chown=python:python --from=compile-image /opt/venv /opt/venv
+WORKDIR /home/python
+COPY --chown=python:python --from=compile-image /.venv /home/python/.venv
 COPY --chown=python:python --from=compile-image quarto-dist/ quarto-dist/
-RUN ln -s /quarto/quarto-dist/bin/quarto /usr/local/bin/quarto
+RUN ln -s /home/python/quarto-dist/bin/quarto /usr/local/bin/quarto
 
-ENV PATH="/opt/venv/bin:$PATH"
-RUN python3 -m venv /opt/venv
+ENV PATH="/.venv/bin:$PATH"
 
 COPY run.sh .
 COPY includes/ includes/
 COPY *.qmd .
 COPY *.py .
+COPY kart/ kart/
+COPY data/ data/
 
-RUN chown python:python /quarto -R
+RUN chown python:python /home/python -R
 
-ENV DENO_DIR=/quarto/deno
-ENV XDG_CACHE_HOME=/quarto/cache
-ENV XDG_DATA_HOME=/quarto/share
+ENV DENO_DIR=/home/python/deno
+ENV XDG_CACHE_HOME=/home/python/cache
+ENV XDG_DATA_HOME=/home/python/share
 
 USER 1069
 ENTRYPOINT ["./run.sh"]

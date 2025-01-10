@@ -83,7 +83,7 @@ data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 
 # Henter data om samarbeid/prosess
 raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
-data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, raw_data_statistikk)
+data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, data_statistikk)
 ```
 
 

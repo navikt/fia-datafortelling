@@ -2,6 +2,9 @@
 set -e
 # Vil helst at jobben stopper om et steg feiler
 
+# path til python miljø
+export PATH="$(pwd)/.venv/bin:$PATH"
+
 # ----------------- Fia helsesjekk
 quarto render helsesjekk.qmd
 
