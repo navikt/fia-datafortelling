@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from google.cloud.bigquery import Client
 
-from konstanter import (
+from utils.konstanter import (
     fylker,
     intervall_sortering,
     resultatområder,
@@ -54,7 +54,9 @@ def parse_næring(rad):
         return rad[0]["navn"]
 
 
-def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
+def preprocess_data_statistikk(
+    data_statistikk: pd.DataFrame, adm_enheter: pd.DataFrame
+) -> pd.DataFrame:
     # Sorter basert på endrettidspunkt
     data_statistikk = data_statistikk.sort_values(
         "endretTidspunkt", ascending=True
@@ -83,7 +85,6 @@ def preprocess_data_statistikk(data_statistikk: pd.DataFrame) -> pd.DataFrame:
     )
 
     # Leser alle kommunenummer og mapper til 2024 kommunenummer
-    adm_enheter = pd.read_csv("data/administrative_enheter.csv", dtype=str)
     alle_kommunenummer = adm_enheter[["kommunenummer", "kommunenummer 2023"]]
 
     data_statistikk["kommunenummer 2024"] = (

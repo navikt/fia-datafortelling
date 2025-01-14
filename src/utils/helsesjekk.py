@@ -5,7 +5,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from dateutil.relativedelta import relativedelta
 
-from helper import annotate_ikke_offisiell_statistikk
+from utils.helper import annotate_ikke_offisiell_statistikk
 
 
 class SakStatus(Enum):

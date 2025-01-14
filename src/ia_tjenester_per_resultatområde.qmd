@@ -30,8 +30,9 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 %autoreload 2
 
 import os
+import pandas as pd
 
-from datahandler import (
+from utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -40,26 +41,30 @@ from datahandler import (
     hent_leveranse_sistestatus,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots_leveranse import (
+from utils.helper import iatjeneste_og_status_sortering
+from utils.konstanter import resultatområder
+
+from plots.leveranse import (
     antall_leveranser_per_tjeneste,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
-from helper import iatjeneste_og_status_sortering
-from konstanter import resultatområder
 
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
-PROJECT = os.environ['GCP_PROJECT']
-DATASET = os.environ['DATASET']
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
-navn = os.environ['RESULTATOMRADE']
+navn = os.environ['RESULTATOMRADE'].replace("_", " ")
+
 if navn in resultatområder.values():
     resultatområde = navn
+else:
+    raise ValueError(f"Resultatområde '{navn}' er ikke gyldig.")
 
-
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 
 raw_data_leveranse = raw_data_leveranse.merge(
     data_statistikk[["saksnummer", "fylkesnummer", "bransjeprogram", "resultatomrade"]],

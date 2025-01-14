@@ -1,15 +1,19 @@
+from datetime import datetime
+
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from datetime import datetime
 
-from datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
-from helper import annotate_ikke_offisiell_statistikk, alle_måneder_mellom_datoer
-from konstanter import (
-    statusordre,
-    resultatområder,
+from utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
+from utils.helper import (
+    alle_måneder_mellom_datoer,
+    annotate_ikke_offisiell_statistikk,
+)
+from utils.konstanter import (
     intervall_sortering,
     plotly_colors,
+    resultatområder,
+    statusordre,
 )
 
 

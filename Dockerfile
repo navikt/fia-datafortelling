@@ -16,6 +16,8 @@ RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/rel
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+RUN touch README.md
+
 COPY uv.lock pyproject.toml ./
 
 RUN uv sync --frozen
@@ -41,11 +43,7 @@ RUN ln -s /home/python/quarto-dist/bin/quarto /usr/local/bin/quarto
 ENV PATH="/.venv/bin:$PATH"
 
 COPY run.sh .
-COPY includes/ includes/
-COPY *.qmd .
-COPY *.py .
-COPY kart/ kart/
-COPY data/ data/
+COPY src/ src/
 
 RUN chown python:python /home/python -R
 

@@ -37,8 +37,9 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 %autoreload 2
 
 import os
+import pandas as pd
 
-from datahandler import (
+from utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -50,37 +51,37 @@ from datahandler import (
     filtrer_bort_saker_på_avsluttet_tidspunkt,
     legg_til_resultatområde,
 )
-from plots_statistikk import (
+from utils.helper import (
+    ikke_aktuell_begrunnelse_sortering,
+    iatjeneste_og_status_sortering,
+)
+from utils.konstanter import (
+    ikkeaktuell_hovedgrunn,
+    resultatområder,
+)
+from plots.statistikk import (
     statusflyt,
     gjennomstrømmingstall,
     saker_per_status_per_måned,
     antall_saker_per_status,
     virksomhetsprofil,
 )
-from plots_leveranse import (
+from plots.leveranse import (
     antall_leveranser_per_tjeneste,
     begrunnelse_ikke_aktuell,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
-from plots_samarbeid import (
+from plots.samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
     trakt_antall_samarbeid,
 )
-from helper import (
-    ikke_aktuell_begrunnelse_sortering,
-    iatjeneste_og_status_sortering,
-)
-from konstanter import (
-    ikkeaktuell_hovedgrunn,
-    resultatområder,
-)
 
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
-PROJECT = os.environ['GCP_PROJECT']
-DATASET = os.environ['DATASET']
+navn = os.environ['RESULTATOMRADE'].replace("_", " ")
 
-navn = os.environ['RESULTATOMRADE']
 if navn in resultatområder.values():
     resultatområde = navn
 else:
@@ -89,7 +90,10 @@ else:
 # Henter data om hendelser og statusendringer
 # med statistikk: sykefravær, bransje, antall ansatte, osv.
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
+
 data_statistikk_resultatområde = data_statistikk[data_statistikk.resultatomrade == resultatområde]
 data_status_resultatområde, data_eierskap_resultatområde, _ = split_data_statistikk(data_statistikk_resultatområde)
 data_status_resultatområde = preprocess_data_status(data_status_resultatområde)
@@ -127,7 +131,7 @@ data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.re
 
 
 ## Antall samarbeid
-{{< include includes/_antall_samarbeid_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -142,7 +146,7 @@ trakt_antall_samarbeid(
 
 ## Antall samarbeid per virksomhet
 
-{{< include includes/_antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -194,7 +198,7 @@ Info om samarbeidsplan kommer senere.
 
 ## Virksomhetsprofil
 
-{{< include includes/_virksomhetsprofil_forklaring.qmd >}}
+{{< include includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -235,7 +239,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include includes/_begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell_resultatområde)

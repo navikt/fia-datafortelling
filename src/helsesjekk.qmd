@@ -25,12 +25,13 @@ jupyter: python3
 %autoreload 2
 
 import os
-from helsesjekk import antall_saker_i_vi_bistår, data_denne_perioden
+from utils.helsesjekk import antall_saker_i_vi_bistår, data_denne_perioden
 
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import pandas as pd
 
-from datahandler import (
+from utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -53,10 +54,8 @@ månedsnavn = [
     "desember",
 ]
 
-PROJECT = os.environ['GCP_PROJECT']
-# PROJECT = "pia-prod-85b2"
-DATASET = os.environ['DATASET']
-# DATASET = "pia_bigquery_sink_v1_dataset_prod"
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
 raw_data_statistikk = load_data_deduplicate(
     PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId"
@@ -66,8 +65,8 @@ raw_data_leveranse = load_data_deduplicate(
 )
 
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
-
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 data_status, _, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 

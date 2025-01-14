@@ -30,8 +30,9 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 %autoreload 2
 
 import os
+import pandas as pd
 
-from datahandler import (
+from utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -40,18 +41,20 @@ from datahandler import (
     hent_leveranse_sistestatus,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots_leveranse import (
+from plots.leveranse import (
     antall_leveranser_per_tjeneste,
     leveranse_tjeneste_per_maaned,
 )
 
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
-PROJECT = os.environ['GCP_PROJECT']
-DATASET = os.environ['DATASET']
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
+
 data_status, _, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)

@@ -1,9 +1,10 @@
-import pandas as pd
-import plotly.graph_objects as go
 from datetime import datetime, timedelta
 
-from datahandler import beregn_siste_oppdatering
-from helper import annotate_ikke_offisiell_statistikk
+import pandas as pd
+import plotly.graph_objects as go
+
+from utils.datahandler import beregn_siste_oppdatering
+from utils.helper import annotate_ikke_offisiell_statistikk
 
 
 def dager_siden_siste_oppdatering(

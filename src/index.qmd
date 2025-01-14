@@ -37,8 +37,9 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 %autoreload 2
 
 import os
+import pandas as pd
 
-from datahandler import (
+from utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -49,7 +50,10 @@ from datahandler import (
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots_statistikk import (
+from utils.helper import ikke_aktuell_begrunnelse_sortering
+from utils.konstanter import ikkeaktuell_hovedgrunn
+
+from plots.statistikk import (
     statusflyt,
     gjennomstrømmingstall,
     saker_per_status_per_måned,
@@ -57,13 +61,11 @@ from plots_statistikk import (
     aktive_saker_per_kolonne,
     virksomhetsprofil,
 )
-from plots_leveranse import begrunnelse_ikke_aktuell
-from plots_samarbeid import (
+from plots.leveranse import begrunnelse_ikke_aktuell
+from plots.samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
     trakt_antall_samarbeid,
 )
-from helper import ikke_aktuell_begrunnelse_sortering
-from konstanter import ikkeaktuell_hovedgrunn
 
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
@@ -71,7 +73,8 @@ DATASET = "pia_bigquery_sink_v1_dataset_prod"
 # Henter data om hendelser og statusendringer
 # med statistikk: sykefravær, bransje, antall ansatte, osv.
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 
 data_status, data_eierskap, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
@@ -95,7 +98,7 @@ data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bi
 
 
 ## Antall samarbeid
-{{< include includes/_antall_samarbeid_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -110,7 +113,7 @@ trakt_antall_samarbeid(
 
 ## Antall samarbeid per virksomhet
 
-{{< include includes/_antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -127,7 +130,7 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 
 ## Statusflyt i Fia
 
-{{< include includes/_statusflyt_i_fia_forklaring.qmd >}}
+{{< include includes/statusflyt_i_fia_forklaring.qmd >}}
 
 ```{python}
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
@@ -168,12 +171,12 @@ aktive_saker_per_kolonne(data_status, "resultatomrade")
 
 ## Leveranser
 
-{{< include includes/_leveranser.qmd >}}
+{{< include includes/leveranser.qmd >}}
 
 
 ## Virksomhetsprofil
 
-{{< include includes/_virksomhetsprofil_forklaring.qmd >}}
+{{< include includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -214,7 +217,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include includes/_begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)

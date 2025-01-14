@@ -2,9 +2,9 @@
 
 set -e
 
-export ADC=/path/to/adc
-export GCP_PROJECT=pia-dev-214a
-export DATASET=pia_bigquery_sink_v1_dataset_dev
+export ADC=/Users/sindre/.config/gcloud/application_default_credentials.json
+export GCP_PROJECT=pia-prod-85b2
+export DATASET=pia_bigquery_sink_v1_dataset_prod
 
 if [ ! -f "$ADC" ]; then
   echo "      ----     "

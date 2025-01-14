@@ -1,11 +1,14 @@
-import pandas as pd
-import plotly.graph_objects as go
 import numbers
 
-from helper import annotate_ikke_offisiell_statistikk
+import pandas as pd
+import plotly.graph_objects as go
+
+from utils.helper import annotate_ikke_offisiell_statistikk
 
 
-def plot_antall_saker_per_antall_samarbeid(data_samarbeid: pd.DataFrame, normalisert=False) -> go.Figure:
+def plot_antall_saker_per_antall_samarbeid(
+    data_samarbeid: pd.DataFrame, normalisert=False
+) -> go.Figure:
     fig = go.Figure()
 
     def legg_til_trace(fig, data_samarbeid, filter, trace_name, normalisert):
@@ -19,7 +22,8 @@ def plot_antall_saker_per_antall_samarbeid(data_samarbeid: pd.DataFrame, normali
         )
 
         maxIndex = antall_saker_per_antall_samarbeid.index.max()
-        if not isinstance(maxIndex, numbers.Number) : maxIndex = 0
+        if not isinstance(maxIndex, numbers.Number):
+            maxIndex = 0
 
         # Fyller inn manglende verdier
         antall_saker_per_antall_samarbeid = antall_saker_per_antall_samarbeid.reindex(
@@ -29,7 +33,9 @@ def plot_antall_saker_per_antall_samarbeid(data_samarbeid: pd.DataFrame, normali
         # Beregne andel
         if normalisert:
             totalt = antall_saker_per_antall_samarbeid.sum()
-            antall_saker_per_antall_samarbeid = antall_saker_per_antall_samarbeid / totalt
+            antall_saker_per_antall_samarbeid = (
+                antall_saker_per_antall_samarbeid / totalt
+            )
 
         # Legger til trace
         fig = fig.add_trace(
@@ -42,7 +48,9 @@ def plot_antall_saker_per_antall_samarbeid(data_samarbeid: pd.DataFrame, normali
         return fig
 
     små_bedrifter = data_samarbeid.antallPersoner <= 20
-    mellomstore_bedrifter = (data_samarbeid.antallPersoner > 20) & (data_samarbeid.antallPersoner <= 100)
+    mellomstore_bedrifter = (data_samarbeid.antallPersoner > 20) & (
+        data_samarbeid.antallPersoner <= 100
+    )
     store_bedrifter = data_samarbeid.antallPersoner > 100
 
     fig = legg_til_trace(

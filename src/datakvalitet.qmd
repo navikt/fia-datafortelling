@@ -31,8 +31,9 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 
 ```{python}
 import os
+import pandas as pd
 
-from datahandler import (
+from utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -43,11 +44,12 @@ from datahandler import (
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
-from plots import (
+
+from plots.tid import (
     urørt_saker_over_tid,
     dager_siden_siste_oppdatering,
 )
-from plots_statistikk import (
+from plots.statistikk import (
     saker_per_status_over_tid,
     dager_mellom_statusendringer,
     median_og_gjennomsnitt_av_tid_mellom_statusendringer,
@@ -59,19 +61,21 @@ from plots_statistikk import (
     andel_superbrukere,
     andel_statusendringer_gjort_av_superbrukere,
 )
-from plots_leveranse import (
+from plots.leveranse import (
     forskjell_frist_fullfort,
     andel_leveranseregistreringer_gjort_av_superbrukere,
 )
 
 
-PROJECT = os.environ['GCP_PROJECT']
-DATASET = os.environ['DATASET']
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
 # Henter data om hendelser og statusendringer
 # med statistikk: sykefravær, bransje, antall ansatte, osv.
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
+
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 data_status, data_eierskap, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
