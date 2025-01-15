@@ -20,7 +20,7 @@ RUN touch README.md
 
 COPY uv.lock pyproject.toml ./
 
-RUN uv sync --frozen
+RUN uv sync --frozen --no-dev
 
 FROM python:${PYTHON_VERSION}-slim AS runner-image
 
