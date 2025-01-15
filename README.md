@@ -155,6 +155,19 @@ kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc
 > Om du vil finne cronjobben finner man den med: `kubectl get cronjobs | grep fia-datafortelling`
 
 # Vedlikehold og videreutvikling
+
+## Linting og formatering
+Dette prosjektet bruker [ruff](https://docs.astral.sh/ruff/) som [linter](https://docs.astral.sh/ruff/linter/) og [formaterer](https://docs.astral.sh/ruff/formatter/) koden. For å kjøre ruff kan du bruke:
+```bash
+ruff check
+```
+for linting, og
+
+```bash
+ruff format
+```
+for å formatere koden.
+
 ## Oppdatering av Python
 Ved oppdatering av Python må versjonen oppdateres flere steder. Python sin siste versjon finner du [her](https://www.python.org/downloads/).
 
