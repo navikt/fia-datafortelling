@@ -45,7 +45,7 @@ def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
 
 
 def parse_næring(rad):
-    if type(rad) != np.ndarray:
+    if type(rad) is not np.ndarray:
         return "Feil ved innhenting av hovednæring, feil format"
     elif rad.size < 1:
         # ca 6 tilfeller hvor rad == []

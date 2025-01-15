@@ -1,48 +1,121 @@
-# fia-datafortelling
+# Fia datafortelling
+## Beskrivelse
+Datafortelling basert på data fra fagsystemet [Fia](https://github.com/navikt/lydia-api).
+Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writing-workflows/about-workflows) og deployes til NAIS som en [NAIS job](https://docs.nais.io/workloads/job/).
 
-Datafortelling basert på data fra [Fia](https://github.com/navikt/lydia-api).
+## Innhold
+- [Oppsett](#oppsett)
+	- [Hvordan installere](#hvordan-installere-prosjektet)
+- [Kjør prosjektet](#kjør-prosjektet)
+- [Vedlikehold og videreutvikling](#vedlikehold-og-videreutvikling)
+	- [Oppdatering av avhengigheter](#oppdatering-av-avhengigheter)
+- [Henvendelser](#henvendelser)
+- [Krediteringer](#krediteringer)
+----
 
-# Komme i gang (WiP)
+# Oppsett
+## Installer Quarto
+Installer Quarto CLI ved å følge guiden [på quarto sine nettsider](https://quarto.org/docs/get-started/).
+## Installer uv
+[uv](https://docs.astral.sh/uv/) kan installeres med:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
 
-### Pre requisites
+evt med andre måter som forklart [på uv sine nettsider](https://docs.astral.sh/uv/getting-started/installation/#homebrew).
 
-Installer quarto ved å følge guiden [på quarto sine nettsider](https://quarto.org/docs/get-started/).
+Om ønskelig kan uv også installere og håndtere forskjellige Python versjoner [for deg](https://docs.astral.sh/uv/guides/install-python/)
 
-Installer [python3.13](https://www.python.org/downloads/).
+## Sett opp virtuelt miljø
+Avhengigheter og oppsettet av prosjektet er definert i [pyproject.toml](pyproject.toml), denne og [uv.lock](uv.lock) brukes av uv for å lage det i virtuelle miljøet.
 
-Som en god praksis, opprett et virtuelt pythonmiljø i root til prosjektet:\
-`python3.13 -m venv env`\
-`source env/bin/activate`
+```bash
+uv sync
+```
 
-Installer requirements med `pip3 install -r requirements.txt`.
+For å ikke oppdatere lock-filen kan du alternativt bruke:
+```bash
+uv sync --frozen
+```
 
-### Git pre-commit hooks
+output fra disse sier også hvor det virtuelle miljøet legges (default i en .venv mappe i roten av prosjektet)
 
-Installer pre-commit pakke med `pip3 install pre-commit`.
+## Aktiver virtuelt miljø
+For å aktivere det virtuelle miljøet bruker du:
+```bash
+source .venv/bin/activate
+```
+det er aktivt når du ser navnet på det virtuelle miljøet i parantes i terminalvinduet:
+```
+fia-datafortelling~$ source .venv/bin/activate
+(src) fia-datafortelling~$
+```
 
-Installer git hook-skriptene med `pre-commit install`.
+## Git pre-commit hooks
+Installer git pre-commit hooks med
+```bash
+uv run pre-commit install
+```
 
-### Lokal utvikling
+# Kjør prosjektet
+## Logg på Google Cloud CLI {#gcloud}
+Logg inn med:
+```bash
+gcloud auth login --update-adc
+```
+eller:
+```bash
+nais login
+```
 
-Logg inn i gcp med `gcloud auth login --update-adc`.
+## Kjør én datafortelling
+> [!Tip]
+> Pass på å aktivere det virtuelle miljøet før du kjører `quarto render` eller
+> `quarto preview` da det avhenger av avhengighetene.
 
-Kjør opp datafortellingene lokalt med følgende kommandoer:
+For å få en forhåndsvisning som endrer seg når du oppdaterer .qmd filen bør du bruke f.eks:
+```bash
+quarto preview src/index.qmd
+```
 
-`export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render <datafortelling>.qmd`
+For å bygge en ferdig html fil av en datafortelling kan du bruke:
 
-`export RESULTATOMRADE="<resultatområde>" && export GCP_PROJECT=<prosjekt> && export DATASET=<dataset> && quarto render datafortelling_per_resultatområde.qmd --output "datafortelling_per_resultatområde_$RESULTATOMRADE.html"`
+```bash
+quarto render src/<datafortelling>.qmd
+```
 
-### Test datafortelling i docker lokalt
+Noen datafortellinger er avhengige av miljøvariabler, de kan settes og kjøres med:
 
-For å teste at datafortellingen kjører i docker lokalt kan man kjøre `rundock.sh`.
+```bash
+export RESULTATOMRADE="<resultatområde>" && quarto preview src/datafortelling_per_resultatområde.qmd
+```
+
+## Script for å bygge alle datafortellinger
+For å kalle `quarto render` for alle datafortellingene bruker vi [run.sh](run.sh). Hvis du vil sjekke lokalt at alle datafortellingene virker som de skal bør du kjøre.
+
+```bash
+export DRYRUN="true" && ./run.sh
+```
+Fordelen med å bruke ./run.sh er at alle datafortellingene kommer samlet i en [src/output](src/output) mappe, og kan da sjekkes opp mot det som er i nada.
+
+> [!Tip]
+> For at alt skal virke godt lokalt er det viktig at `DRYRUN` er satt slik at vi ikke forsøker å laste opp de ferdig byggede datafortellingene til nada. Hvis du ikke gjør dette vil du få feilmelding ved lokal kjøring
+
+## Bygg datafortellinger i docker lokalt
+
+For å teste at datafortellingen kjører i docker lokalt kan man kjøre [rundock.sh](rundock.sh).
+
 Denne kommandoen forsøker å bygge et image fra `Dockerfile` og kjøre imaget opp mot bigquery i dev.
+
 For at dette skal gå vil man måtte supplere imaget med en Application Default Credentials (ADC) fil.
+
 Denne genererer man på forhånd og limer inn i variabelen `ADC` i scriptet.
 
 1. Sett riktig prosjekt for gcloud
 ```bash
-gcloud config set project <PROSJEKT> 
+gcloud config set project <PROSJEKT>
 ```
+
 2. Generer ADC
 ```bash
 gcloud auth application-default login
@@ -54,57 +127,77 @@ gcloud auth application-default login
 ./rundock.sh
 ```
 
-### Bygg docker image på M1:
+## Kjør NAIS job manuelt
+Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writing-workflows/about-workflows) og deployes til NAIS som en [NAIS job](https://docs.nais.io/workloads/job/).
 
-`docker build . --platform=linux/amd64`
+Jobben kjører i intervaller som er definert i cron-utrykket `spec.schedule` i [nais.yaml](.nais/nais.yaml). Når jobben spinner opp kjører den [run.sh](run.sh).
 
-# Bygg og deploy
+For å kjøre Jobben manuelt (utenfor intervallet som kjører automatisk):
 
-Bygges med github [workflow](.github/workflows/deploy.yml) og deployes til nais som en [naisjob](.nais/nais.yaml).
+1. Logge på nais:
+```bash
+nais login
+```
+2. Sett namespace til pia:
+```bash
+kubens pia
+```
+3. Sett cluster til prod-gcp: ``
+```bash
+kubectx prod-gcp
+```
+4. Kjør NAIS jobben manuelt med:
+```bash
+kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc
+```
 
-Jobben kjører i intervaller som er definert i cron-utrykket `spec.schedule` i [nais.yaml](.nais/nais.yaml).
+> [!tip]
+> Om du vil finne cronjobben finner man den med: `kubectl get cronjobs | grep fia-datafortelling`
 
-Naisjobben spinner opp quarto (render html) og oppdaterer datafortellingen.
-Dette er definert i [run.sh](run.sh).
+# Vedlikehold og videreutvikling
+## Oppdatering av Python
+Ved oppdatering av Python må versjonen oppdateres flere steder. Python sin siste versjon finner du [her](https://www.python.org/downloads/).
 
-# Ad hoc kjøring
+Om du vil oppdatere versjonen av python bør den oppdateres i:
+1. [.python-version](.python-version) (Hvilken python versjon som vil bli brukt av uv og må oppdateres ved versjonsendring)
+2. Versjonen som brukes i [Dockerfile](Dockerfile) bør være det samme som i [.python-version](.python-version)
+3. Om versjonsnummeret endres til noe som er utenfor kravet i [pyproject.toml](pyproject.toml) må det også oppdateres.
+4. Kjør `uv lock --check` for å sjekke om lock-filen er oppdatert, om ikke vil `uv sync`oppdatere den.
 
-For å regenerere datafortellingen manuelt, gjør følgende:
+## Oppdatering av avhengigheter
 
-- Logg inn i gcp med `gcloud auth login --update-adc`
-- Gå til cluster prod-gcp i kubectl `kubectx prod-gcp`
-- Sett namespace til pia `kubens pia`
-- Finn cronjobben for datafortellingen ( `kubectl get cronjobs | grep fia-datafortelling` )
-- Kjør jobben manuelt ( `kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc` )
+Akkurat nå *(Sist oppdatert 15.01.2025)* er det ikke veldig lett å se hvilke avhengigheter det finnes oppdateringer innebygd i uv. Man kan oppdatere lock filen innenfor begrensningene satt i [pyproject.toml](pyproject.toml) ved å bruke `uv lock --upgrade`.
 
-# Oppdater avhengigheter
-## Oversikt fra Pia-hub:
-- Script for å finne pythonversjon brukt i
-  dockerfil https://github.com/navikt/pia-hub/blob/main/scripts/pythonversions.sh
-  - Oppdater pythonversjon om nødvendig
-- Script for å finne utdaterte pythonpakker https://github.com/navikt/pia-hub/blob/main/scripts/pythonpackageversions.sh
-  - Oppdater requirements.txt om nødvendig
+En mulig bedre måte å oppdatere avhengigheter er å pinne alle versjoner i [pyproject.toml](pyproject.toml), feks:
+```
+dependencies = [
+    "pandas==2.2.3",
+    "plotly==5.23.0",
+]
+```
+Da kan man se hvilke avhengigheter det finnes oppdateringer til ved å bruke:
+```bash
+uv pip list --outdated
+```
+Endre pinned versjon i [pyproject.toml](pyproject.toml) til ny versjon og bruke:
+```bash
+uv sync
+```
+til å oppdatere versjonen.
 
-## Manuelt:
-- Oppdater python:
-  - Sjekk versjon i Dockerfile opp mot Python sin siste versjon [her](https://www.python.org/downloads/).
-  - Dersom kom ny versjon, lag et lokalt virtual miljø på nytt.
-- Oppdater python pakker:
-  - `pip3 install --upgrade pip`
-  - `pip3 install --upgrade <pakke>`
-  - Oppdater `requirements.txt` manuelt (eller bruk `pip3 freeze > requirements.txt`)
-  - Kjør datafortellingene lokalt på nytt og sammenlign med prod
+> [!Tip]
+> Om `uv pip list --outdated` viser en indirekte avhengighet som ikke ligger i pyproject.toml (men er i `uv tree`) bør disse kunne oppgraderes med `uv lock --upgrade`
 
----
+Dependabot støtter desverre ikke uv.lock-filen enda, men det er planlagt [for første kvartal (Jan - Mar, 2025)](https://github.com/dependabot/dependabot-core/issues/10478)
 
 # Henvendelser
-
 Spørsmål knyttet til koden eller prosjektet kan stilles som et [issue her på GitHub](https://github.com/navikt/ia-datafortelling/issues).
-
 ## For NAV-ansatte
-
 Interne henvendelser kan sendes via Slack i kanalen #team-pia.
-
+# Krediteringer
+## Kartdata
+Data brukt for kommunesgrenser i `src/data/Kommuner-s.geojson` er basert på [dette repoet](https://github.com/robhop/fylker-og-kommuner)
+## Kommunedata
+Data brukt for kommuneinndelinger er basert på [kartverkets data](https://www.kartverket.no/til-lands/fakta-om-norge/norske-fylke-og-kommunar)
 ## Kode generert av GitHub Copilot
-
 Dette repoet bruker GitHub Copilot til å generere kode.
