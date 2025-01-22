@@ -91,15 +91,15 @@ export RESULTATOMRADE="<resultatområde>" && quarto preview src/datafortelling_p
 ```
 
 ## Script for å bygge alle datafortellinger
-For å kalle `quarto render` for alle datafortellingene bruker vi [run.sh](run.sh). Hvis du vil sjekke lokalt at alle datafortellingene virker som de skal bør du kjøre.
+Datafortellingene renderes og lastes opp til NADA med [main.py](main.py). Ferdig rendret filer eksporteres til mappen `_site` og lastes opp til NADA. Om du ønsker kan du kontrollere at alt ser bra ut før du laster opp til NADA ved å kjøre:
 
 ```bash
-export DRYRUN="true" && ./run.sh
+uv run main.py
 ```
-Fordelen med å bruke ./run.sh er at alle datafortellingene kommer samlet i en [src/output](src/output) mappe, og kan da sjekkes opp mot det som er i nada.
+Og åpne [index.html](_site/index.html) i en nettleser.
 
 > [!Tip]
-> For at alt skal virke godt lokalt er det viktig at `DRYRUN` er satt slik at vi ikke forsøker å laste opp de ferdig byggede datafortellingene til nada. Hvis du ikke gjør dette vil du få feilmelding ved lokal kjøring
+> TODO: Lokal kjøring med flagg for å unngå å laste opp til Nada
 
 ## Bygg datafortellinger i docker lokalt
 

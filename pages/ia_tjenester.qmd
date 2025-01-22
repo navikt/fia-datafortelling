@@ -1,0 +1,74 @@
+---
+title: "IA-tjenester i Fia"
+subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+%load_ext autoreload
+%autoreload 2
+
+import os
+import pandas as pd
+
+from src.utils.datahandler import (
+    load_data_deduplicate,
+    preprocess_data_statistikk,
+    split_data_statistikk,
+    preprocess_data_status,
+    preprocess_data_leveranse,
+    hent_leveranse_sistestatus,
+    filtrer_bort_saker_på_avsluttet_tidspunkt,
+)
+from src.plots.leveranse import (
+    antall_leveranser_per_tjeneste,
+    leveranse_tjeneste_per_maaned,
+)
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
+```
+```{python}
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
+
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
+
+data_status, _, _ = split_data_statistikk(data_statistikk)
+data_status = preprocess_data_status(data_status)
+data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
+data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
+```
+
+## IA-tjenester
+Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester som er under arbeid eller levert.
+En sak kan ikke gå videre til status "Fullført" før alle registrerte IA-tjenester er satt som levert eller er slettet.
+
+Slettet IA-tjenester vises ikke i grafene under.
+
+```{python}
+# Filtrerer bort saker avsluttet for over ett år siden
+data_status_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
+data_leveranse_sistestatus_siste_år = data_leveranse_sistestatus[data_leveranse_sistestatus.saksnummer.isin(data_status_siste_år.saksnummer.unique())]
+```
+
+
+
+## Levert per måned
+Antall leveranser som ble satt som levert per måned.
+```{python}
+leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_siste_år)
+```
+
+## Antall saker per IA-tjeneste
+Antall saker som er registrert med IA-tjenester, fordelt etter IA-tjeneste og dens status.
+```{python}
+antall_leveranser_per_tjeneste(data_leveranse_sistestatus_siste_år)
+```
+
+
+{{< include ../src/includes/leveransestatus-forklaring.qmd >}}
+
+
+

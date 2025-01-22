@@ -1,0 +1,73 @@
+project:
+  type: website
+  output-dir: _site
+  execute-dir: project
+
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Sist oppdatert"
+
+website:
+  title: "Team Pia"
+  repo-url: https://github.com/navikt/fia-datafortelling
+  # reader-mode: false # TODO: Sjekk hva denne gjør
+  # page-navigation: true # TODO: Sjekk hva denne gjør
+  search:
+    location: navbar
+    type: overlay
+  navbar:
+    background: primary
+    logo: assets/nav_logo_hvit.png
+    logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
+    left:
+      - href: index.qmd
+      - href: pages/ia_tjenester.qmd
+      - text: Resultatområder
+        menu:
+          - resultatområder/Oslo.qmd
+          - resultatområder/Bergen.qmd
+    right:
+      - icon: people-fill
+        target: _blank # åpne i ny fane
+        text: Ansvarlig team hos NAV
+        aria-label: Ansvarlig team hos NAV
+        href: https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a
+      - icon: slack
+        target: _blank # åpne i ny fane
+        aria-label: Slack kanal for kontakt
+        href: https://nav-it.slack.com/archives/C02DL347ZT2 
+      - icon: github
+        target: _blank # åpne i ny fane
+        aria-label: Kildekode
+        href: https://github.com/orgs/navikt/teams/pia
+  page-footer:
+    background: primary
+    foreground: white
+    center:
+      - text: Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen <u>her</u>
+        target: _blank # åpne i ny fane
+        href: https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362
+  announcement:
+    type: danger
+    icon: info-circle
+    content: "**NB!** - Dette er ikke offisiell statistikk og må ikke deles utenfor Nav."
+    position: above-navbar
+    dismissable: true
+
+execute:
+    echo: false # trenger ikke ha med kildekode
+    warning: false # TODO: får en del feilmeldinger som ikke er relevante ?
+    daemon: false
+
+format:
+  html:
+    theme:
+      light: 
+        - flatly
+      dark:
+        - darkly
+    # TODO: Sjekk om disse bør settes globalt eller per side:
+    # page-layout: full
+    # embed-resources: true
+    # toc: true
+    # toc-title: Indeks

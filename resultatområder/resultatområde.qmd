@@ -1,0 +1,8 @@
+Noe tekst om resultatområdet som er `{python} resultatområde`.
+
+## er resultatområdet Oslo?
+```{python}
+er_oslo = resultatområde == "Oslo"
+er_oslo
+```
+

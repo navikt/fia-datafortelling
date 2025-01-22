@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from google.cloud.bigquery import Client
 
-from utils.konstanter import (
+from src.utils.konstanter import (
     fylker,
     intervall_sortering,
     resultatområder,

@@ -42,7 +42,7 @@ RUN ln -s /home/python/quarto-dist/bin/quarto /usr/local/bin/quarto
 
 ENV PATH="/.venv/bin:$PATH"
 
-COPY run.sh .
+COPY main.py .
 COPY src/ src/
 
 RUN chown python:python /home/python -R
@@ -52,4 +52,4 @@ ENV XDG_CACHE_HOME=/home/python/cache
 ENV XDG_DATA_HOME=/home/python/share
 
 USER 1069
-ENTRYPOINT ["./run.sh"]
+ENTRYPOINT ["python", "main.py"]

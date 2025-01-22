@@ -2,11 +2,11 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from utils.helper import (
+from src.utils.helper import (
     alle_måneder_mellom_datoer,
     annotate_ikke_offisiell_statistikk,
 )
-from utils.konstanter import ikkeaktuell_hovedgrunn, plotly_colors
+from src.utils.konstanter import ikkeaktuell_hovedgrunn, plotly_colors
 
 
 def leveranse_per_maaned(data_leveranse: pd.DataFrame) -> go.Figure:

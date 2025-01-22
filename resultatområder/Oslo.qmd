@@ -1,0 +1,13 @@
+---
+title: Oslo
+subtitle: Statistikk som viser bruk av Fia - i Oslo.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+#| tags: [parameters]
+resultatområde = "Oslo"
+```
+
+{{< include resultatområde.qmd >}}

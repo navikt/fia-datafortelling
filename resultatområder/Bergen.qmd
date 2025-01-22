@@ -1,0 +1,12 @@
+---
+title: Bergen
+subtitle: Statistikk som viser bruk av Fia - i Bergen.
+title-block-banner: true
+title-block-banner-color: white
+---
+```{python}
+#| tags: [parameters]
+resultatområde = "Bergen"
+```
+
+{{< include resultatområde.qmd >}}
