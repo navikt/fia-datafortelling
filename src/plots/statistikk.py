@@ -4,12 +4,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
-from utils.helper import (
+from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
+from src.utils.helper import (
     alle_måneder_mellom_datoer,
     annotate_ikke_offisiell_statistikk,
 )
-from utils.konstanter import (
+from src.utils.konstanter import (
     intervall_sortering,
     plotly_colors,
     resultatområder,

@@ -3,7 +3,7 @@ import numbers
 import pandas as pd
 import plotly.graph_objects as go
 
-from utils.helper import annotate_ikke_offisiell_statistikk
+from src.utils.helper import annotate_ikke_offisiell_statistikk
 
 
 def plot_antall_saker_per_antall_samarbeid(

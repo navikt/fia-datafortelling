@@ -1,0 +1,13 @@
+---
+title: Rogaland
+subtitle: Statistikk som viser bruk av Fia - i Rogaland.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+#| tags: [parameters]
+resultatområde = "Rogaland"
+```
+
+{{< include resultatområde.qmd >}}

@@ -1,0 +1,13 @@
+---
+title: Agder
+subtitle: Statistikk som viser bruk av Fia - i Agder.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+#| tags: [parameters]
+resultatområde = "Agder"
+```
+
+{{< include resultatområde.qmd >}}

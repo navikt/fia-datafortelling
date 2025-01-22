@@ -1,0 +1,13 @@
+---
+title: Vestland
+subtitle: Statistikk som viser bruk av Fia - i Vestland.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+#| tags: [parameters]
+resultatområde = "Vestland"
+```
+
+{{< include resultatområde.qmd >}}

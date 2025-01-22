@@ -87,4 +87,4 @@ antall_leveranser_per_tjeneste(data_leveranse_sistestatus_siste_år)
 
 :::
 
-{{< include includes/leveransestatus-forklaring.qmd >}}
+{{< include ../includes/leveransestatus-forklaring.qmd >}}

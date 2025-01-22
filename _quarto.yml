@@ -21,11 +21,21 @@ website:
     logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
     left:
       - href: index.qmd
-      - href: pages/ia_tjenester.qmd
+      - href: ia_tjenester.qmd
       - text: Resultatområder
         menu:
-          - resultatområder/Oslo.qmd
-          - resultatområder/Bergen.qmd
+          - resultatområder/agder.qmd
+          - resultatområder/innlandet.qmd
+          - resultatområder/møre_og_romsdal.qmd
+          - resultatområder/nordland.qmd
+          - resultatområder/oslo.qmd
+          - resultatområder/øst-viken.qmd
+          - resultatområder/rogaland.qmd
+          - resultatområder/troms_og_finnmark.qmd
+          - resultatområder/trøndelag.qmd
+          - resultatområder/vest-viken.qmd
+          - resultatområder/vestfold_og_telemark.qmd
+          - resultatområder/vestland.qmd
     right:
       - icon: people-fill
         target: _blank # åpne i ny fane

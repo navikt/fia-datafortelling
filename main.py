@@ -79,11 +79,21 @@ if __name__ == "__main__":
     logging.info("Script started.")
     files = [
         "index",
-        "pages/ia_tjenester",
+        "ia_tjenester",
     ]
     resultatområder = [
-        "Oslo",
-        "Bergen",
+        "agder",
+        "innlandet",
+        "møre_og_romsdal",
+        "nordland",
+        "oslo",
+        "øst-viken",
+        "rogaland",
+        "troms_og_finnmark",
+        "trøndelag",
+        "vest-viken",
+        "vestfold_og_telemark",
+        "vestland",
     ]
     try:
         for file in files:
