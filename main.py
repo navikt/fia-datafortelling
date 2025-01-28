@@ -21,8 +21,7 @@ def render_quarto(file_to_render: str):
             capture_output=True,
             text=True,
         )
-        logging.info("Quarto render completed successfully.")
-        logging.debug(f"Quarto render output: {result.stdout}")
+        logging.debug(f"Quarto render output: {result.stdout} \n {result.stderr}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Error rendering Quarto document: {e.stderr}")
         raise
@@ -43,8 +42,8 @@ def render_resultatområder(resultatområde: str):
             capture_output=True,
             text=True,
         )
-        logging.info("Quarto render completed successfully.")
-        logging.debug(f"Quarto render output: {result.stdout}")
+
+        logging.debug(f"Quarto render output: {result.stdout} \n {result.stderr}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Error rendering Quarto document: {e.stderr}")
         raise
@@ -77,10 +76,7 @@ def update_quarto(files_to_upload: list[str]):
 
 if __name__ == "__main__":
     logging.info("Script started.")
-    files = [
-        "index",
-        "ia_tjenester",
-    ]
+    files = ["index", "ia_tjenester", "datakvalitet"]
     resultatområder = [
         "agder",
         "innlandet",

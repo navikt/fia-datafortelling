@@ -27,8 +27,7 @@ from src.plots.leveranse import (
 )
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
-```
-```{python}
+
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
@@ -44,7 +43,6 @@ data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
 ## IA-tjenester
 Når en sak har status "Vi bistår" kan eier av saken registrere hvilke IA-tjenester som er under arbeid eller levert.
 En sak kan ikke gå videre til status "Fullført" før alle registrerte IA-tjenester er satt som levert eller er slettet.
-
 Slettet IA-tjenester vises ikke i grafene under.
 
 ```{python}
@@ -53,10 +51,9 @@ data_status_siste_år = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 data_leveranse_sistestatus_siste_år = data_leveranse_sistestatus[data_leveranse_sistestatus.saksnummer.isin(data_status_siste_år.saksnummer.unique())]
 ```
 
-
+::: {.panel-tabset}
 
 ## Levert per måned
-Antall leveranser som ble satt som levert per måned.
 ```{python}
 leveranse_tjeneste_per_maaned(data_leveranse_sistestatus_siste_år)
 ```
@@ -67,8 +64,6 @@ Antall saker som er registrert med IA-tjenester, fordelt etter IA-tjeneste og de
 antall_leveranser_per_tjeneste(data_leveranse_sistestatus_siste_år)
 ```
 
+:::
 
 {{< include includes/leveransestatus-forklaring.qmd >}}
-
-
-

@@ -3,37 +3,13 @@ title: "Fia datakvalitet"
 subtitle: Statistikk som viser datakvalitet i Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
-date: now
-date-format: "DD.MM.YYYY HH:mm:ss z"
-published-title: "Oppdatert"
-author: Team Pia
-author-title: "Eier"
-execute:
-    echo: false
-    warning: false
-format:
-    html:
-        toc: true
-        toc-title: Indeks
-        page-layout: full
-        embed-resources: true
-jupyter: python3
 ---
-
-Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
-Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
-
-Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
-
-<span style="color:red;">
-NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
-</span>
 
 ```{python}
 import os
 import pandas as pd
 
-from utils.datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -45,11 +21,11 @@ from utils.datahandler import (
     explode_ikke_aktuell_begrunnelse,
 )
 
-from plots.tid import (
+from src.plots.tid import (
     urørt_saker_over_tid,
     dager_siden_siste_oppdatering,
 )
-from plots.statistikk import (
+from src.plots.statistikk import (
     saker_per_status_over_tid,
     dager_mellom_statusendringer,
     median_og_gjennomsnitt_av_tid_mellom_statusendringer,
@@ -61,7 +37,7 @@ from plots.statistikk import (
     andel_superbrukere,
     andel_statusendringer_gjort_av_superbrukere,
 )
-from plots.leveranse import (
+from src.plots.leveranse import (
     forskjell_frist_fullfort,
     andel_leveranseregistreringer_gjort_av_superbrukere,
 )
