@@ -5,7 +5,7 @@ import subprocess
 import requests
 
 logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
@@ -76,7 +76,12 @@ def update_quarto(files_to_upload: list[str]):
 
 if __name__ == "__main__":
     logging.info("Script started.")
-    files = ["index", "ia_tjenester", "datakvalitet"]
+    files = [
+        "index",
+        "ia_tjenester",
+        "datakvalitet",
+        "teampia",
+    ]
     resultatområder = [
         "agder",
         "innlandet",

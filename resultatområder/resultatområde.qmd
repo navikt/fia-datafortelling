@@ -1,11 +1,6 @@
-Noe tekst om resultatområdet som er `{python} resultatområde`.
-
-
 ```{python}
 %load_ext autoreload
 %autoreload 2
-
-# Import og konstanter
 
 import os
 import pandas as pd
@@ -50,9 +45,14 @@ from src.plots.samarbeid import (
 
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
-```
 
-```{python}
+# navn = os.environ['RESULTATOMRADE'].replace("_", " ")
+
+# if navn in resultatområder.values():
+#     resultatområde = navn
+# else:
+#     raise ValueError(f"Resultatområde '{navn}' er ikke gyldig.")
+
 # Henter data om hendelser og statusendringer
 # med statistikk: sykefravær, bransje, antall ansatte, osv.
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")

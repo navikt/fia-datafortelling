@@ -23,6 +23,7 @@ website:
       - href: index.qmd
       - href: ia_tjenester.qmd
       - href: datakvalitet.qmd
+      - href: teampia.qmd
       - text: Resultatområder
         menu:
           - resultatområder/agder.qmd
