@@ -89,7 +89,7 @@ execute:
 
 format:
   html:
-    grid: 
+    grid:
       body-width: 900px # default: 800px
       sidebar-width: 200px # default: 250px
       margin-width: 200px # default: 250px
