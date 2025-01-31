@@ -100,7 +100,7 @@ def saker_per_status_over_tid(
         valgte_resultatområder = list(set(resultatområder.values()))
 
     # En strek for hver kombinasjon av fylke og status
-    for resultatområde in valgte_resultatområder:
+    for resultatområde in [s.replace(" ", "_").lower() for s in valgte_resultatområder]:
         status_per_dato = beregn_status_per_dato(
             data_status[data_status.resultatomrade == resultatområde], alle_datoer
         )

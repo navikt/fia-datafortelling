@@ -1,13 +1,12 @@
 ---
-title: Øst-Viken
-subtitle: Statistikk som viser bruk av Fia - i Øst-Viken.
+title: Agder
+subtitle: Statistikk som viser bruk av Fia - i Agder.
 title-block-banner: true
 title-block-banner-color: white
 ---
 
 ```{python}
-#| tags: [parameters]
-resultatområde = "Øst-Viken"
+resultatområde = "agder"
 ```
 
 {{< include datafortelling_per_resultatområde.qmd >}}

@@ -36,9 +36,7 @@ def render_fia_per_resultatområde(resultatområde: str):
             [
                 "quarto",
                 "render",
-                f"resultatområder/{resultatområde}.qmd",
-                "-P",
-                f"resultatområde:{resultatområde}",
+                f"datafortellinger/fia/{resultatområde}.qmd",
             ],
             check=True,
             capture_output=True,
@@ -60,9 +58,7 @@ def render_ia_tjenester_per_resultatområde(resultatområde: str):
             [
                 "quarto",
                 "render",
-                f"ia_tjenester/{resultatområde}.qmd",
-                "-P",
-                f"resultatområde:{resultatområde}",
+                f"datafortellinger/ia_tjenester/{resultatområde}.qmd",
             ],
             check=True,
             capture_output=True,
@@ -75,11 +71,16 @@ def render_ia_tjenester_per_resultatområde(resultatområde: str):
         raise
 
 
-def update_quarto(files_to_upload: list[str]):
+def update_quarto(output_dir: str):
     logging.info("Starting Quarto update process.")
+    files_to_upload = []
+    for root, dirs, files in os.walk(output_dir):
+        for file in files:
+            files_to_upload.append(os.path.join(root, file))
+
     multipart_form_data = {}
     for file_path in files_to_upload:
-        file_name = os.path.basename(file_path + ".html")
+        file_name = os.path.basename(file_path)
         with open(file_path, "rb") as file:
             # Read the file contents and store them in the dictionary
             file_contents = file.read()
@@ -104,11 +105,11 @@ if __name__ == "__main__":
     logging.info("Script started.")
     files = [
         "index",
-        "ia_tjenester/ia_tjenester",
-        "datakvalitet",
-        "teampia",
+        "datafortellinger/datakvalitet",
+        "datafortellinger/endret_prosess",
     ]
     resultatområder = [
+        "nasjonalt",
         "agder",
         "innlandet",
         "møre_og_romsdal",
@@ -131,11 +132,8 @@ if __name__ == "__main__":
             render_ia_tjenester_per_resultatområde(resultatområde=resultatområde)
 
         logging.debug("Reading files in _site")
-        for root, dirs, files in os.walk("_site"):
-            for file in files:
-                logging.debug(f"File: {os.path.join(root, file)}")
 
-        # update_quarto(files_to_upload=["_site/index.html"])
+        update_quarto(output_dir="_site")
     except Exception as e:
         logging.error(f"Script failed: {e}")
     logging.info("Script finished.")

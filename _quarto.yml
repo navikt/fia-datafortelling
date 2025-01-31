@@ -18,43 +18,42 @@ website:
     logo: assets/nav_logo_hvit.png
     logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
     left:
-      - text: Team Pia
-        href: teampia.qmd
-      - text: Datakvalitet
-        href: datakvalitet.qmd
-      - text: Fia
+      - text: Startside
         href: index.qmd
-      - text: Fia per resultatområde
+      - text: Datakvalitet
+        href: datafortellinger/datakvalitet.qmd
+      - text: Ny prosess i Fia
+        href: datafortellinger/endret_prosess.qmd
+      - text: Fia
         menu:
-          - resultatområder/agder.qmd
-          - resultatområder/innlandet.qmd
-          - resultatområder/møre_og_romsdal.qmd
-          - resultatområder/nordland.qmd
-          - resultatområder/oslo.qmd
-          - resultatområder/øst-viken.qmd
-          - resultatområder/rogaland.qmd
-          - resultatområder/troms_og_finnmark.qmd
-          - resultatområder/trøndelag.qmd
-          - resultatområder/vest-viken.qmd
-          - resultatområder/vestfold_og_telemark.qmd
-          - resultatområder/vestland.qmd
-      
+          - datafortellinger/fia/nasjonalt.qmd
+          - datafortellinger/fia/agder.qmd
+          - datafortellinger/fia/innlandet.qmd
+          - datafortellinger/fia/møre_og_romsdal.qmd
+          - datafortellinger/fia/nordland.qmd
+          - datafortellinger/fia/oslo.qmd
+          - datafortellinger/fia/øst-viken.qmd
+          - datafortellinger/fia/rogaland.qmd
+          - datafortellinger/fia/troms_og_finnmark.qmd
+          - datafortellinger/fia/trøndelag.qmd
+          - datafortellinger/fia/vest-viken.qmd
+          - datafortellinger/fia/vestfold_og_telemark.qmd
+          - datafortellinger/fia/vestland.qmd
       - text: Ia-tjenester
-        href: ia_tjenester/ia_tjenester.qmd
-      - text: Ia-tjenester per resultatområde
         menu:
-          - ia_tjenester/agder.qmd
-          - ia_tjenester/innlandet.qmd
-          - ia_tjenester/møre_og_romsdal.qmd
-          - ia_tjenester/nordland.qmd
-          - ia_tjenester/oslo.qmd
-          - ia_tjenester/øst-viken.qmd
-          - ia_tjenester/rogaland.qmd
-          - ia_tjenester/troms_og_finnmark.qmd
-          - ia_tjenester/trøndelag.qmd
-          - ia_tjenester/vest-viken.qmd
-          - ia_tjenester/vestfold_og_telemark.qmd
-          - ia_tjenester/vestland.qmd
+          - datafortellinger/ia_tjenester//nasjonalt.qmd
+          - datafortellinger/ia_tjenester//agder.qmd
+          - datafortellinger/ia_tjenester//innlandet.qmd
+          - datafortellinger/ia_tjenester//møre_og_romsdal.qmd
+          - datafortellinger/ia_tjenester//nordland.qmd
+          - datafortellinger/ia_tjenester//oslo.qmd
+          - datafortellinger/ia_tjenester//øst-viken.qmd
+          - datafortellinger/ia_tjenester//rogaland.qmd
+          - datafortellinger/ia_tjenester//troms_og_finnmark.qmd
+          - datafortellinger/ia_tjenester//trøndelag.qmd
+          - datafortellinger/ia_tjenester//vest-viken.qmd
+          - datafortellinger/ia_tjenester//vestfold_og_telemark.qmd
+          - datafortellinger/ia_tjenester//vestland.qmd
     right:
       - icon: people-fill
         target: _blank

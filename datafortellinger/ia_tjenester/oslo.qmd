@@ -6,8 +6,7 @@ title-block-banner-color: white
 ---
 
 ```{python}
-#| tags: [parameters]
-resultatområde = "Oslo"
+resultatområde = "oslo"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+{{< include ia_tjenester_per_resultatområde.qmd >}}

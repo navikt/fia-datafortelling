@@ -1,13 +1,12 @@
 ---
-title: Trøndelag
-subtitle: Statistikk som viser bruk av Fia - i Trøndelag.
+title: Oslo
+subtitle: Statistikk som viser bruk av Fia - i Oslo.
 title-block-banner: true
 title-block-banner-color: white
 ---
 
 ```{python}
-#| tags: [parameters]
-resultatområde = "Trøndelag"
+resultatområde = "oslo"
 ```
 
 {{< include datafortelling_per_resultatområde.qmd >}}

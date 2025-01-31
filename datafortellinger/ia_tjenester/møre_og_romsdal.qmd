@@ -6,8 +6,7 @@ title-block-banner-color: white
 ---
 
 ```{python}
-#| tags: [parameters]
-resultatområde = "Møre og Romsdal"
+resultatområde = "møre_og_romsdal"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+{{< include ia_tjenester_per_resultatområde.qmd >}}
