@@ -46,18 +46,20 @@ from src.plots.samarbeid import (
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
-# navn = os.environ['RESULTATOMRADE'].replace("_", " ")
+```
 
-# if navn in resultatområder.values():
-#     resultatområde = navn
-# else:
-#     raise ValueError(f"Resultatområde '{navn}' er ikke gyldig.")
 
-# Henter data om hendelser og statusendringer
-# med statistikk: sykefravær, bransje, antall ansatte, osv.
+```{python}
+
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+
+
+```
+
+
+```{python}
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 
 data_statistikk_resultatområde = data_statistikk[data_statistikk.resultatomrade == resultatområde]
@@ -66,7 +68,7 @@ data_status_resultatområde = preprocess_data_status(data_status_resultatområde
 ikke_aktuell_resultatområde = explode_ikke_aktuell_begrunnelse(data_status_resultatområde)
 
 # Henter data om IA-tjenester
-raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
+
 raw_data_leveranse = legg_til_resultatområde(raw_data_leveranse, data_statistikk)
 raw_data_leveranse_resultatområde = raw_data_leveranse[raw_data_leveranse.resultatomrade == resultatområde]
 data_leveranse_resultatområde = preprocess_data_leveranse(raw_data_leveranse_resultatområde)
@@ -94,7 +96,6 @@ data_samarbeidsplan = data_samarbeidsplan.merge(
 data_samarbeidsplan = legg_til_resultatområde(data_samarbeidsplan, data_statistikk)
 data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.resultatomrade == resultatområde]
 ```
-
 
 ## Antall samarbeid
 {{< include ../includes/antall_samarbeid_forklaring.qmd >}}
@@ -137,16 +138,14 @@ antall_saker_per_status(data_status_resultatområde[data_status_resultatområde.
 # Historikk
 Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år siden.
 ```{python}
-# TODO: Noe har gått galt her
-# saker_per_status_per_måned(data_status_resultatområde)
+saker_per_status_per_måned(data_status_resultatområde)
 ```
 
 # Gjennomstrømmingstall
 Viser hvor mange saker som går inn og ut av status **Vi bistår**.
 Fra status Vi bistår er det mulig å skifte til enten Fullført eller Ikke aktuell.
 ```{python}
-# TODO: Fiks
-# gjennomstrømmingstall(data_status_resultatområde)
+gjennomstrømmingstall(data_status_resultatområde)
 ```
 :::
 

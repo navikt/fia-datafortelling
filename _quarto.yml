@@ -10,8 +10,6 @@ published-title: "Sist oppdatert"
 website:
   title: "Team Pia"
   repo-url: https://github.com/navikt/fia-datafortelling
-  # reader-mode: false # TODO: Sjekk hva denne gjør
-  # page-navigation: true # TODO: Sjekk hva denne gjør
   search:
     location: navbar
     type: overlay
@@ -20,11 +18,13 @@ website:
     logo: assets/nav_logo_hvit.png
     logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
     left:
-      - href: index.qmd
-      - href: ia_tjenester.qmd
-      - href: datakvalitet.qmd
-      - href: teampia.qmd
-      - text: Resultatområder
+      - text: Team Pia
+        href: teampia.qmd
+      - text: Datakvalitet
+        href: datakvalitet.qmd
+      - text: Fia
+        href: index.qmd
+      - text: Fia per resultatområde
         menu:
           - resultatområder/agder.qmd
           - resultatområder/innlandet.qmd
@@ -38,18 +38,35 @@ website:
           - resultatområder/vest-viken.qmd
           - resultatområder/vestfold_og_telemark.qmd
           - resultatområder/vestland.qmd
+      
+      - text: Ia-tjenester
+        href: ia_tjenester/ia_tjenester.qmd
+      - text: Ia-tjenester per resultatområde
+        menu:
+          - ia_tjenester/agder.qmd
+          - ia_tjenester/innlandet.qmd
+          - ia_tjenester/møre_og_romsdal.qmd
+          - ia_tjenester/nordland.qmd
+          - ia_tjenester/oslo.qmd
+          - ia_tjenester/øst-viken.qmd
+          - ia_tjenester/rogaland.qmd
+          - ia_tjenester/troms_og_finnmark.qmd
+          - ia_tjenester/trøndelag.qmd
+          - ia_tjenester/vest-viken.qmd
+          - ia_tjenester/vestfold_og_telemark.qmd
+          - ia_tjenester/vestland.qmd
     right:
       - icon: people-fill
-        target: _blank # åpne i ny fane
+        target: _blank
         text: Ansvarlig team hos NAV
         aria-label: Ansvarlig team hos NAV
         href: https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a
       - icon: slack
-        target: _blank # åpne i ny fane
+        target: _blank
         aria-label: Slack kanal for kontakt
         href: https://nav-it.slack.com/archives/C02DL347ZT2 
       - icon: github
-        target: _blank # åpne i ny fane
+        target: _blank
         aria-label: Kildekode
         href: https://github.com/orgs/navikt/teams/pia
   page-footer:
@@ -57,7 +74,7 @@ website:
     foreground: white
     center:
       - text: Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen <u>her</u>
-        target: _blank # åpne i ny fane
+        target: _blank
         href: https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362
   announcement:
     type: danger
@@ -67,19 +84,20 @@ website:
     dismissable: true
 
 execute:
-    echo: false # trenger ikke ha med kildekode
-    warning: false # TODO: får en del feilmeldinger som ikke er relevante ?
+    echo: false
+    warning: false
     daemon: false
 
 format:
   html:
+    grid: 
+      body-width: 900px # default: 800px
+      sidebar-width: 200px # default: 250px
+      margin-width: 200px # default: 250px
+    toc: true
+    toc-title: Indeks
     theme:
       light: 
         - flatly
       dark:
         - darkly
-    # TODO: Sjekk om disse bør settes globalt eller per side:
-    # page-layout: full
-    # embed-resources: true
-    # toc: true
-    # toc-title: Indeks

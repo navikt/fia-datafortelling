@@ -10,4 +10,4 @@ title-block-banner-color: white
 resultatområde = "Oslo"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+{{< include ia_tjenester_per_resultatområde.qmd >}}

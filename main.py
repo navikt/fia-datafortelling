@@ -27,14 +27,40 @@ def render_quarto(file_to_render: str):
         raise
 
 
-def render_resultatområder(resultatområde: str):
+def render_fia_per_resultatområde(resultatområde: str):
     try:
-        logging.info(f"Starting Quarto render process, rendering {resultatområde}")
+        logging.info(
+            f"Starting Quarto render process, rendering fia datafortelling for {resultatområde}"
+        )
         result = subprocess.run(
             [
                 "quarto",
                 "render",
                 f"resultatområder/{resultatområde}.qmd",
+                "-P",
+                f"resultatområde:{resultatområde}",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        logging.debug(f"Quarto render output: {result.stdout} \n {result.stderr}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Error rendering Quarto document: {e.stderr}")
+        raise
+
+
+def render_ia_tjenester_per_resultatområde(resultatområde: str):
+    try:
+        logging.info(
+            f"Starting Quarto render process, rendering ia_tjenester for {resultatområde}"
+        )
+        result = subprocess.run(
+            [
+                "quarto",
+                "render",
+                f"ia_tjenester/{resultatområde}.qmd",
                 "-P",
                 f"resultatområde:{resultatområde}",
             ],
@@ -78,7 +104,7 @@ if __name__ == "__main__":
     logging.info("Script started.")
     files = [
         "index",
-        "ia_tjenester",
+        "ia_tjenester/ia_tjenester",
         "datakvalitet",
         "teampia",
     ]
@@ -101,7 +127,8 @@ if __name__ == "__main__":
             render_quarto(file_to_render=file)
 
         for resultatområde in resultatområder:
-            render_resultatområder(resultatområde=resultatområde)
+            render_fia_per_resultatområde(resultatområde=resultatområde)
+            render_ia_tjenester_per_resultatområde(resultatområde=resultatområde)
 
         logging.debug("Reading files in _site")
         for root, dirs, files in os.walk("_site"):

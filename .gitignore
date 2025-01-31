@@ -145,3 +145,4 @@ local-files/
 *.quarto_ipynb
 /.quarto/
 /_site/
+/.ruff_cache/

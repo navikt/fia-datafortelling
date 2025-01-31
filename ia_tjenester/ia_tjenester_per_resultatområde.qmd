@@ -1,30 +1,3 @@
----
-title: "IA-tjenester i Fia for {{< env RESULTATOMRADE >}}"
-subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
-title-block-banner: true
-title-block-banner-color: white
-date: now
-date-format: "DD.MM.YYYY HH:mm:ss z"
-published-title: "Oppdatert"
-author: Team Pia
-author-title: "Eier"
-execute:
-    echo: false
-    warning: false
-    daemon: false
-format:
-    html:
-        toc: true
-        toc-title: Indeks
-        page-layout: full
-        embed-resources: true
-jupyter: python3
----
-
-<span style="color:red;">
-NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
-</span>
-
 ```{python}
 %load_ext autoreload
 %autoreload 2
@@ -32,7 +5,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 import os
 import pandas as pd
 
-from utils.datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -41,10 +14,10 @@ from utils.datahandler import (
     hent_leveranse_sistestatus,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from utils.helper import iatjeneste_og_status_sortering
-from utils.konstanter import resultatområder
+from src.utils.helper import iatjeneste_og_status_sortering
+from src.utils.konstanter import resultatområder
 
-from plots.leveranse import (
+from src.plots.leveranse import (
     antall_leveranser_per_tjeneste,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
@@ -52,18 +25,19 @@ from plots.leveranse import (
 
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
+```
 
+```{python}
+# Last inn data
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 
-navn = os.environ['RESULTATOMRADE'].replace("_", " ")
-
-if navn in resultatområder.values():
-    resultatområde = navn
-else:
-    raise ValueError(f"Resultatområde '{navn}' er ikke gyldig.")
-
 adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+
+```
+
+```{python}
+# Preprossesser statistikk
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 
 raw_data_leveranse = raw_data_leveranse.merge(
@@ -76,7 +50,10 @@ data_status, _, _ = split_data_statistikk(data_statistikk)
 data_status = preprocess_data_status(data_status)
 data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
 data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
+```
 
+```{python}
+# Legg på resultatområde
 data_status_resultatområde = data_status[data_status.resultatomrade == resultatområde]
 data_leveranse_resultatområde = data_leveranse[data_leveranse.resultatomrade == resultatområde]
 data_leveranse_sistestatus_resultatområde = data_leveranse_sistestatus[data_leveranse_sistestatus.resultatomrade == resultatområde]

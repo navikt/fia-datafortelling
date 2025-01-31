@@ -10,4 +10,4 @@ title-block-banner-color: white
 resultatområde = "Rogaland"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+{{< include ia_tjenester_per_resultatområde.qmd >}}

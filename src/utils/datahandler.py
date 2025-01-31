@@ -84,6 +84,10 @@ def preprocess_data_statistikk(
         data_statistikk.kommunenummer.map(rogaland_lund)
     )
 
+    data_statistikk["resultatomrade"] = data_statistikk["resultatomrade"].apply(
+        lambda x: str(x).replace(" ", "_").lower()
+    )
+
     # Leser alle kommunenummer og mapper til 2024 kommunenummer
     alle_kommunenummer = adm_enheter[["kommunenummer", "kommunenummer 2023"]]
 

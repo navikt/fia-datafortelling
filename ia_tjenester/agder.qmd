@@ -10,4 +10,5 @@ title-block-banner-color: white
 resultatområde = "Agder"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+
+{{< include ia_tjenester_per_resultatområde.qmd >}}
