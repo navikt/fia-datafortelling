@@ -131,10 +131,10 @@ def trakt_antall_samarbeid(
     fig = go.Figure(
         go.Funnel(
             y=[
-                "Antall samarbeid",
-                "Antall samarbeid med<br>fullført behovsvudering",
-                "Antall aktive samarbeid<br>med opprettet samarbeidsplan",
-                "Antall samarbeid med<br>fullført evaluering",
+                "Antall aktive samarbeid/underavdelinger",
+                "Antall aktive samarbeid/underavdelinger<br>med fullført behovsvudering med minst ett svar",
+                "Antall aktive samarbeid/underavdelinger<br>med opprettet samarbeidsplan",
+                "Antall aktive samarbeid/underavdelinger<br>med fullført evaluering med minst ett svar",
             ],
             x=[
                 antall_aktive_samarbeid,
