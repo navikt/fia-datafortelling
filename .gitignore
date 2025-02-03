@@ -144,3 +144,5 @@ local-files/
 .venv
 *.quarto_ipynb
 /.quarto/
+/_site/
+/.ruff_cache/

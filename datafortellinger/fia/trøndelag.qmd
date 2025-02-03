@@ -1,0 +1,12 @@
+---
+title: Bruk av Fia i Trøndelag
+subtitle: Statistikk som viser bruk av Fia i Trøndelag.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+resultatområde = "trøndelag"
+```
+
+{{< include datafortelling_per_resultatområde.qmd >}}

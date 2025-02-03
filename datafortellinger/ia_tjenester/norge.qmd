@@ -1,29 +1,9 @@
 ---
-title: "IA-tjenester i Fia"
+title: IA-tjenester levert nasjonalt
 subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
 title-block-banner: true
 title-block-banner-color: white
-date: now
-date-format: "DD.MM.YYYY HH:mm:ss z"
-published-title: "Oppdatert"
-author: Team Pia
-author-title: "Eier"
-execute:
-    echo: false
-    warning: false
-    daemon: false
-format:
-    html:
-        toc: true
-        toc-title: Indeks
-        page-layout: full
-        embed-resources: true
-jupyter: python3
 ---
-
-<span style="color:red;">
-NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
-</span>
 
 ```{python}
 %load_ext autoreload
@@ -32,7 +12,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 import os
 import pandas as pd
 
-from utils.datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -41,11 +21,10 @@ from utils.datahandler import (
     hent_leveranse_sistestatus,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from plots.leveranse import (
+from src.plots.leveranse import (
     antall_leveranser_per_tjeneste,
     leveranse_tjeneste_per_maaned,
 )
-
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
@@ -87,4 +66,4 @@ antall_leveranser_per_tjeneste(data_leveranse_sistestatus_siste_år)
 
 :::
 
-{{< include includes/leveransestatus-forklaring.qmd >}}
+{{< include ../includes/leveransestatus-forklaring.qmd >}}

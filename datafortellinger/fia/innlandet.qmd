@@ -1,0 +1,12 @@
+---
+title: Bruk av Fia i Innlandet
+subtitle: Statistikk som viser bruk av Fia i Innlandet.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+resultatområde = "innlandet"
+```
+
+{{< include datafortelling_per_resultatområde.qmd >}}

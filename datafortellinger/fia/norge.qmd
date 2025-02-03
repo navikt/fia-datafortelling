@@ -1,45 +1,18 @@
 ---
-title: "Fia datafortelling"
-subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
+title: Bruk av Fia nasjonalt
+subtitle: Statistikk som viser Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
-date: now
-date-format: "DD.MM.YYYY HH:mm:ss z"
-published-title: "Oppdatert"
-author: Team Pia
-author-title: "Eier"
-execute:
-    echo: false
-    warning: false
-    daemon: false
-format:
-    html:
-        toc: true
-        toc-title: Indeks
-        page-layout: full
-        embed-resources: true
-jupyter: python3
 ---
-
-**Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen i [Porten](https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362).**
-
-Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
-Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
-
-Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
-
-<span style="color:red;">
-NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
-</span>
-
 ```{python}
 %load_ext autoreload
 %autoreload 2
 
+# Imports og konstanter
 import os
 import pandas as pd
 
-from utils.datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -50,10 +23,10 @@ from utils.datahandler import (
     explode_ikke_aktuell_begrunnelse,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from utils.helper import ikke_aktuell_begrunnelse_sortering
-from utils.konstanter import ikkeaktuell_hovedgrunn
+from src.utils.helper import ikke_aktuell_begrunnelse_sortering
+from src.utils.konstanter import ikkeaktuell_hovedgrunn
 
-from plots.statistikk import (
+from src.plots.statistikk import (
     statusflyt,
     gjennomstrømmingstall,
     saker_per_status_per_måned,
@@ -61,8 +34,8 @@ from plots.statistikk import (
     aktive_saker_per_kolonne,
     virksomhetsprofil,
 )
-from plots.leveranse import begrunnelse_ikke_aktuell
-from plots.samarbeid import (
+from src.plots.leveranse import begrunnelse_ikke_aktuell
+from src.plots.samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
     trakt_antall_samarbeid,
 )
@@ -70,6 +43,11 @@ from plots.samarbeid import (
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
+```
+
+
+```{python}
+# Preprossesering
 # Henter data om hendelser og statusendringer
 # med statistikk: sykefravær, bransje, antall ansatte, osv.
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
@@ -98,7 +76,7 @@ data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bi
 
 
 ## Antall samarbeid
-{{< include includes/antall_samarbeid_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -108,12 +86,12 @@ trakt_antall_samarbeid(
 )
 ```
 
-{{< include includes/begrep-forklaring.qmd >}}
+{{< include ../includes/begrep-forklaring.qmd >}}
 
 
 ## Antall samarbeid per virksomhet
 
-{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -130,15 +108,15 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 
 ## Statusflyt i Fia
 
-{{< include includes/statusflyt_i_fia_forklaring.qmd >}}
+{{< include ../includes/statusflyt_i_fia_forklaring.qmd >}}
 
 ```{python}
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 statusflyt(data_input)
 ```
 
-{{< include includes/sak-forklaring.qmd >}}
-{{< include includes/saksstatus-forklaring.qmd >}}
+{{< include ../includes/sak-forklaring.qmd >}}
+{{< include ../includes/saksstatus-forklaring.qmd >}}
 
 
 ## Antall saker per status
@@ -171,12 +149,12 @@ aktive_saker_per_kolonne(data_status, "resultatomrade")
 
 ## Leveranser
 
-{{< include includes/leveranser.qmd >}}
+{{< include ../includes/leveranser.qmd >}}
 
 
 ## Virksomhetsprofil
 
-{{< include includes/virksomhetsprofil_forklaring.qmd >}}
+{{< include ../includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -217,7 +195,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include ../includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
@@ -280,10 +258,6 @@ begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 
 :::
 
-{{< include includes/ikke-aktuell-forklaring.qmd >}}
-
----
-
-{{< include includes/datafortellinger_per_resultatområde.qmd >}}
+{{< include ../includes/ikke-aktuell-forklaring.qmd >}}
 
 Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).

@@ -1,37 +1,3 @@
----
-title: "Fia datafortelling for {{< env RESULTATOMRADE >}}"
-subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
-title-block-banner: true
-title-block-banner-color: white
-date: now
-date-format: "DD.MM.YYYY HH:mm:ss z"
-published-title: "Oppdatert"
-author: Team Pia
-author-title: "Eier"
-execute:
-    echo: false
-    warning: false
-    daemon: false
-format:
-    html:
-        toc: true
-        toc-title: Indeks
-        page-layout: full
-        embed-resources: true
-jupyter: python3
----
-
-**Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen i [Porten](https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362).**
-
-Ansvarlig team er [Team Pia](https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a).
-Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på e-post `pia@nav.no`.
-
-Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
-
-<span style="color:red;">
-NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
-</span>
-
 ```{python}
 %load_ext autoreload
 %autoreload 2
@@ -39,7 +5,7 @@ NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.
 import os
 import pandas as pd
 
-from utils.datahandler import (
+from src.utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -51,28 +17,28 @@ from utils.datahandler import (
     filtrer_bort_saker_på_avsluttet_tidspunkt,
     legg_til_resultatområde,
 )
-from utils.helper import (
+from src.utils.helper import (
     ikke_aktuell_begrunnelse_sortering,
     iatjeneste_og_status_sortering,
 )
-from utils.konstanter import (
+from src.utils.konstanter import (
     ikkeaktuell_hovedgrunn,
     resultatområder,
 )
-from plots.statistikk import (
+from src.plots.statistikk import (
     statusflyt,
     gjennomstrømmingstall,
     saker_per_status_per_måned,
     antall_saker_per_status,
     virksomhetsprofil,
 )
-from plots.leveranse import (
+from src.plots.leveranse import (
     antall_leveranser_per_tjeneste,
     begrunnelse_ikke_aktuell,
     leveranse_per_maaned,
     leveranse_tjeneste_per_maaned,
 )
-from plots.samarbeid import (
+from src.plots.samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
     trakt_antall_samarbeid,
 )
@@ -80,18 +46,20 @@ from plots.samarbeid import (
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
-navn = os.environ['RESULTATOMRADE'].replace("_", " ")
+```
 
-if navn in resultatområder.values():
-    resultatområde = navn
-else:
-    raise ValueError(f"Resultatområde '{navn}' er ikke gyldig.")
 
-# Henter data om hendelser og statusendringer
-# med statistikk: sykefravær, bransje, antall ansatte, osv.
+```{python}
+
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+
+
+```
+
+
+```{python}
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 
 data_statistikk_resultatområde = data_statistikk[data_statistikk.resultatomrade == resultatområde]
@@ -100,7 +68,7 @@ data_status_resultatområde = preprocess_data_status(data_status_resultatområde
 ikke_aktuell_resultatområde = explode_ikke_aktuell_begrunnelse(data_status_resultatområde)
 
 # Henter data om IA-tjenester
-raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
+
 raw_data_leveranse = legg_til_resultatområde(raw_data_leveranse, data_statistikk)
 raw_data_leveranse_resultatområde = raw_data_leveranse[raw_data_leveranse.resultatomrade == resultatområde]
 data_leveranse_resultatområde = preprocess_data_leveranse(raw_data_leveranse_resultatområde)
@@ -129,9 +97,8 @@ data_samarbeidsplan = legg_til_resultatområde(data_samarbeidsplan, data_statist
 data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.resultatomrade == resultatområde]
 ```
 
-
 ## Antall samarbeid
-{{< include includes/antall_samarbeid_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -141,12 +108,12 @@ trakt_antall_samarbeid(
 )
 ```
 
-{{< include includes/begrep-forklaring.qmd >}}
+{{< include ../includes/begrep-forklaring.qmd >}}
 
 
 ## Antall samarbeid per virksomhet
 
-{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include ../includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -182,23 +149,16 @@ gjennomstrømmingstall(data_status_resultatområde)
 ```
 :::
 
-{{< include includes/sak-forklaring.qmd >}}
-{{< include includes/saksstatus-forklaring.qmd >}}
+{{< include ../includes/sak-forklaring.qmd >}}
+{{< include ../includes/saksstatus-forklaring.qmd >}}
 
 
 ## Leveranser
-
-```{python}
-lenke_til_ia_tjenester = f"ia_tjenester_per_resultatområde_{navn.replace(' ', '_')}.html"
-```
-
 IA-tjenester er faset ut og erstattet med samarbeidsplanen i Fia.
-Du kan finne de gamle dataene om IA-tjenester i ditt fylke [her](`{python} lenke_til_ia_tjenester`).
-Info om samarbeidsplan kommer senere.
 
 ## Virksomhetsprofil
 
-{{< include includes/virksomhetsprofil_forklaring.qmd >}}
+{{< include ../includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -239,7 +199,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include ../includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell_resultatområde)
@@ -249,6 +209,6 @@ data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
-{{< include includes/ikke-aktuell-forklaring.qmd >}}
+{{< include ../includes/ikke-aktuell-forklaring.qmd >}}
 
 Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).

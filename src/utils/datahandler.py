@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from google.cloud.bigquery import Client
 
-from utils.konstanter import (
+from src.utils.konstanter import (
     fylker,
     intervall_sortering,
     resultatområder,
@@ -82,6 +82,10 @@ def preprocess_data_statistikk(
     # Flytt Lund kommune i Rogaland til Agder da de er der de blir fulgt opp
     data_statistikk.loc[data_statistikk["fylkesnummer"] == "11", "resultatomrade"] = (
         data_statistikk.kommunenummer.map(rogaland_lund)
+    )
+
+    data_statistikk["resultatomrade"] = data_statistikk["resultatomrade"].apply(
+        lambda x: str(x).replace(" ", "_").lower()
     )
 
     # Leser alle kommunenummer og mapper til 2024 kommunenummer

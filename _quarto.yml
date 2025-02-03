@@ -1,0 +1,128 @@
+project:
+  type: website
+  output-dir: _site
+  execute-dir: project
+
+date: now
+date-format: "DD.MM.YYYY HH:mm:ss z"
+published-title: "Sist oppdatert"
+
+website:
+  title: "Team Pia"
+  repo-url: https://github.com/navikt/fia-datafortelling
+  search:
+    location: navbar
+    type: overlay
+  navbar:
+    background: primary
+    logo: assets/nav_logo_hvit.png
+    logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
+    left:
+      - text: Startside
+        href: index.qmd
+      - text: Datakvalitet
+        href: datafortellinger/datakvalitet.qmd
+      # - text: Ny prosess i Fia TODO: denne bør legges inn i datakvalitet eller fjernes
+      #   href: datafortellinger/endret_prosess.qmd
+      - text: Bruk av Fia
+        menu:
+          - text: Hele Norge
+            href: datafortellinger/fia/norge.qmd
+          - text: Agder
+            href: datafortellinger/fia/agder.qmd
+          - text: Innlandet
+            href: datafortellinger/fia/innlandet.qmd
+          - text: Møre og Romsdal
+            href: datafortellinger/fia/møre_og_romsdal.qmd
+          - text: Nordland
+            href: datafortellinger/fia/nordland.qmd
+          - text: Oslo
+            href: datafortellinger/fia/oslo.qmd
+          - text: Øst-Viken
+            href: datafortellinger/fia/øst-viken.qmd
+          - text: Rogaland
+            href: datafortellinger/fia/rogaland.qmd
+          - text: Troms og Finnmark
+            href: datafortellinger/fia/troms_og_finnmark.qmd
+          - text: Trøndelag
+            href: datafortellinger/fia/trøndelag.qmd
+          - text: Vest-Viken
+            href: datafortellinger/fia/vest-viken.qmd
+          - text: Vestfold og Telemark
+            href: datafortellinger/fia/vestfold_og_telemark.qmd
+          - text: Vestland
+            href: datafortellinger/fia/vestland.qmd
+      - text: IA-tjenester
+        menu:
+          - text: Hele Norge
+            href: datafortellinger/ia_tjenester/norge.qmd
+          - text: Agder
+            href: datafortellinger/ia_tjenester/agder.qmd
+          - text: Innlandet
+            href: datafortellinger/ia_tjenester/innlandet.qmd
+          - text: Møre og Romsdal
+            href: datafortellinger/ia_tjenester/møre_og_romsdal.qmd
+          - text: Nordland
+            href: datafortellinger/ia_tjenester/nordland.qmd
+          - text: Oslo
+            href: datafortellinger/ia_tjenester/oslo.qmd
+          - text: Øst-Viken
+            href: datafortellinger/ia_tjenester/øst-viken.qmd
+          - text: Rogaland
+            href: datafortellinger/ia_tjenester/rogaland.qmd
+          - text: Troms og Finnmark
+            href: datafortellinger/ia_tjenester/troms_og_finnmark.qmd
+          - text: Trøndelag
+            href: datafortellinger/ia_tjenester/trøndelag.qmd
+          - text: Vest-Viken
+            href: datafortellinger/ia_tjenester/vest-viken.qmd
+          - text: Vestfold og Telemark
+            href: datafortellinger/ia_tjenester/vestfold_og_telemark.qmd
+          - text: Vestland
+            href: datafortellinger/ia_tjenester/vestland.qmd
+    right:
+      - icon: people-fill
+        target: _blank
+        text: Ansvarlig team hos NAV
+        aria-label: Ansvarlig team hos NAV
+        href: https://teamkatalog.nav.no/team/b347ac99-c382-4e5a-a1dd-532e91110e2a
+      - icon: slack
+        target: _blank
+        aria-label: Slack kanal for kontakt
+        href: https://nav-it.slack.com/archives/C02DL347ZT2 
+      - icon: github
+        target: _blank
+        aria-label: Kildekode
+        href: https://github.com/orgs/navikt/teams/pia
+  page-footer:
+    background: primary
+    foreground: white
+    center:
+      - text: Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen <u>her</u>
+        target: _blank
+        href: https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362
+  announcement:
+    type: danger
+    icon: info-circle
+    content: "**NB!** - Dette er ikke offisiell statistikk og må ikke deles utenfor Nav."
+    position: above-navbar
+    dismissable: true
+
+execute:
+    echo: false
+    warning: false
+    daemon: false
+
+format:
+  html:
+    grid:
+      body-width: 900px # default: 800px
+      sidebar-width: 200px # default: 250px
+      margin-width: 200px # default: 250px
+    toc: true
+    toc-title: Indeks
+    theme:
+      light: 
+        - flatly
+      dark:
+        - darkly

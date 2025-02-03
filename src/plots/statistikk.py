@@ -4,12 +4,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-from utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
-from utils.helper import (
+from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
+from src.utils.helper import (
     alle_måneder_mellom_datoer,
     annotate_ikke_offisiell_statistikk,
 )
-from utils.konstanter import (
+from src.utils.konstanter import (
     intervall_sortering,
     plotly_colors,
     resultatområder,
@@ -100,7 +100,7 @@ def saker_per_status_over_tid(
         valgte_resultatområder = list(set(resultatområder.values()))
 
     # En strek for hver kombinasjon av fylke og status
-    for resultatområde in valgte_resultatområder:
+    for resultatområde in [s.replace(" ", "_").lower() for s in valgte_resultatområder]:
         status_per_dato = beregn_status_per_dato(
             data_status[data_status.resultatomrade == resultatområde], alle_datoer
         )

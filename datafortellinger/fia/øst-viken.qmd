@@ -1,0 +1,12 @@
+---
+title: Bruk av Fia i Øst-Viken
+subtitle: Statistikk som viser bruk av Fia i Øst-Viken.
+title-block-banner: true
+title-block-banner-color: white
+---
+
+```{python}
+resultatområde = "øst-viken"
+```
+
+{{< include datafortelling_per_resultatområde.qmd >}}
