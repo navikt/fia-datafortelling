@@ -204,7 +204,7 @@ til å oppdatere versjonen.
 Dependabot støtter desverre ikke uv.lock-filen enda, men det er planlagt [for første kvartal (Jan - Mar, 2025)](https://github.com/dependabot/dependabot-core/issues/10478)
 
 # Henvendelser
-Spørsmål knyttet til koden eller prosjektet kan stilles som et [issue her på GitHub](https://github.com/navikt/ia-datafortelling/issues).
+Spørsmål knyttet til koden eller prosjektet kan stilles som et [issue her på GitHub](https://github.com/navikt/fia-datafortelling/issues).
 ## For NAV-ansatte
 Interne henvendelser kan sendes via Slack i kanalen #team-pia.
 # Krediteringer
