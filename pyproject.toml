@@ -30,6 +30,10 @@ dev = [
     "ruff==0.9.1",
 ]
 
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project.urls]
 Repository = "https://github.com/navikt/fia-datafortelling.git"
 
