@@ -1,0 +1,5 @@
+Ny logikk er innført i Fia. IA-tjenester er fjernet og erstattet av “samarbeid” og “plan for samarbeid” med alternativer for å “planlegge”, “pågår”, “avbryt” og “fullføre” leveranser. Med denne nye logikken vil ikke lenger status “vi bistår” vise hvor mange og hvilke virksomheter som blir gitt “prioritert bistand”.
+
+Denne ilustrasjonen viser det totale antallet samarbeid/underavdelinger registrert i FIA med status 'aktiv' (ikke fullført/avsluttet eller slettet). Dette tallet representerer ikke antall bedrifter, men antall samarbeid/underavdelinger. En bedrift med ett aktivt samarbeid bidrar med 1 i totalen, mens en bedrift med to aktive samarbeid bidrar med 2.
+
+I Illustrasjonen vises både hvor mange samarbeid vi har opprettet og hvor mange samarbeid som har fått utarbeidet en “plan for samarbeid”. Tallene for “plan for samarbeid” gir en indikasjon på hvor mange “samarbeid” vi har en aktiv og planlagt satsning på, altså blir gitt en prioritert bistand. Illustrasjonen viser også hvor mange “behovsvurderinger” som er fullført. Etter hvert vil også “fullførte evalueringer” innkomme i illustrasjonen.
