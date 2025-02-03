@@ -132,6 +132,12 @@ Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writi
 
 Jobben kjører i intervaller som er definert i cron-utrykket `spec.schedule` i [nais.yaml](.nais/nais.yaml). Når jobben spinner opp kjører den [run.sh](run.sh).
 
+### Fra NAIS console
+
+Velg "Trigger run" fra [NAIS console](https://console.nav.cloud.nais.io/team/pia/prod-gcp/job/fia-datafortelling) og gi gjenkjennelig navn, feks: "ad-hoc".
+
+### Manuell kjøring
+
 For å kjøre Jobben manuelt (utenfor intervallet som kjører automatisk):
 
 1. Logge på nais:
