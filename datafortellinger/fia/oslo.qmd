@@ -1,6 +1,6 @@
 ---
-title: Oslo
-subtitle: Statistikk som viser bruk av Fia - i Oslo.
+title: Bruk av Fia i Oslo
+subtitle: Statistikk som viser bruk av Fia i Oslo.
 title-block-banner: true
 title-block-banner-color: white
 ---

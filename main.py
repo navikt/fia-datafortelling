@@ -11,27 +11,23 @@ logging.basicConfig(
 
 def render_quarto(file_to_render: str):
     try:
-        logging.info(
-            f"Starting Quarto render process, rendering file: {file_to_render}"
-        )
-        # Run the quarto render command
+        logging.info(f"Kjører quarto render {file_to_render}.qmd")
+
         result = subprocess.run(
             ["quarto", "render", file_to_render + ".qmd"],
             check=True,
             capture_output=True,
             text=True,
         )
-        logging.debug(f"Quarto render output: {result.stdout} \n {result.stderr}")
+        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error rendering Quarto document: {e.stderr}")
+        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
         raise
 
 
 def render_fia_per_resultatområde(resultatområde: str):
     try:
-        logging.info(
-            f"Starting Quarto render process, rendering fia datafortelling for {resultatområde}"
-        )
+        logging.info("Bruk av Fia")
         result = subprocess.run(
             [
                 "quarto",
@@ -43,17 +39,15 @@ def render_fia_per_resultatområde(resultatområde: str):
             text=True,
         )
 
-        logging.debug(f"Quarto render output: {result.stdout} \n {result.stderr}")
+        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error rendering Quarto document: {e.stderr}")
+        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
         raise
 
 
 def render_ia_tjenester_per_resultatområde(resultatområde: str):
     try:
-        logging.info(
-            f"Starting Quarto render process, rendering ia_tjenester for {resultatområde}"
-        )
+        logging.info("IA-tjenester")
         result = subprocess.run(
             [
                 "quarto",
@@ -65,9 +59,9 @@ def render_ia_tjenester_per_resultatområde(resultatområde: str):
             text=True,
         )
 
-        logging.debug(f"Quarto render output: {result.stdout} \n {result.stderr}")
+        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
     except subprocess.CalledProcessError as e:
-        logging.error(f"Error rendering Quarto document: {e.stderr}")
+        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
         raise
 
 
@@ -90,8 +84,8 @@ def update_quarto(output_dir: str):
     try:
         # Send the request with all files in the dictionary
         response = requests.put(
-            f"https://{os.environ['ENV']}/quarto/update/{os.environ['QUARTO_ID']}",
-            headers={"Authorization": f"Bearer {os.environ['NADA_TOKEN']}"},
+            f"https://{os.environ['NADA_ENV']}/quarto/update/{os.environ['QUARTO_ID_HELSESJEKK']}",
+            headers={"Authorization": f"Bearer {os.environ['QUARTO_TOKEN']}"},
             files=multipart_form_data,
         )
         response.raise_for_status()
@@ -102,14 +96,16 @@ def update_quarto(output_dir: str):
 
 
 if __name__ == "__main__":
-    logging.info("Script started.")
+    logging.info("Starter kjøring av datafortellinger.")
+
     files = [
         "index",
         "datafortellinger/datakvalitet",
-        "datafortellinger/endret_prosess",
+        # "datafortellinger/endret_prosess", //TODO: Legg inn i datakvalitet eller fjern helt
     ]
+
     resultatområder = [
-        "nasjonalt",
+        "norge",
         "agder",
         "innlandet",
         "møre_og_romsdal",
@@ -128,12 +124,10 @@ if __name__ == "__main__":
             render_quarto(file_to_render=file)
 
         for resultatområde in resultatområder:
+            logging.info(f"Kjører quarto render for resultatområde: {resultatområde}")
             render_fia_per_resultatområde(resultatområde=resultatområde)
             render_ia_tjenester_per_resultatområde(resultatområde=resultatområde)
-
-        logging.debug("Reading files in _site")
-
         update_quarto(output_dir="_site")
     except Exception as e:
-        logging.error(f"Script failed: {e}")
-    logging.info("Script finished.")
+        logging.error(f"Script feilet: {e}")
+    logging.info("Oppdatering av datafortellinger ferdig")

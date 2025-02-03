@@ -1,6 +1,6 @@
 ---
-title: Nordland
-subtitle: Statistikk som viser bruk av Fia - i Nordland.
+title: IA-tjenester levert i Nordland
+subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
 title-block-banner: true
 title-block-banner-color: white
 ---

@@ -1,6 +1,6 @@
 ---
-title: Troms og Finnmark
-subtitle: Statistikk som viser bruk av Fia - i Troms og Finnmark.
+title: IA-tjenester levert i Troms og Finnmark
+subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
 title-block-banner: true
 title-block-banner-color: white
 ---

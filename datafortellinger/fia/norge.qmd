@@ -1,6 +1,6 @@
 ---
-title: "Fia datafortelling"
-subtitle: Statistikk som viser bruk av Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
+title: Bruk av Fia nasjonalt
+subtitle: Statistikk som viser Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
 ---

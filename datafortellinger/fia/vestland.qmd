@@ -1,6 +1,6 @@
 ---
-title: Vestland
-subtitle: Statistikk som viser bruk av Fia - i Vestland.
+title: Bruk av Fia i Vestland
+subtitle: Statistikk som viser bruk av Fia i Vestland.
 title-block-banner: true
 title-block-banner-color: white
 ---

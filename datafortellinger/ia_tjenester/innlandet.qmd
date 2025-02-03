@@ -1,6 +1,6 @@
 ---
-title: Innlandet
-subtitle: Statistikk som viser bruk av Fia - i Innlandet.
+title: IA-tjenester levert i Innlandet
+subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
 title-block-banner: true
 title-block-banner-color: white
 ---

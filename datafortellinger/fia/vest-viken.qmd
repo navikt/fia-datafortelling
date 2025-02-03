@@ -1,6 +1,6 @@
 ---
-title: Vest-Viken
-subtitle: Statistikk som viser bruk av Fia - i Vest-Viken.
+title: Bruk av Fia i Vest-Viken
+subtitle: Statistikk som viser bruk av Fia i Vest-Viken.
 title-block-banner: true
 title-block-banner-color: white
 ---

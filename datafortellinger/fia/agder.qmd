@@ -1,6 +1,6 @@
 ---
-title: Agder
-subtitle: Statistikk som viser bruk av Fia - i Agder.
+title: Bruk av Fia i Agder
+subtitle: Statistikk som viser bruk av Fia i Agder.
 title-block-banner: true
 title-block-banner-color: white
 ---
