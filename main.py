@@ -71,6 +71,7 @@ def update_quarto(output_dir: str):
     for root, dirs, files in os.walk(output_dir):
         for file in files:
             files_to_upload.append(os.path.join(root, file))
+            logging.info(os.path.join(root, file))
 
     multipart_form_data = {}
     for file_path in files_to_upload:
