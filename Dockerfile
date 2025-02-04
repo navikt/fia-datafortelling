@@ -27,8 +27,6 @@ COPY src/ src/
 
 RUN uv sync --frozen --no-dev  --compile-bytecode
 # Compiling Python source files to bytecode is typically desirable for production images as it tends to improve startup time (at the cost of increased installation time).
-# RUN uv build
-# RUN uv pip install dist/src-0.1.0-py3-none-any.whl
 
 FROM python:${PYTHON_VERSION}-slim AS runner-image
 

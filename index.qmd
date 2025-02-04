@@ -1,5 +1,5 @@
 ---
-title: "Startside"
+title: Startside
 subtitle: Startside for datafortellinger fra Team Pia.
 title-block-banner: true
 title-block-banner-color: white

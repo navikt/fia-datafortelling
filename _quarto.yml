@@ -1,7 +1,8 @@
 project:
   type: website
-  output-dir: _site
-  execute-dir: project
+  render:
+    - "index.qmd"
+    - "datakvalitet.qmd"
 
 date: now
 date-format: "DD.MM.YYYY HH:mm:ss z"
@@ -22,64 +23,6 @@ website:
         href: index.qmd
       - text: Datakvalitet
         href: datakvalitet.qmd
-      # - text: Ny prosess i Fia TODO: denne bør legges inn i datakvalitet eller fjernes
-      #   href: datafortellinger/endret_prosess.qmd
-      - text: Bruk av Fia
-        menu:
-          - text: Hele Norge
-            href: datafortellinger/fia/norge.qmd
-          - text: Agder
-            href: datafortellinger/fia/agder.qmd
-          - text: Innlandet
-            href: datafortellinger/fia/innlandet.qmd
-          - text: Møre og Romsdal
-            href: datafortellinger/fia/møre_og_romsdal.qmd
-          - text: Nordland
-            href: datafortellinger/fia/nordland.qmd
-          - text: Oslo
-            href: datafortellinger/fia/oslo.qmd
-          - text: Øst-Viken
-            href: datafortellinger/fia/øst-viken.qmd
-          - text: Rogaland
-            href: datafortellinger/fia/rogaland.qmd
-          - text: Troms og Finnmark
-            href: datafortellinger/fia/troms_og_finnmark.qmd
-          - text: Trøndelag
-            href: datafortellinger/fia/trøndelag.qmd
-          - text: Vest-Viken
-            href: datafortellinger/fia/vest-viken.qmd
-          - text: Vestfold og Telemark
-            href: datafortellinger/fia/vestfold_og_telemark.qmd
-          - text: Vestland
-            href: datafortellinger/fia/vestland.qmd
-      - text: IA-tjenester
-        menu:
-          - text: Hele Norge
-            href: datafortellinger/ia_tjenester/norge.qmd
-          - text: Agder
-            href: datafortellinger/ia_tjenester/agder.qmd
-          - text: Innlandet
-            href: datafortellinger/ia_tjenester/innlandet.qmd
-          - text: Møre og Romsdal
-            href: datafortellinger/ia_tjenester/møre_og_romsdal.qmd
-          - text: Nordland
-            href: datafortellinger/ia_tjenester/nordland.qmd
-          - text: Oslo
-            href: datafortellinger/ia_tjenester/oslo.qmd
-          - text: Øst-Viken
-            href: datafortellinger/ia_tjenester/øst-viken.qmd
-          - text: Rogaland
-            href: datafortellinger/ia_tjenester/rogaland.qmd
-          - text: Troms og Finnmark
-            href: datafortellinger/ia_tjenester/troms_og_finnmark.qmd
-          - text: Trøndelag
-            href: datafortellinger/ia_tjenester/trøndelag.qmd
-          - text: Vest-Viken
-            href: datafortellinger/ia_tjenester/vest-viken.qmd
-          - text: Vestfold og Telemark
-            href: datafortellinger/ia_tjenester/vestfold_og_telemark.qmd
-          - text: Vestland
-            href: datafortellinger/ia_tjenester/vestland.qmd
     right:
       - icon: people-fill
         target: _blank
