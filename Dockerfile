@@ -3,6 +3,7 @@ ARG PYTHON_VERSION=3.13.1
 FROM python:${PYTHON_VERSION} AS compile-image
 
 # Endre til feks arm64 for å bygge for Apple Silicon Mac
+# ENV CPU=arm64
 ENV CPU=amd64
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
@@ -17,41 +18,44 @@ RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/rel
     ln -s quarto-${QUARTO_VERSION} quarto-dist && \
     rm -rf quarto-${QUARTO_VERSION}-linux-${CPU}.tar.gz
 
-# FROM python:${PYTHON_VERSION}-slim AS runner-image
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# RUN apt-get update && apt-get install -yq --no-install-recommends \
-#       curl \
-#     && apt-get upgrade -y curl \
-#     && apt-get purge -y imagemagick git-man golang libexpat1-dev \
-#     && apt-get -y autoremove \
-#     && apt-get clean \
-#     && rm -rf /var/lib/apt/lists/*
+RUN touch README.md
+
+COPY uv.lock pyproject.toml ./
+COPY src/ src/
+
+RUN uv sync --frozen --no-dev  --compile-bytecode
+# Compiling Python source files to bytecode is typically desirable for production images as it tends to improve startup time (at the cost of increased installation time).
+# RUN uv build
+# RUN uv pip install dist/src-0.1.0-py3-none-any.whl
+
+FROM python:${PYTHON_VERSION}-slim AS runner-image
+
+RUN apt-get update && apt-get install -yq --no-install-recommends \
+      curl \
+    && apt-get upgrade -y curl \
+    && apt-get purge -y imagemagick git-man golang libexpat1-dev \
+    && apt-get -y autoremove \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -g 1069 python && \
     useradd -r -u 1069 -g python python
 
-
-RUN ln -s /quarto-dist/bin/quarto /usr/local/bin/quarto
 WORKDIR /home/python
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --chown=python:python --from=compile-image /.venv /home/python/.venv
+COPY --chown=python:python --from=compile-image quarto-dist/ quarto-dist/
+RUN ln -s /home/python/quarto-dist/bin/quarto /usr/local/bin/quarto
 
-# COPY --chown=python:python --from=compile-image /.venv /home/python/.venv
-# COPY --chown=python:python --from=compile-image quarto-dist/ quarto-dist/
+ENV PATH="/home/python/.venv/bin:$PATH"
 
-
-ENV PATH="/.venv/bin:$PATH"
-
-# Krever en README for å kunne bygge prosjektet https://docs.astral.sh/uv/concepts/projects/config/#project-packaging
-RUN touch README.md
+COPY main.py index.qmd datakvalitet.qmd ./
 COPY data/ data/
-COPY assets/ assets/
 COPY src/ src/
+COPY assets/ assets/
 COPY datafortellinger/ datafortellinger/
-
-COPY uv.lock pyproject.toml _quarto.yml main.py index.qmd ./
-
-RUN uv sync --frozen --no-dev
 
 RUN chown python:python /home/python -R
 
@@ -60,4 +64,4 @@ ENV XDG_CACHE_HOME=/home/python/cache
 ENV XDG_DATA_HOME=/home/python/share
 
 USER 1069
-ENTRYPOINT ["uv", "run", "main.py"]
+ENTRYPOINT ["python",  "main.py"]

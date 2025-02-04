@@ -21,7 +21,7 @@ website:
       - text: Startside
         href: index.qmd
       - text: Datakvalitet
-        href: datafortellinger/datakvalitet.qmd
+        href: datakvalitet.qmd
       # - text: Ny prosess i Fia TODO: denne bør legges inn i datakvalitet eller fjernes
       #   href: datafortellinger/endret_prosess.qmd
       - text: Bruk av Fia

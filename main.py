@@ -100,24 +100,24 @@ if __name__ == "__main__":
 
     files = [
         "index",
-        "datafortellinger/datakvalitet",
+        "datakvalitet",
         # "datafortellinger/endret_prosess", //TODO: Legg inn i datakvalitet eller fjern helt
     ]
 
     resultatområder = [
-        "norge",
-        "agder",
-        "innlandet",
-        "møre_og_romsdal",
-        "nordland",
-        "oslo",
-        "øst-viken",
-        "rogaland",
-        "troms_og_finnmark",
-        "trøndelag",
-        "vest-viken",
-        "vestfold_og_telemark",
-        "vestland",
+        # "norge",
+        # "agder",
+        # "innlandet",
+        # "møre_og_romsdal",
+        # "nordland",
+        # "oslo",
+        # "øst-viken",
+        # "rogaland",
+        # "troms_og_finnmark",
+        # "trøndelag",
+        # "vest-viken",
+        # "vestfold_og_telemark",
+        # "vestland",
     ]
     try:
         for file in files:

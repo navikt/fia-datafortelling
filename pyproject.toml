@@ -24,8 +24,11 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["src"]
 
 [project.urls]
 Repository = "https://github.com/navikt/fia-datafortelling.git"
@@ -35,3 +38,10 @@ Repository = "https://github.com/navikt/fia-datafortelling.git"
 addopts = "-ra -q" # reduserer output så lenge alle tester består
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[dependency-groups]
+dev = [
+    "nbstripout>=0.8.1",
+    "pre-commit>=4.1.0",
+    "pytest>=8.3.4",
+]
