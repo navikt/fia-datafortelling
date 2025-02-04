@@ -3,7 +3,7 @@ ARG PYTHON_VERSION=3.13.1
 FROM python:${PYTHON_VERSION} AS compile-image
 
 # Endre til feks arm64 for å bygge for Apple Silicon Mac
-ENV CPU=arm64
+ENV CPU=amd64
 
 RUN apt-get update && apt-get install -yq --no-install-recommends \
     curl \
