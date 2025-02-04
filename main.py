@@ -73,6 +73,8 @@ def update_quarto(output_dir: str):
             files_to_upload.append(os.path.join(root, file))
             logging.info(os.path.join(root, file))
 
+    logging.info(f"{len(files_to_upload)} files found for upload.")
+
     multipart_form_data = {}
     for file_path in files_to_upload:
         file_name = os.path.basename(file_path)
@@ -80,7 +82,9 @@ def update_quarto(output_dir: str):
             # Read the file contents and store them in the dictionary
             file_contents = file.read()
             multipart_form_data[file_name] = (file_name, file_contents)
-            logging.debug(f"Prepared file for upload: {file_name}")
+            logging.info(f"Prepared file for upload: {file_name}")
+
+    logging.info("multipart form data prepared.")
 
     try:
         # Send the request with all files in the dictionary
