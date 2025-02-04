@@ -51,7 +51,7 @@ RUN ln -s /home/python/quarto-dist/bin/quarto /usr/local/bin/quarto
 
 ENV PATH="/home/python/.venv/bin:$PATH"
 
-COPY main.py index.qmd datakvalitet.qmd ./
+COPY main.py index.qmd datakvalitet.qmd _quarto.yml ./
 COPY data/ data/
 COPY src/ src/
 COPY assets/ assets/

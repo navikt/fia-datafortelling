@@ -65,16 +65,7 @@ def render_ia_tjenester_per_resultatområde(resultatområde: str):
         raise
 
 
-def update_quarto(output_dir: str):
-    logging.info("Starting Quarto update process.")
-    files_to_upload = []
-    for root, dirs, files in os.walk(output_dir):
-        for file in files:
-            files_to_upload.append(os.path.join(root, file))
-            logging.info(os.path.join(root, file))
-
-    logging.info(f"{len(files_to_upload)} files found for upload.")
-
+def update_quarto(files_to_upload: list[str]):
     multipart_form_data = {}
     for file_path in files_to_upload:
         file_name = os.path.basename(file_path)
@@ -132,7 +123,18 @@ if __name__ == "__main__":
             logging.info(f"Kjører quarto render for resultatområde: {resultatområde}")
             render_fia_per_resultatområde(resultatområde=resultatområde)
             render_ia_tjenester_per_resultatområde(resultatområde=resultatområde)
-        update_quarto(output_dir="_site")
+
+        logging.info("Starting Quarto update process.")
+        files_to_upload = []
+        for root, dirs, files in os.walk("_site"):
+            for file in files:
+                files_to_upload.append(os.path.join(root, file))
+                logging.info(os.path.join(root, file))
+
+        logging.info(f"{len(files_to_upload)} files found for upload.")
+
+        update_quarto(files_to_upload=files_to_upload)
+
     except Exception as e:
         logging.error(f"Script feilet: {e}")
     logging.info("Oppdatering av datafortellinger ferdig")
