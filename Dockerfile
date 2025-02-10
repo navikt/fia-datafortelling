@@ -74,22 +74,6 @@ COPY fia_vest-viken.qmd .
 COPY fia_vestfold_og_telemark.qmd .
 COPY fia_vestland.qmd .
 
-# IA-tjenester
-COPY ia_tjenester_per_resultatomrade.qmd .
-COPY ia_tjenester_agder.qmd .
-COPY ia_tjenester_innlandet.qmd .
-COPY ia_tjenester_more_og_romsdal.qmd .
-COPY ia_tjenester_nordland.qmd .
-COPY ia_tjenester_norge.qmd .
-COPY ia_tjenester_oslo.qmd .
-COPY ia_tjenester_ost-viken.qmd .
-COPY ia_tjenester_rogaland.qmd .
-COPY ia_tjenester_troms_og_finnmark.qmd .
-COPY ia_tjenester_trondelag.qmd .
-COPY ia_tjenester_vest-viken.qmd .
-COPY ia_tjenester_vestfold_og_telemark.qmd .
-COPY ia_tjenester_vestland.qmd .
-
 # Data, assets, kode og qmd-filer inkludert i datafortellinger
 COPY data/ data/
 COPY src/ src/
