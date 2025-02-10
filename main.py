@@ -80,7 +80,7 @@ def update_quarto(files_to_upload: list[str]):
     try:
         # Send the request with all files in the dictionary
         response = requests.put(
-            f"https://{os.environ['NADA_ENV']}/quarto/update/{os.environ['QUARTO_ID_HELSESJEKK']}",
+            f"https://{os.environ['NADA_ENV']}/quarto/update/{os.environ['QUARTO_ID']}",
             headers={"Authorization": f"Bearer {os.environ['QUARTO_TOKEN']}"},
             files=multipart_form_data,
         )
