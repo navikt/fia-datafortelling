@@ -26,7 +26,6 @@ COPY uv.lock pyproject.toml ./
 COPY src/ src/
 
 RUN uv sync --frozen --no-dev  --compile-bytecode
-# Compiling Python source files to bytecode is typically desirable for production images as it tends to improve startup time (at the cost of increased installation time).
 
 FROM python:${PYTHON_VERSION}-slim AS runner-image
 
@@ -62,4 +61,5 @@ ENV XDG_CACHE_HOME=/home/python/cache
 ENV XDG_DATA_HOME=/home/python/share
 
 USER 1069
+
 ENTRYPOINT ["python",  "main.py"]
