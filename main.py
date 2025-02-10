@@ -121,7 +121,6 @@ if __name__ == "__main__":
         for resultatområde in resultatområder:
             logging.info(f"Kjører quarto render for resultatområde: {resultatområde}")
             render_fia_per_resultatområde(resultatområde=resultatområde)
-            render_ia_tjenester_per_resultatområde(resultatområde=resultatområde)
 
         logging.info("Starting Quarto update process.")
         files_to_upload = []
