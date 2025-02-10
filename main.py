@@ -77,6 +77,9 @@ def update_quarto(files_to_upload: list[str]):
 
     logging.info("multipart form data prepared.")
 
+    if os.getenv("LOCAL") is not None:
+        return
+
     try:
         # Send the request with all files in the dictionary
         response = requests.put(

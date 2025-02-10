@@ -103,13 +103,7 @@ Og åpne [index.html](_site/index.html) i en nettleser.
 
 ## Bygg datafortellinger i docker lokalt
 
-For å teste at datafortellingen kjører i docker lokalt kan man kjøre [rundock.sh](rundock.sh).
-
-Denne kommandoen forsøker å bygge et image fra `Dockerfile` og kjøre imaget opp mot bigquery i dev.
-
-For at dette skal gå vil man måtte supplere imaget med en Application Default Credentials (ADC) fil.
-
-Denne genererer man på forhånd og limer inn i variabelen `ADC` i scriptet.
+For å teste at datafortellingen kjører i docker lokalt må man supplere docker-imaget med en Application Default Credentials (ADC) fil. Denne genererer man på forhånd og limer inn i variabelen `ADC` i scriptet.
 
 1. Sett riktig prosjekt for gcloud
 ```bash
@@ -120,11 +114,15 @@ gcloud config set project <PROSJEKT>
 ```bash
 gcloud auth application-default login
 ```
-3. Lim inn path til `ADC` (output fra kommando over) inn i variabelen ADC i scriptet rundock.sh
-4. Oppdater evt variablene `GCP_PROJECT` og `DATASET`
-5. Kjør scriptet rundock.sh. Dette vil generere alle fortellingene, uten å laste de opp til nada.
+
+3. eksporter path til `ADC` (output fra kommando over)
 ```bash
-./rundock.sh
+export ADC=path/til/adc.json
+```
+
+4. Kjør docker imaget, med ADC filen som et volume. -e `LOCAL=1` Gjør så python scriptet main.py ikke laster opp til NADA.
+```bash
+docker run -e LOCAL=1 -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/adc.json -v $ADC:/tmp/keys/adc.json:ro datafortelling
 ```
 
 ## Kjør NAIS job manuelt
