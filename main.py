@@ -32,7 +32,7 @@ def render_fia_per_resultatområde(resultatområde: str):
             [
                 "quarto",
                 "render",
-                f"datafortellinger/fia/{resultatområde}.qmd",
+                f"fia_{resultatområde}.qmd",
             ],
             check=True,
             capture_output=True,
@@ -52,7 +52,7 @@ def render_ia_tjenester_per_resultatområde(resultatområde: str):
             [
                 "quarto",
                 "render",
-                f"datafortellinger/ia_tjenester/{resultatområde}.qmd",
+                f"ia_tjenester_{resultatområde}.qmd",
             ],
             check=True,
             capture_output=True,
@@ -77,9 +77,6 @@ def update_quarto(files_to_upload: list[str]):
 
     logging.info("multipart form data prepared.")
 
-    if os.getenv("LOCAL") is not None:
-        return
-
     try:
         # Send the request with all files in the dictionary
         response = requests.put(
@@ -100,23 +97,22 @@ if __name__ == "__main__":
     files = [
         "index",
         "datakvalitet",
-        # "datafortellinger/endret_prosess", //TODO: Legg inn i datakvalitet eller fjern helt
     ]
 
     resultatområder = [
-        # "norge",
-        # "agder",
-        # "innlandet",
-        # "møre_og_romsdal",
-        # "nordland",
-        # "oslo",
-        # "øst-viken",
-        # "rogaland",
-        # "troms_og_finnmark",
-        # "trøndelag",
-        # "vest-viken",
-        # "vestfold_og_telemark",
-        # "vestland",
+        "norge",
+        "agder",
+        "innlandet",
+        "more_og_romsdal",
+        "nordland",
+        "oslo",
+        "ost-viken",
+        "rogaland",
+        "troms_og_finnmark",
+        "trondelag",
+        "vest-viken",
+        "vestfold_og_telemark",
+        "vestland",
     ]
     try:
         for file in files:
@@ -129,7 +125,7 @@ if __name__ == "__main__":
 
         logging.info("Starting Quarto update process.")
         files_to_upload = []
-        for root, dirs, files in os.walk("_site"):
+        for root, dirs, files in os.walk("pages"):
             for file in files:
                 files_to_upload.append(os.path.join(root, file))
                 logging.info(os.path.join(root, file))

@@ -122,7 +122,7 @@ export ADC=path/til/adc.json
 
 4. Kjør docker imaget, med ADC filen som et volume. -e `LOCAL=1` Gjør så python scriptet main.py ikke laster opp til NADA.
 ```bash
-docker run -e LOCAL=1 -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/adc.json -v $ADC:/tmp/keys/adc.json:ro datafortelling
+docker run -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/adc.json -v $ADC:/tmp/keys/adc.json:ro datafortelling
 ```
 
 ## Kjør NAIS job manuelt

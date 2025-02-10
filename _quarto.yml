@@ -1,8 +1,40 @@
 project:
   type: website
+  output-dir: pages
   render:
-    - "index.qmd"
-    - "datakvalitet.qmd"
+    - datafortelling_per_resoltatomrade.qmd
+    - ia_tjenester_per_resuotatomrade.qmd
+
+    - datakvalitet.qmd
+    - index.qmd
+    
+    - fia_agder.qmd
+    - fia_innlandet.qmd
+    - fia_more_og_romsdal.qmd
+    - fia_nordland.qmd
+    - fia_norge.qmd
+    - fia_oslo.qmd
+    - fia_ost-viken.qmd
+    - fia_rogaland.qmd
+    - fia_troms_og_finnmark.qmd
+    - fia_trondelag.qmd
+    - fia_vest-viken.qmd
+    - fia_vestfold_og_telemark.qmd
+    - fia_vestland.qmd
+
+    - ia_tjenester_agder.qmd
+    - ia_tjenester_innlandet.qmd
+    - ia_tjenester_more_og_romsdal.qmd
+    - ia_tjenester_nordland.qmd
+    - ia_tjenester_norge.qmd
+    - ia_tjenester_oslo.qmd
+    - ia_tjenester_ost-viken.qmd
+    - ia_tjenester_rogaland.qmd
+    - ia_tjenester_troms_og_finnmark.qmd
+    - ia_tjenester_trondelag.qmd
+    - ia_tjenester_vest-viken.qmd
+    - ia_tjenester_vestfold_og_telemark.qmd
+    - ia_tjenester_vestland.qmd
 
 date: now
 date-format: "DD.MM.YYYY HH:mm:ss z"
@@ -23,6 +55,62 @@ website:
         href: index.qmd
       - text: Datakvalitet
         href: datakvalitet.qmd
+      - text: Bruk av Fia
+        menu:
+        - href: fia_norge.qmd
+          text: Hele Norge
+        - href: fia_agder.qmd
+          text: Agder
+        - href: fia_innlandet.qmd
+          text: Innlandet
+        - href: fia_more_og_romsdal.qmd
+          text: Møre og Romsdal
+        - href: fia_nordland.qmd
+          text: Nordland
+        - href: fia_oslo.qmd
+          text: Oslo
+        - href: fia_ost-viken.qmd
+          text: Øst-Viken
+        - href: fia_rogaland.qmd
+          text: Rogaland
+        - href: fia_troms_og_finnmark.qmd
+          text: Troms og Finnmark
+        - href: fia_trondelag.qmd
+          text: Trøndelag
+        - href: fia_vest-viken.qmd
+          text: Vest-Viken
+        - href: fia_vestfold_og_telemark.qmd
+          text: Vestfold og Telemark
+        - href: fia_vestland.qmd
+          text: Vestland
+      - text: IA-tjenester
+        menu:
+        - href: ia_tjenester_norge.qmd
+          text: Hele Norge
+        - href: ia_tjenester_agder.qmd
+          text: Agder
+        - href: ia_tjenester_innlandet.qmd
+          text: Innlandet
+        - href: ia_tjenester_more_og_romsdal.qmd
+          text: Møre og Romsdal
+        - href: ia_tjenester_nordland.qmd
+          text: Nordland
+        - href: ia_tjenester_oslo.qmd
+          text: Oslo
+        - href: ia_tjenester_ost-viken.qmd
+          text: Øst-Viken
+        - href: ia_tjenester_rogaland.qmd
+          text: Rogaland
+        - href: ia_tjenester_troms_og_finnmark.qmd
+          text: Troms og Finnmark
+        - href: ia_tjenester_trondelag.qmd
+          text: Trøndelag
+        - href: ia_tjenester_vest-viken.qmd
+          text: Vest-Viken
+        - href: ia_tjenester_vestfold_og_telemark.qmd
+          text: Vestfold og Telemark
+        - href: ia_tjenester_vestland.qmd
+          text: Vestland
     right:
       - icon: people-fill
         target: _blank

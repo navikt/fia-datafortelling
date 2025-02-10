@@ -3,10 +3,11 @@ title: Bruk av Fia i Agder
 subtitle: Statistikk som viser bruk av Fia i Agder.
 title-block-banner: true
 title-block-banner-color: white
+embed-resources: true
 ---
 
 ```{python}
 resultatområde = "agder"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+{{< include datafortelling_per_resultatomrade.qmd >}}

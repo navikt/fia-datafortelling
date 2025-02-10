@@ -3,10 +3,11 @@ title: Bruk av Fia i Vestfold og Telemark
 subtitle: Statistikk som viser bruk av Fia i Vestfold og Telemark.
 title-block-banner: true
 title-block-banner-color: white
+embed-resources: true
 ---
 
 ```{python}
 resultatområde = "vestfold_og_telemark"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+{{< include datafortelling_per_resultatomrade.qmd >}}

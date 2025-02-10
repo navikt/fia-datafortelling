@@ -3,10 +3,11 @@ title: Bruk av Fia i Nordland
 subtitle: Statistikk som viser bruk av Fia i Nordland.
 title-block-banner: true
 title-block-banner-color: white
+embed-resources: true
 ---
 
 ```{python}
 resultatområde = "nordland"
 ```
 
-{{< include datafortelling_per_resultatområde.qmd >}}
+{{< include datafortelling_per_resultatomrade.qmd >}}

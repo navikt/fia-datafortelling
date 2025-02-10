@@ -1,12 +1,13 @@
 ---
-title: IA-tjenester levert i Innlandet
+title: IA-tjenester levert i Rogaland
 subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
 title-block-banner: true
 title-block-banner-color: white
+embed-resources: true
 ---
 
 ```{python}
-resultatområde = "innlandet"
+resultatområde = "rogaland"
 ```
 
-{{< include ia_tjenester_per_resultatområde.qmd >}}
+{{< include ia_tjenester_per_resultatomrade.qmd >}}

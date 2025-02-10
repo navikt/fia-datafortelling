@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.13.1
+ARG PYTHON_VERSION=3.13.2
 
 FROM python:${PYTHON_VERSION} AS compile-image
 
@@ -48,11 +48,53 @@ RUN ln -s /home/python/quarto-dist/bin/quarto /usr/local/bin/quarto
 
 ENV PATH="/home/python/.venv/bin:$PATH"
 
-COPY main.py index.qmd datakvalitet.qmd _quarto.yml ./
+# Config for quarto website
+COPY _quarto.yml .
+
+# Main script for rendering av quarto og opplasting
+COPY main.py .
+
+# Generelle datafortellinger
+COPY index.qmd .
+COPY datakvalitet.qmd .
+
+# Fia Tall
+COPY datafortelling_per_resultatomrade.qmd .
+COPY fia_agder.qmd .
+COPY fia_innlandet.qmd .
+COPY fia_more_og_romsdal.qmd .
+COPY fia_nordland.qmd .
+COPY fia_norge.qmd .
+COPY fia_oslo.qmd .
+COPY fia_ost-viken.qmd .
+COPY fia_rogaland.qmd .
+COPY fia_troms_og_finnmark.qmd .
+COPY fia_trondelag.qmd .
+COPY fia_vest-viken.qmd .
+COPY fia_vestfold_og_telemark.qmd .
+COPY fia_vestland.qmd .
+
+# IA-tjenester
+COPY ia_tjenester_per_resultatomrade.qmd .
+COPY ia_tjenester_agder.qmd .
+COPY ia_tjenester_innlandet.qmd .
+COPY ia_tjenester_more_og_romsdal.qmd .
+COPY ia_tjenester_nordland.qmd .
+COPY ia_tjenester_norge.qmd .
+COPY ia_tjenester_oslo.qmd .
+COPY ia_tjenester_ost-viken.qmd .
+COPY ia_tjenester_rogaland.qmd .
+COPY ia_tjenester_troms_og_finnmark.qmd .
+COPY ia_tjenester_trondelag.qmd .
+COPY ia_tjenester_vest-viken.qmd .
+COPY ia_tjenester_vestfold_og_telemark.qmd .
+COPY ia_tjenester_vestland.qmd .
+
+# Data, assets, kode og qmd-filer inkludert i datafortellinger
 COPY data/ data/
 COPY src/ src/
 COPY assets/ assets/
-COPY datafortellinger/ datafortellinger/
+COPY includes/ includes/
 
 RUN chown python:python /home/python -R
 

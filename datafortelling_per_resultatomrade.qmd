@@ -98,7 +98,7 @@ data_samarbeidsplan_resultatområde = data_samarbeidsplan[data_samarbeidsplan.re
 ```
 
 ## Antall samarbeid
-{{< include ../includes/antall_samarbeid_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -108,12 +108,12 @@ trakt_antall_samarbeid(
 )
 ```
 
-{{< include ../includes/begrep-forklaring.qmd >}}
+{{< include includes/begrep-forklaring.qmd >}}
 
 
 ## Antall samarbeid per virksomhet
 
-{{< include ../includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -149,8 +149,8 @@ gjennomstrømmingstall(data_status_resultatområde)
 ```
 :::
 
-{{< include ../includes/sak-forklaring.qmd >}}
-{{< include ../includes/saksstatus-forklaring.qmd >}}
+{{< include includes/sak-forklaring.qmd >}}
+{{< include includes/saksstatus-forklaring.qmd >}}
 
 
 ## Leveranser
@@ -158,7 +158,7 @@ IA-tjenester er faset ut og erstattet med samarbeidsplanen i Fia.
 
 ## Virksomhetsprofil
 
-{{< include ../includes/virksomhetsprofil_forklaring.qmd >}}
+{{< include includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -199,7 +199,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include ../includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell_resultatområde)
@@ -209,6 +209,6 @@ data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
-{{< include ../includes/ikke-aktuell-forklaring.qmd >}}
+{{< include includes/ikke-aktuell-forklaring.qmd >}}
 
 Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).

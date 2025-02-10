@@ -3,10 +3,11 @@ title: IA-tjenester levert i Troms og Finnmark
 subtitle: IA-tjenester er utfaset med samarbeidsplan i Fia.
 title-block-banner: true
 title-block-banner-color: white
+embed-resources: true
 ---
 
 ```{python}
 resultatområde = "troms_og_finnmark"
 ```
 
-{{< include ia_tjenester_per_resultatområde.qmd >}}
+{{< include ia_tjenester_per_resultatomrade.qmd >}}

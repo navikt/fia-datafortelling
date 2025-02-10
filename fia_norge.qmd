@@ -3,6 +3,7 @@ title: Bruk av Fia nasjonalt
 subtitle: Statistikk som viser Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
+embed-resources: true
 ---
 ```{python}
 %load_ext autoreload
@@ -76,7 +77,7 @@ data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bi
 
 
 ## Antall samarbeid
-{{< include ../includes/antall_samarbeid_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
 trakt_antall_samarbeid(
@@ -86,12 +87,12 @@ trakt_antall_samarbeid(
 )
 ```
 
-{{< include ../includes/begrep-forklaring.qmd >}}
+{{< include includes/begrep-forklaring.qmd >}}
 
 
 ## Antall samarbeid per virksomhet
 
-{{< include ../includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 # Antall
@@ -108,15 +109,15 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 
 ## Statusflyt i Fia
 
-{{< include ../includes/statusflyt_i_fia_forklaring.qmd >}}
+{{< include includes/statusflyt_i_fia_forklaring.qmd >}}
 
 ```{python}
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 statusflyt(data_input)
 ```
 
-{{< include ../includes/sak-forklaring.qmd >}}
-{{< include ../includes/saksstatus-forklaring.qmd >}}
+{{< include includes/sak-forklaring.qmd >}}
+{{< include includes/saksstatus-forklaring.qmd >}}
 
 
 ## Antall saker per status
@@ -149,12 +150,12 @@ aktive_saker_per_kolonne(data_status, "resultatomrade")
 
 ## Leveranser
 
-{{< include ../includes/leveranser.qmd >}}
+{{< include includes/leveranser.qmd >}}
 
 
 ## Virksomhetsprofil
 
-{{< include ../includes/virksomhetsprofil_forklaring.qmd >}}
+{{< include includes/virksomhetsprofil_forklaring.qmd >}}
 
 ::: {.panel-tabset}
 
@@ -195,7 +196,7 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include ../includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
+{{< include includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
 
 ```{python}
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
@@ -258,6 +259,6 @@ begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 
 :::
 
-{{< include ../includes/ikke-aktuell-forklaring.qmd >}}
+{{< include includes/ikke-aktuell-forklaring.qmd >}}
 
 Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).
