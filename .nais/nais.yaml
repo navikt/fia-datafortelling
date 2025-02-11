@@ -32,12 +32,8 @@ spec:
       value: {{ nada_env }}
     - name: QUARTO_ID
       value: {{ quarto_id }}
-    - name: QUARTO_ID_DATAKVALITET
-      value: {{ quarto_id_datakvalitet }}
     - name: QUARTO_ID_TEAMPIA
       value: {{ quarto_id_teampia }}
-    - name: QUARTO_ID_HELSESJEKK
-      value: {{ quarto_id_helsesjekk }}
     - name: GCP_PROJECT
       value: {{ project }}
     - name: DATASET
