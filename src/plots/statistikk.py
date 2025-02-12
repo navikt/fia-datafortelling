@@ -393,7 +393,6 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
     for node, total in node_plus.items():
         label_with_value.append(f"{status_label[node]} ({total})")
 
-    gråfarge = "204, 204, 204"
     farge_vurderes = "246, 130, 130"
     farge_fullført = "51, 214, 171"
     farge_kartelgges = "255, 215, 153"
@@ -413,18 +412,19 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
         f"rgba({farge_ikke_aktuell}, {alpha})",  # Ikke aktuell
     ]
 
-    alpha = 0.4
-    link_colors = [
-        f"rgba({gråfarge}, {alpha})",  # Til Vurderes
-        f"rgba({gråfarge}, {alpha})",  # Til Kontaktes
-        f"rgba({gråfarge}, {alpha})",  # Til Kartlegges
-        f"rgba({gråfarge}, {alpha})",  # Til Vi bistår
-        f"rgba({farge_fullført}, {alpha})",  # Til Fullført
-        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-    ]
+    # alpha = 0.4
+    # gråfarge = "204, 204, 204"
+    # link_colors = [
+    #     f"rgba({gråfarge}, {alpha})",  # Til Vurderes
+    #     f"rgba({gråfarge}, {alpha})",  # Til Kontaktes
+    #     f"rgba({gråfarge}, {alpha})",  # Til Kartlegges
+    #     f"rgba({gråfarge}, {alpha})",  # Til Vi bistår
+    #     f"rgba({farge_fullført}, {alpha})",  # Til Fullført
+    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+    # ]
 
     fig = go.Figure()
     fig.add_trace(
@@ -442,8 +442,7 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
                 source=source_status,
                 target=target_status,
                 value=count_endringer,
-                color=link_colors,
-                # color=[color_dict_link[x.split("_")[0]] for x in target_list],
+                # color=[link_colors[i] for i in target_status], TODO: Link colors er ikke pålitelig i plotly, test litt mer
             ),
         )
     )
