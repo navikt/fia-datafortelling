@@ -380,22 +380,70 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
     target_status = status_endringer.index.get_level_values(1).map(status_indexes)
     count_endringer = status_endringer.values
 
+    node_plus = {i: 0 for i in range(7)}
+    node_plus[0] = count_endringer[0]
+
+    for src, tgt, count in zip(source_status, target_status, count_endringer):
+        node_plus[tgt] += count
+
     status_label = [x.capitalize().replace("_", " ") for x in statusordre_uslettet]
     status_label = [x if x != "Ny" else "Alle saker" for x in status_label]
+
+    label_with_value = []
+    for node, total in node_plus.items():
+        label_with_value.append(f"{status_label[node]} ({total})")
+
+    gråfarge = "204, 204, 204"
+    farge_vurderes = "246, 130, 130"
+    farge_fullført = "51, 214, 171"
+    farge_kartelgges = "255, 215, 153"
+    farge_vi_bistår = "187, 130, 251"
+    farge_kontaktes = "71, 219, 245"
+    farge_ikke_aktuell = "242, 119, 98"
+    farge_alle_saker = "130, 139, 251"
+
+    alpha = 1
+    node_colors = [
+        f"rgba({farge_alle_saker}, {alpha})",  # Alle saker
+        f"rgba({farge_vurderes}, {alpha})",  # Vurderes
+        f"rgba({farge_kontaktes}, {alpha})",  # Kontaktes
+        f"rgba({farge_kartelgges}, {alpha})",  # Kartlegges
+        f"rgba({farge_vi_bistår}, {alpha})",  # Vi bistår
+        f"rgba({farge_fullført}, {alpha})",  # Fullført
+        f"rgba({farge_ikke_aktuell}, {alpha})",  # Ikke aktuell
+    ]
+
+    alpha = 0.4
+    link_colors = [
+        f"rgba({gråfarge}, {alpha})",  # Til Vurderes
+        f"rgba({gråfarge}, {alpha})",  # Til Kontaktes
+        f"rgba({gråfarge}, {alpha})",  # Til Kartlegges
+        f"rgba({gråfarge}, {alpha})",  # Til Vi bistår
+        f"rgba({farge_fullført}, {alpha})",  # Til Fullført
+        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+        f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
+    ]
+
     fig = go.Figure()
     fig.add_trace(
         go.Sankey(
             node=dict(
                 # pad=200,
-                label=status_label,
+                thickness=10,
+                label=label_with_value,
+                color=node_colors,
                 # node position in the open interval (0, 1)
                 x=[0.02, 0.2, 0.4, 0.6, 0.8, 0.98, 0.98],
-                y=[0.5, 0.5, 0.55, 0.6, 0.6, 0.6, 0.14],
+                y=[0.5, 0.5, 0.55, 0.6, 0.6, 0.7, 0.14],
             ),
             link=dict(
                 source=source_status,
                 target=target_status,
                 value=count_endringer,
+                color=link_colors,
+                # color=[color_dict_link[x.split("_")[0]] for x in target_list],
             ),
         )
     )
