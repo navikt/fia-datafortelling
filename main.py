@@ -27,7 +27,6 @@ def render_quarto(file_to_render: str):
 
 def render_fia_per_resultatområde(resultatområde: str):
     try:
-        logging.info("Bruk av Fia")
         result = subprocess.run(
             [
                 "quarto",

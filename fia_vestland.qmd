@@ -7,7 +7,73 @@ embed-resources: true
 ---
 
 ```{python}
-resultatområde = "vestland"
+%load_ext autoreload
+%autoreload 2
+
+import pandas as pd
+
+from src.utils.datahandler import (
+    load_data_deduplicate,
+    preprocess_data_statistikk,
+    split_data_statistikk,
+    preprocess_data_status,
+    preprocess_data_leveranse,
+    preprocess_data_samarbeid,
+    hent_leveranse_sistestatus,
+    explode_ikke_aktuell_begrunnelse,
+    legg_til_resultatområde,
+)
+
+
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
+RESULTATOMRÅDE = "vestland"
 ```
 
-{{< include datafortelling_per_resultatomrade.qmd >}}
+
+```{python}
+raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
+adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
+```
+
+
+```{python}
+data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
+
+data_statistikk_resultatområde = data_statistikk[data_statistikk.resultatomrade == RESULTATOMRÅDE]
+data_status, data_eierskap_resultatområde, _ = split_data_statistikk(data_statistikk_resultatområde)
+data_status = preprocess_data_status(data_status)
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
+
+# Henter data om IA-tjenester
+
+raw_data_leveranse = legg_til_resultatområde(raw_data_leveranse, data_statistikk)
+raw_data_leveranse_resultatområde = raw_data_leveranse[raw_data_leveranse.resultatomrade == RESULTATOMRÅDE]
+data_leveranse_resultatområde = preprocess_data_leveranse(raw_data_leveranse_resultatområde)
+data_leveranse_sistestatus_resultatområde = hent_leveranse_sistestatus(data_leveranse_resultatområde)
+
+# Henter data om samarbeid/prosess
+raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
+raw_data_samarbeid = legg_til_resultatområde(raw_data_samarbeid, data_statistikk)
+raw_data_samarbeid_resultatområde = raw_data_samarbeid[raw_data_samarbeid.resultatomrade == RESULTATOMRÅDE]
+data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid_resultatområde, data_statistikk_resultatområde)
+
+
+# Henter data om spørreundersøkelser
+data_spørreundersøkelse = load_data_deduplicate(PROJECT, DATASET, "sporreundersokelse-v1", distinct_colunms="id")
+data_spørreundersøkelse = legg_til_resultatområde(data_spørreundersøkelse, data_statistikk)
+data_spørreundersøkelse = data_spørreundersøkelse[data_spørreundersøkelse.resultatomrade == RESULTATOMRÅDE]
+
+# Henter data om samarbeidsplan
+data_samarbeidsplan = load_data_deduplicate(PROJECT, DATASET, "samarbeidsplan-bigquery-v1", distinct_colunms="id")
+# samarbeidsplantabellen har ikke saksnummer enda, så vi må legge det til
+data_samarbeidsplan = data_samarbeidsplan.merge(
+    raw_data_samarbeid[["id", "saksnummer"]].rename({"id": "samarbeidId"}, axis = 1),
+    how="left", on="samarbeidId",
+)
+data_samarbeidsplan = legg_til_resultatområde(data_samarbeidsplan, data_statistikk)
+data_samarbeidsplan = data_samarbeidsplan[data_samarbeidsplan.resultatomrade == RESULTATOMRÅDE]
+```
+
+{{< include datafortelling_fia.qmd >}}

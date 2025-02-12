@@ -5,8 +5,7 @@ project:
     - index.qmd
     - datakvalitet.qmd
     
-    - datafortelling_per_resoltatomrade.qmd
-
+    - datafortelling_fia.qmd
     - fia_agder.qmd
     - fia_innlandet.qmd
     - fia_more_og_romsdal.qmd

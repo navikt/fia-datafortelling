@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Datafortelling basert på data fra Fia"
 authors = [{name="NAV-IT"}]
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.13.2"
 dependencies = [
     "db-dtypes==1.3.1",
     "geojson-rewind==1.1.0",

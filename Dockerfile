@@ -59,7 +59,7 @@ COPY index.qmd .
 COPY datakvalitet.qmd .
 
 # Fia Tall
-COPY datafortelling_per_resultatomrade.qmd .
+COPY datafortelling_fia.qmd .
 COPY fia_agder.qmd .
 COPY fia_innlandet.qmd .
 COPY fia_more_og_romsdal.qmd .
