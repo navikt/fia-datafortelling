@@ -402,29 +402,29 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
     farge_alle_saker = "130, 139, 251"
 
     alpha = 1
-    node_colors = [
-        f"rgba({farge_alle_saker}, {alpha})",  # Alle saker
-        f"rgba({farge_vurderes}, {alpha})",  # Vurderes
-        f"rgba({farge_kontaktes}, {alpha})",  # Kontaktes
-        f"rgba({farge_kartelgges}, {alpha})",  # Kartlegges
-        f"rgba({farge_vi_bistår}, {alpha})",  # Vi bistår
-        f"rgba({farge_fullført}, {alpha})",  # Fullført
-        f"rgba({farge_ikke_aktuell}, {alpha})",  # Ikke aktuell
-    ]
+    farge_dict = {
+        "Alle saker": f"rgba({farge_alle_saker}, {alpha})",
+        "Vurderes": f"rgba({farge_vurderes}, {alpha})",
+        "Kontaktes": f"rgba({farge_kontaktes}, {alpha})",
+        "Kartlegges": f"rgba({farge_kartelgges}, {alpha})",
+        "Vi bistår": f"rgba({farge_vi_bistår}, {alpha})",
+        "Fullført": f"rgba({farge_fullført}, {alpha})",
+        "Ikke aktuell": f"rgba({farge_ikke_aktuell}, {alpha})",
+    }
 
-    # alpha = 0.4
-    # gråfarge = "204, 204, 204"
-    # link_colors = [
-    #     f"rgba({gråfarge}, {alpha})",  # Til Vurderes
-    #     f"rgba({gråfarge}, {alpha})",  # Til Kontaktes
-    #     f"rgba({gråfarge}, {alpha})",  # Til Kartlegges
-    #     f"rgba({gråfarge}, {alpha})",  # Til Vi bistår
-    #     f"rgba({farge_fullført}, {alpha})",  # Til Fullført
-    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-    #     f"rgba({farge_ikke_aktuell}, {alpha})",  # Til Ikke aktuell
-    # ]
+    alpha = 0.4
+    gråfarge = "204, 204, 204"
+    farge_dict_links = {
+        "Alle saker": f"rgba({gråfarge}, {alpha})",
+        "Vurderes": f"rgba({gråfarge}, {alpha})",
+        "Kontaktes": f"rgba({gråfarge}, {alpha})",
+        "Kartlegges": f"rgba({gråfarge}, {alpha})",
+        "Vi bistår": f"rgba({gråfarge}, {alpha})",
+        "Fullført": f"rgba({farge_fullført}, {alpha})",
+        "Ikke aktuell": f"rgba({farge_ikke_aktuell}, {alpha})",
+    }
+
+    target_status_label = [status_label[i] for i in target_status]
 
     fig = go.Figure()
     fig.add_trace(
@@ -433,7 +433,7 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
                 # pad=200,
                 thickness=10,
                 label=label_with_value,
-                color=node_colors,
+                color=[farge_dict[status] for status in status_label],
                 # node position in the open interval (0, 1)
                 x=[0.02, 0.2, 0.4, 0.6, 0.8, 0.98, 0.98],
                 y=[0.5, 0.5, 0.55, 0.6, 0.6, 0.7, 0.14],
@@ -442,7 +442,10 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
                 source=source_status,
                 target=target_status,
                 value=count_endringer,
-                # color=[link_colors[i] for i in target_status], TODO: Link colors er ikke pålitelig i plotly, test litt mer
+                color=[
+                    farge_dict_links[target_status]
+                    for target_status in target_status_label
+                ],
             ),
         )
     )
