@@ -35,8 +35,6 @@ website:
     logo: assets/nav_logo_hvit.png
     logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
     left:
-      - text: Startside
-        href: index.qmd
       - text: Datakvalitet
         href: datakvalitet.qmd
       - text: Bruk av Fia
