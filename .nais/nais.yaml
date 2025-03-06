@@ -25,6 +25,16 @@ spec:
     bigQueryDatasets:
       - name: {{ dataset }}
         permission: READ
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: python
+      destinations:
+        - id: "grafana-lgtm"
+    logging:
+      destinations:
+        - id: loki
+        - id: elastic
   envFrom:
     - secret: fia-quarto-secrets # value is the secret name in Google Secret Manager
   env:
