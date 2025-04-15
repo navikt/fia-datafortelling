@@ -74,6 +74,23 @@ COPY fia_vest-viken.qmd .
 COPY fia_vestfold_og_telemark.qmd .
 COPY fia_vestland.qmd .
 
+
+# Samarbeid datafortelling
+COPY datafortelling_fia_samarbeid.qmd .
+COPY fia_agder_samarbeid.qmd .
+COPY fia_innlandet_samarbeid.qmd .
+COPY fia_more_og_romsdal_samarbeid.qmd .
+COPY fia_nordland_samarbeid.qmd .
+COPY fia_norge_samarbeid.qmd .
+COPY fia_oslo_samarbeid.qmd .
+COPY fia_ost-viken_samarbeid.qmd .
+COPY fia_rogaland_samarbeid.qmd .
+COPY fia_troms_og_finnmark_samarbeid.qmd .
+COPY fia_trondelag_samarbeid.qmd .
+COPY fia_vest-viken_samarbeid.qmd .
+COPY fia_vestfold_og_telemark_samarbeid.qmd .
+COPY fia_vestland_samarbeid.qmd .
+
 # Data, assets, kode og qmd-filer inkludert i datafortellinger
 COPY data/ data/
 COPY src/ src/

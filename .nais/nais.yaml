@@ -26,11 +26,6 @@ spec:
       - name: {{ dataset }}
         permission: READ
   observability:
-    autoInstrumentation:
-      enabled: true
-      runtime: python
-      destinations:
-        - id: "grafana-lgtm"
     logging:
       destinations:
         - id: loki
