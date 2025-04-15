@@ -2,7 +2,6 @@ from enum import Enum
 
 
 class Resultatområde(Enum):
-    NORGE = None
     MØRE_OG_ROMSDAL = "møre_og_romsdal"
     AGDER = "agder"
     OSLO = "oslo"

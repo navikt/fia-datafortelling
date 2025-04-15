@@ -9,6 +9,18 @@ from src.utils.datahandler import (
 from src.utils.konstanter import Resultatområde
 
 
+def last_inn_spørreundersøkelser(
+    project: str,
+    dataset: str,
+):
+    return load_data_deduplicate(
+        project=project,
+        dataset=dataset,
+        table="sporreundersokelse-v1",
+        distinct_colunms="id",
+    )
+
+
 def last_inn_samarbeid(
     project: str,
     dataset: str,

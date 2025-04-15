@@ -45,6 +45,59 @@ def fullførte_samarbeid_med_tid(
     return antall_rader_filtrert_bort, fullførte_samarbeid_not_na
 
 
+def samarbeid_med_behovsvurdering(
+    data_samarbeid: pd.DataFrame,
+    data_spørreundersøkelse: pd.DataFrame,
+) -> pd.DataFrame:
+    if data_samarbeid.empty or data_spørreundersøkelse.empty:
+        return 0, pd.DataFrame()
+
+    samarbeid_ikke_slettet = data_samarbeid[data_samarbeid["status"] != "SLETTET"]
+
+    if samarbeid_ikke_slettet.empty:
+        return 0, pd.DataFrame()
+
+    # Filter surveys to only include completed behovsvurdering surveys
+    fullførte_behovsvurderinger = data_spørreundersøkelse[
+        (data_spørreundersøkelse["type"] == "Behovsvurdering")
+        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
+        # & (data_spørreundersøkelse["fullfort"].notna()) # TODO: Want to know the number filtered out by notna
+        # & (data_spørreundersøkelse["harMinstEttSvar"]) # TODO: Want to know number of spørreundersøkelser fullført uten svar?
+    ]
+
+    # TODO: Join fullførte_behovsvurderinger with samarbeid_ikke_slettet
+
+    # Filter samarbeid to include only those with completed behovsvurdering
+    samarbeid_med_fullført_behovsvurdering = samarbeid_ikke_slettet[
+        samarbeid_ikke_slettet["id"].isin(
+            fullførte_behovsvurderinger["samarbeidId"].unique()
+        )
+    ]
+
+    if samarbeid_med_fullført_behovsvurdering.empty:
+        return 0, pd.DataFrame()
+
+    # Find earliest completion time for each samarbeidId
+    tidligste_fullført = (
+        fullførte_behovsvurderinger.groupby("samarbeidId")["fullfort"]
+        .min()
+        .reset_index()
+        .rename(
+            columns={
+                "fullfort": "tidligste_behovsvurdering_fullfort",
+                "samarbeidId": "id",
+            }
+        )
+    )
+
+    # Merge with samarbeid data
+    resultat = samarbeid_med_fullført_behovsvurdering.merge(
+        tidligste_fullført, on="id", how="left"
+    )
+
+    return resultat
+
+
 def load_data_deduplicate(
     project: str, dataset: str, table: str, distinct_colunms: str
 ) -> pd.DataFrame:

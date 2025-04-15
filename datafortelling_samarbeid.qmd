@@ -1,11 +1,11 @@
 ```{python}
 
-from src.utils.datahandler import fullførte_samarbeid_med_tid
-from src.plots.samarbeid import plot_tid_brukt_i_samarbeid
+from src.utils.datahandler import fullførte_samarbeid_med_tid,samarbeid_med_behovsvurdering
+from src.plots.samarbeid import plot_tid_brukt_i_samarbeid, plot_tid_til_første_behovsvurdering
 ```
 
 
-# Tid brukt i samarbeid - (Opprettet - Fullført)
+# Tid brukt i samarbeid - (Opprettet - Fullført samarbeid)
 
 Antall dager mellom opprettelse av et samarbeid og når det er satt i status 'fullført'
 
@@ -22,12 +22,23 @@ plot_tid_brukt_i_samarbeid(df=fullførte_samarbeid)
 
 ```
 
+# Tid brukt i samarbeid - (Opprettet - Fullført behovsvurdering)
+Antall dager mellom opprettelse av et samarbeid og fullføring av første behovsvurdering.
+
+
+```{python}
+antall_fullforte_samarbeid_uten_dato, fullførte_samarbeid = fullførte_samarbeid_med_tid(data_samarbeid=data_samarbeid)
+samarbeid_behovsvurdering = samarbeid_med_behovsvurdering(data_samarbeid=data_samarbeid, data_spørreundersøkelse=data_spørreundersøkelse)
+
+plot_tid_til_første_behovsvurdering(df=samarbeid_behovsvurdering)
+```
 
 
 
-<!-- ## Fra Opprett samarbeid til Fullført behovsvurdering
-Se på virksomhetsprofil visning med gjennomsnitt og hel graf for å få "ett tall"
 
+<!-- 
+
+#TODO:
 ## Fra Fullført behovsvurdering til Fullført Evaluering
 Se på virksomhetsprofil visning med gjennomsnitt og hel graf for å få "ett tall"
 
