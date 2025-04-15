@@ -1,0 +1,46 @@
+---
+title: Tid brukt i samarbeid
+subtitle: Visning av tid brukt i samarbeid i Fia nasjonalt 
+title-block-banner: true
+title-block-banner-color: white
+embed-resources: true
+---
+```{python}
+%load_ext autoreload
+%autoreload 2
+
+import pandas as pd
+
+from src.utils.dataloader import (
+    last_inn_samarbeid,
+    last_inn_data_statistikk
+)
+
+from src.utils.konstanter import Resultatområde
+
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
+RESULTATOMRÅDE = Resultatområde.NORGE # None
+
+data_statistikk = last_inn_data_statistikk(
+    project=PROJECT,
+    dataset=DATASET,
+    adm_enheter=pd.read_csv("data/administrative_enheter.csv", dtype=str),
+)
+
+data_samarbeid = last_inn_samarbeid(
+    project=PROJECT,
+    dataset=DATASET,
+    data_statistikk=data_statistikk,
+)
+
+```
+
+
+<!-- Samme som resultatområder: -->
+
+{{< include datafortelling_samarbeid.qmd >}}
+
+<!-- Kun for Norge: -->
+
+

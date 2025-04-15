@@ -6,6 +6,78 @@ import plotly.graph_objects as go
 from src.utils.helper import annotate_ikke_offisiell_statistikk
 
 
+def plot_tid_brukt_i_samarbeid(df: pd.DataFrame) -> go.Figure:
+    """
+    Lager et histogram som viser hvor lang tid det tar fra et samarbeid blir opprettet til det blir fullført.
+
+    Args:
+        df: DataFrame av samarbeid som inneholder kolonnene 'opprettet' og 'fullfort'.
+
+    Returns:
+        Plotly figur med histogram og gjennomsnittlig tid til fullføring.
+    """
+
+    # Create a base figure
+    fig = go.Figure()
+
+    # Handle empty DataFrame
+    if df.empty:
+        fig.add_annotation(
+            text="Ingen data tilgjengelig",
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=0.5,
+            showarrow=False,
+            font=dict(size=20),
+        )
+        return fig
+
+    # Calculate time to completion in days, handling potential NaN values
+    df = df.copy()  # Create copy to avoid modifying original
+    df["time_to_completion"] = (df["fullfort"] - df["opprettet"]).dt.total_seconds() / (
+        60 * 60 * 24
+    )
+
+    # Calculate average
+    gjennomsnitt = df["time_to_completion"].mean()
+
+    # Create histogram
+    fig = go.Figure(
+        data=[
+            go.Histogram(
+                x=df["time_to_completion"],
+                nbinsx=40,  # Adjust based on your data spread
+                marker_color="#3366CC",
+                hovertemplate="Tid brukt i samarbeid: %{x:.1f} dager<br>Antall samarbeid: %{y}<extra></extra>",
+            )
+        ]
+    )
+
+    # Add vertical line for average
+    fig.add_vline(
+        x=gjennomsnitt,
+        line_width=2,
+        line_dash="dash",
+        line_color="#ef553b",
+        annotation_text=f"Gjennomsnitt: {gjennomsnitt:.1f} dager",
+        annotation_position="top right",
+        annotation_borderwidth=6,
+        annotation_font_color="white",
+        annotation_bgcolor="#ef553b",
+    )
+
+    # Update layout
+    fig.update_layout(
+        xaxis_title="Tid fra samarbeid ble opprettet til det ble fullført",
+        yaxis_title="Antall samarbeid",
+        bargap=0.04,
+    )
+
+    # Display the plot
+    return fig
+
+
 def plot_antall_saker_per_antall_samarbeid(
     data_samarbeid: pd.DataFrame, normalisert=False
 ) -> go.Figure:

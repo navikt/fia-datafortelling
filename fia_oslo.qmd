@@ -24,21 +24,16 @@ from src.utils.datahandler import (
     legg_til_resultatområde,
 )
 
+from src.utils.konstanter import Resultatområde
 
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
-RESULTATOMRÅDE = "oslo"
-```
+RESULTATOMRÅDE = Resultatområde.OSLO.value
 
-
-```{python}
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
 raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
 adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
-```
 
-
-```{python}
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
 
 data_statistikk_resultatområde = data_statistikk[data_statistikk.resultatomrade == RESULTATOMRÅDE]

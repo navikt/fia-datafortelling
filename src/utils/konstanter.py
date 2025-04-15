@@ -1,3 +1,22 @@
+from enum import Enum
+
+
+class Resultatområde(Enum):
+    NORGE = None
+    MØRE_OG_ROMSDAL = "møre_og_romsdal"
+    AGDER = "agder"
+    OSLO = "oslo"
+    INNLANDET = "innlandet"
+    NORDLAND = "nordland"
+    TROMS_OG_FINNMARK = "troms_og_finnmark"
+    TRØNDELAG = "trøndelag"
+    VESTFOLD_OG_TELEMARK = "vestfold_og_telemark"
+    VESTLAND = "vestland"
+    ROGALAND = "rogaland"
+    VEST_VIKEN = "vest-viken"
+    ØST_VIKEN = "øst-viken"
+
+
 statusordre = [
     "NY",
     "VURDERES",

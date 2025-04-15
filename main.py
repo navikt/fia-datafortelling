@@ -11,14 +11,31 @@ logging.basicConfig(
 
 def render_quarto(file_to_render: str):
     try:
-        logging.info(f"Kjører quarto render {file_to_render}.qmd")
-
         result = subprocess.run(
             ["quarto", "render", file_to_render + ".qmd"],
             check=True,
             capture_output=True,
             text=True,
         )
+        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
+        raise
+
+
+def render_samarbeid_per_resultatområde(resultatområde: str):
+    try:
+        result = subprocess.run(
+            [
+                "quarto",
+                "render",
+                f"fia_{resultatområde}_samarbeid.qmd",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
         logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
@@ -91,44 +108,46 @@ def update_quarto(files_to_upload: list[str]):
 
 
 if __name__ == "__main__":
-    logging.info("Starter kjøring av datafortellinger.")
-
-    files = [
-        "index",
-        "datakvalitet",
-    ]
-
-    resultatområder = [
-        "norge",
-        "agder",
-        "innlandet",
-        "more_og_romsdal",
-        "nordland",
-        "oslo",
-        "ost-viken",
-        "rogaland",
-        "troms_og_finnmark",
-        "trondelag",
-        "vest-viken",
-        "vestfold_og_telemark",
-        "vestland",
-    ]
+    logging.info("Starter render av datafortellinger.")
     try:
-        for file in files:
-            render_quarto(file_to_render=file)
+        logging.info("Kjører quarto render for forside til datafortellingene")
+        render_quarto(file_to_render="index")
+        logging.info("Kjører quarto render for datakvalitet datafortelling")
+        render_quarto(file_to_render="datakvalitet")
 
-        for resultatområde in resultatområder:
-            logging.info(f"Kjører quarto render for resultatområde: {resultatområde}")
+        for resultatområde in [
+            "norge",
+            "agder",
+            "innlandet",
+            "more_og_romsdal",
+            "nordland",
+            "oslo",
+            "ost-viken",
+            "rogaland",
+            "troms_og_finnmark",
+            "trondelag",
+            "vest-viken",
+            "vestfold_og_telemark",
+            "vestland",
+        ]:
+            logging.info(
+                f"Kjører quarto render for datafortelling om Fia - {resultatområde}"
+            )
             render_fia_per_resultatområde(resultatområde=resultatområde)
 
-        logging.info("Starting Quarto update process.")
+            logging.info(
+                f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
+            )
+            render_samarbeid_per_resultatområde(resultatområde=resultatområde)
+
+        logging.info("Henter filer å laste opp til NADA")
         files_to_upload = []
         for root, dirs, files in os.walk("pages"):
             for file in files:
                 files_to_upload.append(os.path.join(root, file))
-                logging.info(os.path.join(root, file))
+                logging.debug(os.path.join(root, file))
 
-        logging.info(f"{len(files_to_upload)} files found for upload.")
+        logging.info(f"Fant {len(files_to_upload)} filer å laste opp.")
 
         update_quarto(files_to_upload=files_to_upload)
 

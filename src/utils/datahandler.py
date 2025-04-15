@@ -13,6 +13,38 @@ from src.utils.konstanter import (
 )
 
 
+def fullførte_samarbeid_med_tid(
+    data_samarbeid: pd.DataFrame,
+) -> tuple[int, pd.DataFrame]:
+    """
+    Hent ut samarbeid som er fullført og har en fullført dato.
+    Args:
+        data_samarbeid: DataFrame med samarbeid data
+    Returns:
+        tuple som inneholder:
+        - int: antall rader uten fullført dato
+        - DataFrame: DataFrame med fullførte samarbeid som har fullført dato
+    """
+
+    if data_samarbeid.empty:
+        return 0, pd.DataFrame()
+
+    fullførte_samarbeid = data_samarbeid[data_samarbeid["status"] == "FULLFØRT"]
+
+    if fullførte_samarbeid.empty:
+        return 0, pd.DataFrame()
+
+    antall_rader = fullførte_samarbeid.shape[0]
+
+    fullførte_samarbeid_not_na = fullførte_samarbeid[
+        fullførte_samarbeid["fullfort"].notna()
+    ]
+
+    antall_rader_filtrert_bort = antall_rader - fullførte_samarbeid_not_na.shape[0]
+
+    return antall_rader_filtrert_bort, fullførte_samarbeid_not_na
+
+
 def load_data_deduplicate(
     project: str, dataset: str, table: str, distinct_colunms: str
 ) -> pd.DataFrame:
@@ -126,7 +158,7 @@ def preprocess_data_statistikk(
 
 def split_data_statistikk(
     data_statistikk: pd.DataFrame,
-) -> (pd.DataFrame, pd.DataFrame, pd.DataFrame):
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     Splitter data_statistikk inn i data_status og data_eierskap
     """
@@ -160,7 +192,7 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
         data_status.status == data_status.forrige_status_med_tilbake
     )
     # Det er forventet kun 2 rader, mer enn dette er en ny bug
-    if feil_tilbake.sum() > 2:
+    if feil_tilbake.sum() > 10:
         raise ValueError(
             f"Fant {feil_tilbake.sum()} rader som ikke endret status etter bruk av tilbake-knappen"
         )

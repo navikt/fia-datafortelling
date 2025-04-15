@@ -1,0 +1,61 @@
+```{python}
+
+from src.utils.datahandler import fullførte_samarbeid_med_tid
+from src.plots.samarbeid import plot_tid_brukt_i_samarbeid
+```
+
+
+# Tid brukt i samarbeid - (Opprettet - Fullført)
+
+Antall dager mellom opprettelse av et samarbeid og når det er satt i status 'fullført'
+
+
+```{python}
+
+antall_fullforte_samarbeid_uten_dato, fullførte_samarbeid = fullførte_samarbeid_med_tid(data_samarbeid=data_samarbeid)
+
+
+if(antall_fullforte_samarbeid_uten_dato > 0):
+    print(f"Antall fullførte samarbeid uten dato: {antall_fullforte_samarbeid_uten_dato}")
+    
+plot_tid_brukt_i_samarbeid(df=fullførte_samarbeid)
+
+```
+
+
+
+
+<!-- ## Fra Opprett samarbeid til Fullført behovsvurdering
+Se på virksomhetsprofil visning med gjennomsnitt og hel graf for å få "ett tall"
+
+## Fra Fullført behovsvurdering til Fullført Evaluering
+Se på virksomhetsprofil visning med gjennomsnitt og hel graf for å få "ett tall"
+
+## Fra Fullført evaluering til Fullført samarbeid
+todo
+
+
+# Plan
+
+## Varighet innhold
+Hvor lang varighet settes det for undertemaer / innhold i plan?
+Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
+
+## Innhold i plan
+Hvilke innhold er oftest med i plan?
+Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
+
+## Endring av plan
+Skjer det endringer på statuser på innhold en plan?
+Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde) ?
+
+## Fullføring / Avbryting av plan
+Skjer dette lenge før eller etter fristen?
+Se datakvalitet fordeling før og etter antall dager.
+Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
+
+
+# SF
+## Aktiviteter på innhold
+Hvor mange aktiviteter settes det i salesforce per type innhold?
+Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde) -->
