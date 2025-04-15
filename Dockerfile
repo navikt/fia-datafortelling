@@ -76,7 +76,7 @@ COPY fia_vestland.qmd .
 
 
 # Samarbeid datafortelling
-COPY datafortelling_fia_samarbeid.qmd .
+COPY datafortelling_samarbeid.qmd .
 COPY fia_agder_samarbeid.qmd .
 COPY fia_innlandet_samarbeid.qmd .
 COPY fia_more_og_romsdal_samarbeid.qmd .
