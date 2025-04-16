@@ -36,6 +36,7 @@ samarbeid_behovsvurdering = samarbeid_med_spørreundersøkelse(
 )
 plot_tid_til_første_spørreundersøkelse(
     df=samarbeid_behovsvurdering,
+    kolonne="tidligste_behovsvurdering_fullfort",
     type_spørreundersøkelse="Behovsvurdering",
 )
 ```
@@ -54,6 +55,7 @@ samarbeid_evaluering = samarbeid_med_spørreundersøkelse(
 
 plot_tid_til_første_spørreundersøkelse(
     df=samarbeid_evaluering,
+    kolonne="tidligste_evaluering_fullfort",
     type_spørreundersøkelse="Evaluering",
 )
 

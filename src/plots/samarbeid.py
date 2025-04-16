@@ -8,6 +8,7 @@ from src.utils.helper import annotate_ikke_offisiell_statistikk
 
 def plot_tid_til_første_spørreundersøkelse(
     df: pd.DataFrame,
+    kolonne: str,
     type_spørreundersøkelse: str = "Behovsvurdering",
 ) -> go.Figure:
     """
@@ -36,64 +37,27 @@ def plot_tid_til_første_spørreundersøkelse(
         )
         return fig
 
-    # Beregn timer for tiden det tar å gjennomføre, gjennomsnitt og median
-    kolonne = f"tidligste_{type_spørreundersøkelse.lower()}_fullfort"
     df["time_to_completion"] = (df[kolonne] - df["opprettet"]).dt.total_seconds() / (
         60 * 60
     )
 
-    gjennomsnitt = df["time_to_completion"].mean()
-    median = df["time_to_completion"].median()
-
     # TODO: Må ha en for evaluering og en for Behovsvurdering? Ta inn i funksjonen?
     # Antall timer, hvis vi vil ha høyere oppløsning kan vi legge til i listen.
-    custom_bins = [
-        0,
-        0.5,
-        1,
-        2,
-        4,
-        # 8, # bin uten innhold nasjonalt, så fjerner for nå
-        12,
-        24,
-        48,
-        72,
-        96,
-        120,
-        144,
-        168,
-        336,
-        504,
-        720,
-        1440,
-        2160,
-        4320,
-        8760,
-    ]
+
+    # TODO: Trekk ut til egen funksjon?
+    custom_bins = make_custom_bins(type_spørreundersøkelse)
     counts = (
         pd.cut(df["time_to_completion"], bins=custom_bins).value_counts().sort_index()
     )
 
-    # Find which bin contains the average and median
+    gjennomsnitt = df["time_to_completion"].mean()
     avg_bin_index = pd.cut([gjennomsnitt], bins=custom_bins).codes[0]
+    median = df["time_to_completion"].median()
     median_bin_index = pd.cut([median], bins=custom_bins).codes[0]
 
-    # Lager bin labels
     x_labels = []
     for i in range(len(custom_bins) - 1):
-        if custom_bins[i + 1] <= 1:  # Show in hours for first few days
-            x_labels.append(
-                f"{int(custom_bins[i] * 60)}-{int(custom_bins[i + 1] * 60)} minutter"
-            )
-        elif custom_bins[i + 1] <= 24:  # Show in hours for first few days
-            x_labels.append(f"{custom_bins[i]}-{custom_bins[i + 1]} timer")
-        else:  # Show in days for longer periods
-            start_days = custom_bins[i] / 24
-            end_days = custom_bins[i + 1] / 24
-            x_labels.append(
-                f"{int(start_days) if start_days.is_integer() else start_days}-"
-                + f"{int(end_days) if end_days.is_integer() else end_days} dager"
-            )
+        x_labels.append(f"{bin_label(custom_bins[i])}-{bin_label(custom_bins[i + 1])}")
 
     # lager stolpediagam
     fig = go.Figure(
@@ -367,3 +331,82 @@ def trakt_antall_samarbeid(
     )
 
     return annotate_ikke_offisiell_statistikk(fig)
+
+
+def bin_label(timer) -> str:
+    if timer < 1:
+        return f"{int(timer * 60)} min"
+    elif timer < 24:
+        return f"{int(timer)} {'time' if timer == 1 else 'timer'}"
+    elif timer < 24 * 7:
+        dager = timer / 24
+        val = f"{int(dager)}" if dager.is_integer() else f"{dager:.1f}"
+        return f"{val} {'dag' if dager == 1 else 'dager'}"
+    elif timer <= 24 * 7 * 4:
+        uker = timer / 24 / 7
+        val = f"{int(uker)}" if uker.is_integer() else f"{uker:.1f}"
+        return f"{val} {'uke' if uker == 1 else 'uker'}"
+    elif timer < 24 * 365:
+        måneder = timer / 24 / (365 / 12)
+        val = f"{int(måneder)}" if måneder.is_integer() else f"{måneder:.1f}"
+        return f"{val} mnd"
+    else:
+        år = timer / 24 / 365
+        val = f"{int(år)}" if år.is_integer() else f"{år:.1f}"
+        return f"{val} år"
+
+
+def make_custom_bins(type_spørreundersøkelse: str) -> list:
+    custom_bins = []
+    if type_spørreundersøkelse == "Behovsvurdering":
+        custom_bins = [
+            0,
+            0.5,
+            # timer
+            1,
+            2,
+            4,
+            12,
+            # dager
+            24,
+            24 * 2,
+            24 * 3,
+            24 * 4,
+            24 * 5,
+            24 * 6,
+            # uker
+            24 * 7,
+            24 * 7 * 2,
+            24 * 7 * 3,
+            # måneder
+            24 * (365 / 12),
+            24 * (365 / 12) * 2,
+            24 * (365 / 12) * 3,
+            24 * (365 / 12) * 4,
+            24 * (365 / 12) * 5,
+            24 * (365 / 12) * 6,
+            # år
+            24 * 365,
+        ]
+    if type_spørreundersøkelse == "Evaluering":
+        custom_bins = [
+            0,
+            24,
+            # uker
+            24 * 7,
+            24 * 7 * 2,
+            24 * 7 * 3,
+            # måneder
+            24 * (365 / 12),
+            24 * (365 / 12) * 2,
+            24 * (365 / 12) * 3,
+            24 * (365 / 12) * 4,
+            24 * (365 / 12) * 5,
+            24 * (365 / 12) * 6,
+            # år
+            24 * 365,
+            24 * 365 * 1.5,
+            24 * 365 * 2,
+        ]
+
+    return custom_bins

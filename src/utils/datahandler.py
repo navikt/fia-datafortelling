@@ -128,7 +128,7 @@ def samarbeid_med_spørreundersøkelse(
         f"{len(samarbeid_med_tid_for_gjennomføring)} samarbeid med minst 1 gjennomført {type_spørreundersøkelse.lower()}"
     )
     print(
-        f"Antall samarbeid som ble opprettet etter fullført behovsvurdering {type_spørreundersøkelse.lower()}: {len(samarbeid_med_tid_for_gjennomføring) - len(result)}, (før samarbeid ble introdusert)"
+        f"Antall samarbeid som ble opprettet etter fullført behovsvurdering {type_spørreundersøkelse.lower()}: {len(samarbeid_med_tid_for_gjennomføring) - len(result)}"
     )
     print(f"Totalt antall samarbeid som gjenstår: {len(result)}")
 
