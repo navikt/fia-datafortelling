@@ -41,19 +41,10 @@ def plot_tid_til_første_spørreundersøkelse(
         60 * 60
     )
 
-    # TODO: Må ha en for evaluering og en for Behovsvurdering? Ta inn i funksjonen?
-    # Antall timer, hvis vi vil ha høyere oppløsning kan vi legge til i listen.
-
-    # TODO: Trekk ut til egen funksjon?
-    custom_bins = make_custom_bins(type_spørreundersøkelse)
+    custom_bins = make_custom_bins(type_bin=type_spørreundersøkelse)
     counts = (
         pd.cut(df["time_to_completion"], bins=custom_bins).value_counts().sort_index()
     )
-
-    gjennomsnitt = df["time_to_completion"].mean()
-    avg_bin_index = pd.cut([gjennomsnitt], bins=custom_bins).codes[0]
-    median = df["time_to_completion"].median()
-    median_bin_index = pd.cut([median], bins=custom_bins).codes[0]
 
     x_labels = []
     for i in range(len(custom_bins) - 1):
@@ -70,8 +61,12 @@ def plot_tid_til_første_spørreundersøkelse(
             )
         ]
     )
-    # bør hindre at annotations kolliderer over hverandre
-    median_minst = median_bin_index < avg_bin_index
+
+    # Annotations og linjer for gjennomsnitt og median
+    gjennomsnitt = df["time_to_completion"].mean()
+    avg_bin_index = pd.cut([gjennomsnitt], bins=custom_bins).codes[0]
+    median = df["time_to_completion"].median()
+    median_bin_index = pd.cut([median], bins=custom_bins).codes[0]
 
     fig.add_vline(
         x=median_bin_index,
@@ -79,7 +74,7 @@ def plot_tid_til_første_spørreundersøkelse(
         line_dash="dash",
         line_color="#ef553b",
         annotation_text=f"Median: {(median / 24):.1f} dager",
-        annotation_position="top left" if median_minst else "top right",
+        annotation_position="top left" if median <= gjennomsnitt else "top right",
         annotation_borderwidth=6,
         annotation_font_color="white",
         annotation_bgcolor="#ef553b",
@@ -91,7 +86,7 @@ def plot_tid_til_første_spørreundersøkelse(
         line_dash="dash",
         line_color="#ef553b",
         annotation_text=f"Gjennomsnitt: {(gjennomsnitt / 24):.1f} dager",
-        annotation_position="top right" if median_minst else "top left",
+        annotation_position="top right" if median <= gjennomsnitt else "top left",
         annotation_borderwidth=6,
         annotation_font_color="white",
         annotation_bgcolor="#ef553b",
@@ -120,8 +115,6 @@ def plot_tid_brukt_i_samarbeid(df: pd.DataFrame) -> go.Figure:
         Plotly figur med histogram og gjennomsnittlig tid til fullføring.
     """
 
-    # TODO: gjør som i plot_tid_til_første_behovsvurdering
-
     # Create a base figure
     fig = go.Figure()
 
@@ -138,46 +131,67 @@ def plot_tid_brukt_i_samarbeid(df: pd.DataFrame) -> go.Figure:
         )
         return fig
 
-    # Calculate time to completion in days, handling potential NaN values
-    df = df.copy()  # Create copy to avoid modifying original
     df["time_to_completion"] = (df["fullfort"] - df["opprettet"]).dt.total_seconds() / (
-        60 * 60 * 24
+        60 * 60
     )
 
-    # Calculate average
-    gjennomsnitt = df["time_to_completion"].mean()
+    custom_bins = make_custom_bins(type_bin="Samarbeid")
+    counts = (
+        pd.cut(df["time_to_completion"], bins=custom_bins).value_counts().sort_index()
+    )
 
-    # Create histogram
+    x_labels = []
+    for i in range(len(custom_bins) - 1):
+        x_labels.append(f"{bin_label(custom_bins[i])}-{bin_label(custom_bins[i + 1])}")
+
+    # lager stolpediagam
     fig = go.Figure(
         data=[
-            go.Histogram(
-                x=df["time_to_completion"],
-                nbinsx=100,  # Adjust based on your data spread
+            go.Bar(
+                x=x_labels,
+                y=counts.values,
                 marker_color="#3366CC",
-                hovertemplate="Tid brukt i samarbeid: %{x:.1f} dager<br>Antall samarbeid: %{y}<extra></extra>",
+                hovertemplate="Tid: %{x}<br>Antall samarbeid: %{y}<extra></extra>",
             )
         ]
     )
 
-    # Add vertical line for average
+    # Annotations og linjer for gjennomsnitt og median
+    gjennomsnitt = df["time_to_completion"].mean()
+    avg_bin_index = pd.cut([gjennomsnitt], bins=custom_bins).codes[0]
+    median = df["time_to_completion"].median()
+    median_bin_index = pd.cut([median], bins=custom_bins).codes[0]
+
     fig.add_vline(
-        x=gjennomsnitt,
+        x=median_bin_index,
         line_width=2,
         line_dash="dash",
         line_color="#ef553b",
-        annotation_text=f"Gjennomsnitt: {gjennomsnitt:.1f} dager",
-        annotation_position="top right",
+        annotation_text=f"Median: {(median / 24):.1f} dager",
+        annotation_position="top left" if median <= gjennomsnitt else "top right",
         annotation_borderwidth=6,
         annotation_font_color="white",
         annotation_bgcolor="#ef553b",
     )
 
-    # Update layout
+    fig.add_vline(
+        x=avg_bin_index,
+        line_width=2,
+        line_dash="dash",
+        line_color="#ef553b",
+        annotation_text=f"Gjennomsnitt: {(gjennomsnitt / 24):.1f} dager",
+        annotation_position="top right" if median <= gjennomsnitt else "top left",
+        annotation_borderwidth=6,
+        annotation_font_color="white",
+        annotation_bgcolor="#ef553b",
+    )
+
+    # Oppdater layout med aksetitler og range for plass til annotasjoner
     fig.update_layout(
         xaxis_title="Tid fra samarbeid ble opprettet til det ble fullført",
         yaxis_title="Antall samarbeid",
         bargap=0.04,
-        xaxis_range=[-1, 365],
+        yaxis_range=[0, (counts.values.max() * 1.4)],
     )
 
     # Display the plot
@@ -356,12 +370,15 @@ def bin_label(timer) -> str:
         return f"{val} år"
 
 
-def make_custom_bins(type_spørreundersøkelse: str) -> list:
+def make_custom_bins(type_bin: str) -> list:
     custom_bins = []
-    if type_spørreundersøkelse == "Behovsvurdering":
+    if type_bin == "Behovsvurdering":
         custom_bins = [
+            # minutter
             0,
+            0.25,
             0.5,
+            0.75,
             # timer
             1,
             2,
@@ -388,7 +405,42 @@ def make_custom_bins(type_spørreundersøkelse: str) -> list:
             # år
             24 * 365,
         ]
-    if type_spørreundersøkelse == "Evaluering":
+    elif type_bin == "Samarbeid":
+        custom_bins = [
+            # minutter
+            0,
+            0.25,
+            0.5,
+            0.75,
+            # timer
+            1,
+            2,
+            4,
+            12,
+            # dager
+            24,
+            24 * 2,
+            24 * 3,
+            24 * 4,
+            24 * 5,
+            24 * 6,
+            # uker
+            24 * 7,
+            24 * 7 * 2,
+            24 * 7 * 3,
+            # måneder
+            24 * (365 / 12),
+            24 * (365 / 12) * 2,
+            24 * (365 / 12) * 3,
+            24 * (365 / 12) * 4,
+            24 * (365 / 12) * 5,
+            24 * (365 / 12) * 6,
+            # år
+            24 * 365,
+            24 * 365 * 1.5,
+            24 * 365 * 2,
+        ]
+    elif type_bin == "Evaluering":
         custom_bins = [
             0,
             24,
