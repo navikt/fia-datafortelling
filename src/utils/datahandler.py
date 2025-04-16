@@ -50,52 +50,69 @@ def samarbeid_med_behovsvurdering(
     data_spørreundersøkelse: pd.DataFrame,
 ) -> pd.DataFrame:
     if data_samarbeid.empty or data_spørreundersøkelse.empty:
-        return 0, pd.DataFrame()
+        return pd.DataFrame()
 
     samarbeid_ikke_slettet = data_samarbeid[data_samarbeid["status"] != "SLETTET"]
 
     if samarbeid_ikke_slettet.empty:
-        return 0, pd.DataFrame()
+        return pd.DataFrame()
 
-    # Filter surveys to only include completed behovsvurdering surveys
-    fullførte_behovsvurderinger = data_spørreundersøkelse[
-        (data_spørreundersøkelse["type"] == "Behovsvurdering")
-        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
-        # & (data_spørreundersøkelse["fullfort"].notna()) # TODO: Want to know the number filtered out by notna
-        # & (data_spørreundersøkelse["harMinstEttSvar"]) # TODO: Want to know number of spørreundersøkelser fullført uten svar?
+    # Filtrer behovsvurderinger for data vi er interessert i. Gjøres stegvis for å vise antall filtrerte rader
+    behovsvurderinger = data_spørreundersøkelse[
+        data_spørreundersøkelse["type"] == "Behovsvurdering"
     ]
 
-    # TODO: Join fullførte_behovsvurderinger with samarbeid_ikke_slettet
-
-    # Filter samarbeid to include only those with completed behovsvurdering
-    samarbeid_med_fullført_behovsvurdering = samarbeid_ikke_slettet[
-        samarbeid_ikke_slettet["id"].isin(
-            fullførte_behovsvurderinger["samarbeidId"].unique()
-        )
+    avsluttede_behovsvurderinger = behovsvurderinger[
+        behovsvurderinger["status"] == "AVSLUTTET"
     ]
 
-    if samarbeid_med_fullført_behovsvurdering.empty:
-        return 0, pd.DataFrame()
+    behovsvurderinger_med_svar = avsluttede_behovsvurderinger[
+        avsluttede_behovsvurderinger["harMinstEttSvar"]
+    ]
 
-    # Find earliest completion time for each samarbeidId
+    # BUG: Dataene inneholder ikke alltid fullfort timestamp for gjennomførte behovsvurderinger (253 av 584 manglet ved sjekk 16.04.2025)
+    #  Midlertidig fiks er å bruke endret i tilfelle fullfort mangler, men kan få feil om det skjer endringer etter gjennomføring
+    behovsvurderinger_med_svar["fullfort_or_endret"] = behovsvurderinger_med_svar[
+        "fullfort"
+    ].fillna(behovsvurderinger_med_svar["endret"])
+
     tidligste_fullført = (
-        fullførte_behovsvurderinger.groupby("samarbeidId")["fullfort"]
+        behovsvurderinger_med_svar.groupby("samarbeidId")["fullfort_or_endret"]
         .min()
         .reset_index()
         .rename(
             columns={
-                "fullfort": "tidligste_behovsvurdering_fullfort",
+                "fullfort_or_endret": "tidligste_behovsvurdering_fullfort",
                 "samarbeidId": "id",
             }
         )
     )
 
+    # Filter samarbeid to include only those with completed behovsvurdering
+    samarbeid_med_fullført_behovsvurdering = samarbeid_ikke_slettet[
+        samarbeid_ikke_slettet["id"].isin(
+            behovsvurderinger_med_svar["samarbeidId"].unique()
+        )
+    ]
+
+    if samarbeid_med_fullført_behovsvurdering.empty:
+        return pd.DataFrame()
+
     # Merge with samarbeid data
-    resultat = samarbeid_med_fullført_behovsvurdering.merge(
+    df = samarbeid_med_fullført_behovsvurdering.merge(
         tidligste_fullført, on="id", how="left"
     )
+    print("Tall i beregning")
+    print("Behovsvurderinger:")
+    print(f"{len(behovsvurderinger)} behovsvurderinger i alle statuser")
+    print(f"{len(avsluttede_behovsvurderinger)} av disse er i status 'AVSLUTTET'")
+    print(f"{len(behovsvurderinger_med_svar)} av disse har minst ett svar")
 
-    return resultat
+    print("Samarbeid:")
+    print(f"{len(samarbeid_ikke_slettet)} samarbeid som ikke er slettet")
+    print(f"{len(df)} samarbeid med gjennomført behovsvurdering")
+
+    return df
 
 
 def load_data_deduplicate(

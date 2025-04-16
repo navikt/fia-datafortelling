@@ -48,7 +48,7 @@ def plot_tid_til_første_behovsvurdering(df: pd.DataFrame) -> go.Figure:
         1,
         2,
         4,
-        8,
+        # 8, # bin uten innhold nasjonalt, så fjerner for nå
         12,
         24,
         48,
@@ -127,48 +127,6 @@ def plot_tid_til_første_behovsvurdering(df: pd.DataFrame) -> go.Figure:
         annotation_font_color="white",
         annotation_bgcolor="#ef553b",
     )
-
-    # vline for gjennomsnitt og median
-    # fig.add_vline(
-    #     x=avg_bin_index,
-    #     line_width=2,
-    #     line_dash="dash",
-    #     line_color="#ef553b",  # TODO: forskjellig farge? vanskelig å se hvilken som hører til hvilken
-    # )
-
-    # fig.add_vline(
-    #     x=median_bin_index,
-    #     line_width=2,
-    #     line_dash="dash",
-    #     line_color="#ef553b",
-    # )
-
-    # Statiske annotasjoner
-    # fig.add_annotation(
-    #     text=f"Gjennomsnitt: {(gjennomsnitt / 24):.1f} dager",
-    #     xref="paper",
-    #     yref="paper",
-    #     x=0.99,
-    #     y=0.99,
-    #     showarrow=False,
-    #     font=dict(color="white"),
-    #     bgcolor="#ef553b",
-    #     borderwidth=6,
-    #     borderpad=4,
-    # )
-
-    # fig.add_annotation(
-    #     text=f"Median: {(median / 24):.1f} dager",
-    #     xref="paper",
-    #     yref="paper",
-    #     x=0.99,
-    #     y=0.90,
-    #     showarrow=False,
-    #     font=dict(color="white"),
-    #     bgcolor="#ef553b",
-    #     borderwidth=6,
-    #     borderpad=4,
-    # )
 
     # Oppdater layout med aksetitler og range for plass til annotasjoner
     fig.update_layout(
