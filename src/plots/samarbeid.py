@@ -6,9 +6,12 @@ import plotly.graph_objects as go
 from src.utils.helper import annotate_ikke_offisiell_statistikk
 
 
-def plot_tid_til_første_behovsvurdering(df: pd.DataFrame) -> go.Figure:
+def plot_tid_til_første_spørreundersøkelse(
+    df: pd.DataFrame,
+    type_spørreundersøkelse: str = "Behovsvurdering",
+) -> go.Figure:
     """
-    Lager et stolpediagram som viser hvor lang tid det tar fra et samarbeid blir opprettet til behovsvurdering er gjennomført.
+    Lager et stolpediagram som viser hvor lang tid det tar fra et samarbeid blir opprettet til spørreundersøkelse er gjennomført.
 
     Args:
         df: DataFrame av samarbeid som inneholder kolonnene 'opprettet' og 'fullfort'.
@@ -34,13 +37,15 @@ def plot_tid_til_første_behovsvurdering(df: pd.DataFrame) -> go.Figure:
         return fig
 
     # Beregn timer for tiden det tar å gjennomføre, gjennomsnitt og median
-    df["time_to_completion"] = (
-        df["tidligste_behovsvurdering_fullfort"] - df["opprettet"]
-    ).dt.total_seconds() / (60 * 60)
+    kolonne = f"tidligste_{type_spørreundersøkelse.lower()}_fullfort"
+    df["time_to_completion"] = (df[kolonne] - df["opprettet"]).dt.total_seconds() / (
+        60 * 60
+    )
 
     gjennomsnitt = df["time_to_completion"].mean()
     median = df["time_to_completion"].median()
 
+    # TODO: Må ha en for evaluering og en for Behovsvurdering? Ta inn i funksjonen?
     # Antall timer, hvis vi vil ha høyere oppløsning kan vi legge til i listen.
     custom_bins = [
         0,
@@ -62,7 +67,7 @@ def plot_tid_til_første_behovsvurdering(df: pd.DataFrame) -> go.Figure:
         720,
         1440,
         2160,
-        2160 * 2,
+        4320,
         8760,
     ]
     counts = (
@@ -130,7 +135,7 @@ def plot_tid_til_første_behovsvurdering(df: pd.DataFrame) -> go.Figure:
 
     # Oppdater layout med aksetitler og range for plass til annotasjoner
     fig.update_layout(
-        xaxis_title="Tid fra samarbeid ble opprettet til første behovsvurdering ble gjennomført (dager)",
+        xaxis_title=f"Tid fra samarbeid ble opprettet til første {type_spørreundersøkelse.lower()} ble gjennomført (dager)",
         yaxis_title="Antall samarbeid",
         bargap=0.04,
         yaxis_range=[0, (counts.values.max() * 1.4)],

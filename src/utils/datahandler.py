@@ -45,9 +45,10 @@ def fullførte_samarbeid_med_tid(
     return antall_rader_filtrert_bort, fullførte_samarbeid_not_na
 
 
-def samarbeid_med_behovsvurdering(
+def samarbeid_med_spørreundersøkelse(
     data_samarbeid: pd.DataFrame,
     data_spørreundersøkelse: pd.DataFrame,
+    type_spørreundersøkelse: str = "Behovsvurdering",
 ) -> pd.DataFrame:
     if data_samarbeid.empty or data_spørreundersøkelse.empty:
         return pd.DataFrame()
@@ -57,9 +58,12 @@ def samarbeid_med_behovsvurdering(
     if samarbeid_ikke_slettet.empty:
         return pd.DataFrame()
 
-    # Filtrer behovsvurderinger for data vi er interessert i. Gjøres stegvis for å vise antall filtrerte rader
+    # TODO: Tell kun samarbeid som er opprettet for mindre enn 365 dager siden ?
+    # TODO:  - Evt litt etter samarbeid ble en ting man kunne opprette?
+    # Filtrer behovsvurderinger for data vi er interessert i.
+    # Gjøres stegvis for å vise antall filtrerte rader
     behovsvurderinger = data_spørreundersøkelse[
-        data_spørreundersøkelse["type"] == "Behovsvurdering"
+        data_spørreundersøkelse["type"] == type_spørreundersøkelse
     ]
 
     avsluttede_behovsvurderinger = behovsvurderinger[
@@ -76,13 +80,14 @@ def samarbeid_med_behovsvurdering(
         "fullfort"
     ].fillna(behovsvurderinger_med_svar["endret"])
 
+    ny_kolonne = f"tidligste_{type_spørreundersøkelse.lower()}_fullfort"
     tidligste_fullført = (
         behovsvurderinger_med_svar.groupby("samarbeidId")["fullfort_or_endret"]
         .min()
         .reset_index()
         .rename(
             columns={
-                "fullfort_or_endret": "tidligste_behovsvurdering_fullfort",
+                "fullfort_or_endret": ny_kolonne,
                 "samarbeidId": "id",
             }
         )
@@ -98,21 +103,36 @@ def samarbeid_med_behovsvurdering(
     if samarbeid_med_fullført_behovsvurdering.empty:
         return pd.DataFrame()
 
-    # Merge with samarbeid data
-    df = samarbeid_med_fullført_behovsvurdering.merge(
+    # Merge dataframes
+    samarbeid_med_tid_for_gjennomføring = samarbeid_med_fullført_behovsvurdering.merge(
         tidligste_fullført, on="id", how="left"
     )
-    print("Tall i beregning")
-    print("Behovsvurderinger:")
-    print(f"{len(behovsvurderinger)} behovsvurderinger i alle statuser")
+
+    # Filtrer ut behovsvurderinger opprettet før samarbeidet ble opprettet
+    result = samarbeid_med_tid_for_gjennomføring[
+        samarbeid_med_tid_for_gjennomføring[ny_kolonne]
+        > samarbeid_med_tid_for_gjennomføring["opprettet"]
+    ].reset_index(drop=True)
+
+    print("Tall med i beregningen")
+    print(f"{type_spørreundersøkelse}er:")
+    print(
+        f"{len(behovsvurderinger)} {type_spørreundersøkelse.lower()}er i alle statuser"
+    )
     print(f"{len(avsluttede_behovsvurderinger)} av disse er i status 'AVSLUTTET'")
     print(f"{len(behovsvurderinger_med_svar)} av disse har minst ett svar")
 
     print("Samarbeid:")
     print(f"{len(samarbeid_ikke_slettet)} samarbeid som ikke er slettet")
-    print(f"{len(df)} samarbeid med gjennomført behovsvurdering")
+    print(
+        f"{len(samarbeid_med_tid_for_gjennomføring)} samarbeid med minst 1 gjennomført {type_spørreundersøkelse.lower()}"
+    )
+    print(
+        f"Antall samarbeid som ble opprettet etter fullført behovsvurdering {type_spørreundersøkelse.lower()}: {len(samarbeid_med_tid_for_gjennomføring) - len(result)}, (før samarbeid ble introdusert)"
+    )
+    print(f"Totalt antall samarbeid som gjenstår: {len(result)}")
 
-    return df
+    return result
 
 
 def load_data_deduplicate(

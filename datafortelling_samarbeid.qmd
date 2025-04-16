@@ -1,7 +1,6 @@
 ```{python}
-
-from src.utils.datahandler import fullførte_samarbeid_med_tid,samarbeid_med_behovsvurdering
-from src.plots.samarbeid import plot_tid_brukt_i_samarbeid, plot_tid_til_første_behovsvurdering
+from src.utils.datahandler import fullførte_samarbeid_med_tid,samarbeid_med_spørreundersøkelse
+from src.plots.samarbeid import plot_tid_brukt_i_samarbeid, plot_tid_til_første_spørreundersøkelse
 ```
 
 
@@ -30,12 +29,34 @@ Antall dager mellom opprettelse av et samarbeid og gjennomføring av første beh
 
 ```{python}
 
-samarbeid_behovsvurdering = samarbeid_med_behovsvurdering(
+samarbeid_behovsvurdering = samarbeid_med_spørreundersøkelse(
     data_samarbeid=data_samarbeid,
     data_spørreundersøkelse=data_spørreundersøkelse,
+    type_spørreundersøkelse="Behovsvurdering",
+)
+plot_tid_til_første_spørreundersøkelse(
+    df=samarbeid_behovsvurdering,
+    type_spørreundersøkelse="Behovsvurdering",
+)
+```
+
+
+# Tid brukt i samarbeid - (Opprettet - Gjennomført evaluering)
+Antall dager mellom opprettelse av et samarbeid og gjennomføring av første evaluering.
+
+
+```{python}
+samarbeid_evaluering = samarbeid_med_spørreundersøkelse(
+    data_samarbeid=data_samarbeid,
+    data_spørreundersøkelse=data_spørreundersøkelse,
+    type_spørreundersøkelse="Evaluering",
 )
 
-plot_tid_til_første_behovsvurdering(df=samarbeid_behovsvurdering)
+plot_tid_til_første_spørreundersøkelse(
+    df=samarbeid_evaluering,
+    type_spørreundersøkelse="Evaluering",
+)
+
 ```
 
 
