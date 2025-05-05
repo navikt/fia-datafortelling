@@ -22,6 +22,11 @@ def last_inn_spørreundersøkelser(
         distinct_colunms="id",
     )
 
+    data_spørreundersøkelse = data_spørreundersøkelse[
+        (data_spørreundersøkelse.harMinstEttSvar)
+        & (data_spørreundersøkelse.status != "SLETTET")
+    ]
+
     data_spørreundersøkelse = legg_til_resultatområde(
         data=data_spørreundersøkelse,
         data_statistikk=data_statistikk,
@@ -47,21 +52,24 @@ def last_inn_samarbeid(
         table="samarbeid-v1",
         distinct_colunms="id",
     )
+
+    data_samarbeid = raw_data_samarbeid[raw_data_samarbeid.status != "SLETTET"]
+
     # TODO: usikker på hva denne gjør, må det være data_statistikk MED resultatområde?
     #  Se på annen måte å merge dataframes på ?
-    raw_data_samarbeid_med_resultatområde = legg_til_resultatområde(
-        data=raw_data_samarbeid,
+    data_samarbeid = legg_til_resultatområde(
+        data=data_samarbeid,
         data_statistikk=data_statistikk,
     )
 
-    #  Rimelig sikker dette bare legger til resultatområde for allerede filtrert liste av samarbeid
+    # TODO: Rimelig sikker dette bare legger til resultatområde for allerede filtrert liste av samarbeid
     if resultatområde is not None:
-        raw_data_samarbeid_med_resultatområde = raw_data_samarbeid_med_resultatområde[
-            raw_data_samarbeid_med_resultatområde.resultatomrade == resultatområde.value
+        data_samarbeid = data_samarbeid[
+            data_samarbeid.resultatomrade == resultatområde.value
         ]
 
     data_samarbeid = preprocess_data_samarbeid(
-        data_samarbeid=raw_data_samarbeid_med_resultatområde,
+        data_samarbeid=data_samarbeid,
         data_statistikk=data_statistikk,
     )
 

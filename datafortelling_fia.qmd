@@ -12,12 +12,6 @@ from src.plots.statistikk import (
     virksomhetsprofil,
 )
 
-from src.plots.samarbeid import (
-    plot_antall_saker_per_antall_samarbeid,
-    trakt_antall_samarbeid,
-)
-from src.plots.samarbeid import plot_antall_samarbeid_over_tid
-from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_tid
 ```
 
 
@@ -25,6 +19,7 @@ from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_ti
 {{< include includes/antall_samarbeid_forklaring.qmd >}}
 
 ```{python}
+from src.plots.samarbeid import trakt_antall_samarbeid
 trakt_antall_samarbeid(
     data_samarbeid,
     data_spørreundersøkelse,
@@ -42,6 +37,7 @@ trakt_antall_samarbeid(
 ::: {.panel-tabset}
 # Antall
 ```{python}
+from src.plots.samarbeid import plot_antall_saker_per_antall_samarbeid
 plot_antall_saker_per_antall_samarbeid(data_samarbeid)
 ```
 
@@ -56,6 +52,7 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 Antall samarbeid opprettet over tid, gruppert per uke.
 
 ```{python}
+from src.plots.samarbeid import plot_antall_samarbeid_over_tid
 plot_antall_samarbeid_over_tid(data_samarbeid=data_samarbeid)
 ```
 
@@ -63,6 +60,7 @@ plot_antall_samarbeid_over_tid(data_samarbeid=data_samarbeid)
 Antall behovsvurderinger gjennomført over tid, gruppert per uke.
 
 ```{python}
+from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_tid
 plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Behovsvurdering")
 ```
 

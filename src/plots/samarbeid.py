@@ -768,14 +768,12 @@ def trakt_antall_samarbeid(
         data_spørreundersøkelse.samarbeidId.isin(aktive_samarbeid)
         & (data_spørreundersøkelse.status == "AVSLUTTET")
         & (data_spørreundersøkelse.type == "Behovsvurdering")
-        & (data_spørreundersøkelse.harMinstEttSvar)
     ].samarbeidId.nunique()
 
     antall_aktive_samarbeid_med_fullfort_evaluering = data_spørreundersøkelse[
         data_spørreundersøkelse.samarbeidId.isin(aktive_samarbeid)
         & (data_spørreundersøkelse.status == "AVSLUTTET")
         & (data_spørreundersøkelse.type == "Evaluering")
-        & (data_spørreundersøkelse.harMinstEttSvar)
     ].samarbeidId.nunique()
 
     # Antall aktive samarbeid med opprettet samarbeidsplan
