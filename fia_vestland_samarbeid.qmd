@@ -3,7 +3,7 @@ title: Tid brukt i samarbeid - Agder
 subtitle: Visning av tid brukt i samarbeid i Fia i Agder
 title-block-banner: true
 title-block-banner-color: white
-embed-resources: true
+embed-resources: false
 ---
 
 ```{python}

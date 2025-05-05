@@ -135,10 +135,10 @@ if __name__ == "__main__":
             )
             render_fia_per_resultatområde(resultatområde=resultatområde)
 
-            # logging.info(
-            #     f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
-            # )
-            # render_samarbeid_per_resultatområde(resultatområde=resultatområde)
+            logging.info(
+                f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
+            )
+            render_samarbeid_per_resultatområde(resultatområde=resultatområde)
 
         logging.info("Henter filer å laste opp til NADA")
         files_to_upload = []
