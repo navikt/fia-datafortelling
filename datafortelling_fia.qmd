@@ -1,6 +1,4 @@
 ```{python}
-
-
 from src.utils.konstanter import ikkeaktuell_hovedgrunn
 from src.utils.helper import ikke_aktuell_begrunnelse_sortering
 from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
@@ -18,7 +16,8 @@ from src.plots.samarbeid import (
     plot_antall_saker_per_antall_samarbeid,
     trakt_antall_samarbeid,
 )
-
+from src.plots.samarbeid import plot_antall_samarbeid_over_tid
+from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_tid
 ```
 
 
@@ -52,6 +51,27 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 ```
 
 :::
+
+## Opprettede samarbeid
+Antall samarbeid opprettet over tid, gruppert per uke.
+
+```{python}
+plot_antall_samarbeid_over_tid(data_samarbeid=data_samarbeid)
+```
+
+## Gjennomførte behovsvurderinger
+Antall behovsvurderinger gjennomført over tid, gruppert per uke.
+
+```{python}
+plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Behovsvurdering")
+```
+
+## Gjennomførte evalueringer
+Antall evalueringer gjennomført over tid, gruppert per uke.
+
+```{python}
+plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Evaluering")
+```
 
 
 ## Statusflyt i Fia

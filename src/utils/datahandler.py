@@ -264,7 +264,7 @@ def split_data_statistikk(
     data_eierskap = data_statistikk[eierskap].reset_index(drop=True)
     data_prosess = data_statistikk[prosess].reset_index(drop=True)
 
-    return data_status, data_eierskap, data_prosess
+    return preprocess_data_status(data_status), data_eierskap, data_prosess
 
 
 def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
@@ -520,6 +520,11 @@ def explode_ikke_aktuell_begrunnelse(data_status: pd.DataFrame) -> pd.DataFrame:
     )
 
     return ikke_aktuell
+
+
+def beregn_ikke_aktuell(data_statistikk):
+    data_status, _, _ = split_data_statistikk(data_statistikk)
+    return explode_ikke_aktuell_begrunnelse(data_status)
 
 
 def filtrer_bort_saker_på_avsluttet_tidspunkt(

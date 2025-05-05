@@ -12,13 +12,27 @@ from src.utils.konstanter import Resultatområde
 def last_inn_spørreundersøkelser(
     project: str,
     dataset: str,
+    data_statistikk: pd.DataFrame,
+    resultatområde: Resultatområde | None = None,
 ):
-    return load_data_deduplicate(
+    data_spørreundersøkelse = load_data_deduplicate(
         project=project,
         dataset=dataset,
         table="sporreundersokelse-v1",
         distinct_colunms="id",
     )
+
+    data_spørreundersøkelse = legg_til_resultatområde(
+        data=data_spørreundersøkelse,
+        data_statistikk=data_statistikk,
+    )
+
+    if resultatområde is not None:
+        data_spørreundersøkelse = data_spørreundersøkelse[
+            data_spørreundersøkelse.resultatomrade == resultatområde.value
+        ]
+
+    return data_spørreundersøkelse
 
 
 def last_inn_samarbeid(
@@ -40,6 +54,7 @@ def last_inn_samarbeid(
         data_statistikk=data_statistikk,
     )
 
+    #  Rimelig sikker dette bare legger til resultatområde for allerede filtrert liste av samarbeid
     if resultatområde is not None:
         raw_data_samarbeid_med_resultatområde = raw_data_samarbeid_med_resultatområde[
             raw_data_samarbeid_med_resultatområde.resultatomrade == resultatområde.value
@@ -51,6 +66,38 @@ def last_inn_samarbeid(
     )
 
     return data_samarbeid
+
+
+def last_inn_data_samarbeidsplan(
+    project: str,
+    dataset: str,
+    data_samarbeid: pd.DataFrame,
+    data_statistikk: pd.DataFrame,
+    resultatområde: Resultatområde | None = None,
+):
+    data_samarbeidsplan = load_data_deduplicate(
+        project,
+        dataset,
+        "samarbeidsplan-bigquery-v1",
+        distinct_colunms="id",
+    )
+
+    # Må legge til saksnummer
+    # TODO: Send inn orgnr per samarbeid?
+    data_samarbeidsplan = data_samarbeidsplan.merge(
+        data_samarbeid[["id", "saksnummer"]].rename({"id": "samarbeidId"}, axis=1),
+        how="left",
+        on="samarbeidId",
+    )
+
+    data_samarbeidsplan = legg_til_resultatområde(data_samarbeidsplan, data_statistikk)
+
+    if resultatområde is not None:
+        data_samarbeidsplan = data_samarbeidsplan[
+            data_samarbeidsplan.resultatomrade == resultatområde.value
+        ]
+
+    return data_samarbeidsplan
 
 
 def last_inn_data_statistikk(
@@ -76,5 +123,7 @@ def last_inn_data_statistikk(
         data_statistikk = data_statistikk[
             data_statistikk.resultatomrade == resultatområde.value
         ]
+
+    data_statistikk = data_statistikk.dropna(subset=["resultatomrade"])
 
     return data_statistikk

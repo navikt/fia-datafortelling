@@ -12,64 +12,33 @@ import pandas as pd
 
 from src.utils.datahandler import (
     load_data_deduplicate,
-    preprocess_data_statistikk,
     split_data_statistikk,
-    preprocess_data_status,
-    preprocess_data_leveranse,
-    preprocess_data_samarbeid,
-    hent_leveranse_sistestatus,
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
 
-from src.plots.tid import (
-    urørt_saker_over_tid,
-    dager_siden_siste_oppdatering,
-)
-from src.plots.statistikk import (
-    saker_per_status_over_tid,
-    dager_mellom_statusendringer,
-    median_og_gjennomsnitt_av_tid_mellom_statusendringer,
-    fullført_per_måned,
-    antall_saker_per_eier,
-    antall_brukere_per_måned,
-    antall_brukere_per_resultatområde,
-    antall_brukere_per_resultatområde_og_nav_enhet,
-    andel_superbrukere,
-    andel_statusendringer_gjort_av_superbrukere,
-)
-from src.plots.leveranse import (
-    forskjell_frist_fullfort,
-    andel_leveranseregistreringer_gjort_av_superbrukere,
-)
-
+from src.utils.dataloader import last_inn_data_statistikk, last_inn_samarbeid
 
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
 
-# Henter data om hendelser og statusendringer
-# med statistikk: sykefravær, bransje, antall ansatte, osv.
-raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
+data_statistikk = last_inn_data_statistikk(
+    project=PROJECT,
+    dataset=DATASET,
+    adm_enheter=pd.read_csv("data/administrative_enheter.csv", dtype=str),
+)
 
-adm_enheter= pd.read_csv("data/administrative_enheter.csv", dtype=str)
-data_statistikk = preprocess_data_statistikk(raw_data_statistikk, adm_enheter)
+
 data_status, data_eierskap, _ = split_data_statistikk(data_statistikk)
-data_status = preprocess_data_status(data_status)
+
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
-# Henter data om IA-tjenester
-raw_data_leveranse = load_data_deduplicate(PROJECT, DATASET, "ia-sak-leveranse-v1", "id, status")
-data_leveranse = preprocess_data_leveranse(raw_data_leveranse)
-data_leveranse_sistestatus = hent_leveranse_sistestatus(data_leveranse)
-
-# Henter data om samarbeid/prosess
-raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
-data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, data_statistikk)
 ```
 
 
 ## Antall saker per status over tid
 ```{python}
+from src.plots.statistikk import saker_per_status_over_tid
 saker_per_status_over_tid(data_status)
 ```
 
@@ -88,11 +57,13 @@ data_status = beregn_intervall_tid_siden_siste_endring(data_status)
 ::: {.panel-tabset}
 ## Til Kontaktes
 ```{python}
+from src.plots.statistikk import dager_mellom_statusendringer
 dager_mellom_statusendringer(
     data_status[(data_status.forrige_status=="VURDERES") & (data_status.status=="KONTAKTES")]
 )
 ```
 ```{python}
+from src.plots.statistikk import median_og_gjennomsnitt_av_tid_mellom_statusendringer
 median_og_gjennomsnitt_av_tid_mellom_statusendringer(
     data_status[(data_status.forrige_status=="VURDERES") & (data_status.status=="KONTAKTES")]
 )
@@ -245,121 +216,17 @@ median_og_gjennomsnitt_av_tid_mellom_statusendringer(
 :::
 
 
-## Dager siden siste oppdatering i Fia
-Grafene under viser hvor mange dager det har gått siden siste oppdatering per sak i Fia.
-En oppdatering er at noen har tatt eierskap til en sak, en endring av status eller en leveranse som er lagt til eller satt til levert.
-Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke dette som oppdatering.
-Vi viser disse tallene fordelt på status, siden statusene kan ha ulik varighet.
-Grafene gir en indikasjon på hvor mange saker som ligger urørt i Fia.
-
-::: {.panel-tabset}
-## Alle aktive saker
-```{python}
-dager_siden_siste_oppdatering(data_status, data_eierskap, data_leveranse)
-```
-## Vurderes
-```{python}
-dager_siden_siste_oppdatering(
-    data_status[data_status.siste_status=="VURDERES"],
-    data_eierskap,
-    data_leveranse
-)
-```
-## Kontaktes
-```{python}
-dager_siden_siste_oppdatering(
-    data_status[data_status.siste_status=="KONTAKTES"],
-    data_eierskap,
-    data_leveranse
-)
-```
-## Kartlegges
-```{python}
-dager_siden_siste_oppdatering(
-    data_status[data_status.siste_status=="KARTLEGGES"],
-    data_eierskap,
-    data_leveranse
-)
-```
-## Vi bistår
-```{python}
-dager_siden_siste_oppdatering(
-    data_status[data_status.siste_status=="VI_BISTÅR"],
-    data_eierskap,
-    data_leveranse
-)
-```
-:::
-
-
-## Antal saker som ligger urørt i Fia
-Grafene under viser, per beregningsdato, hvor mange saker som ikke var oppdatert i Fia i 90 dager.
-En oppdatering er at noen har tatt eierskap til en sak, en endring av status eller en leveranse som er lagt til eller satt til levert.
-Hvis en statusendring blir angret (ved bruk av tilbake-knappen) eller en leveranse blir slettet, telles ikke dette som oppdatering.
-
-```{python}
-urørt_saker_over_tid(data_status, data_eierskap, data_leveranse, antall_dager=90)
-```
-
-
 ## Antall saker per eier
 Vise antall saker i status "Vi bistår" eller "Fullført" per eier. Gjelder bare siste eier per sak.
 
 ```{python}
+from src.plots.statistikk import antall_saker_per_eier
 antall_saker_per_eier(data_status)
 ```
 
 
 ## Antall fullførte saker per måned
 ```{python}
+from src.plots.statistikk import fullført_per_måned
 fullført_per_måned(data_status)
 ```
-
-
-## Forskjellen mellom frist og fullført dato
-```{python}
-forskjell_frist_fullfort(data_leveranse_sistestatus)
-```
-
-
-## Antall brukere
-Antall unike brukere som har gjort noe som fører til en statusendring.
-
-::: {.panel-tabset}
-## Per måned
-```{python}
-antall_brukere_per_måned(data_statistikk)
-```
-
-## Per resultatområde
-En bruker kan telles i flere resultatområder.
-```{python}
-antall_brukere_per_resultatområde(data_statistikk)
-```
-
-## Per resultatområde og NAV-enhet
-En bruker kan telles i flere resultatområder, men bare i den siste NAV-enheten bruker er registrert med.
-NAV-enhet begynte å bli registrert i databasen 2023-05-05.
-```{python}
-antall_brukere_per_resultatområde_og_nav_enhet(data_statistikk)
-```
-:::
-
-
-## Brukerrolle
-::: {.panel-tabset}
-## Andel superbrukere
-```{python}
-andel_superbrukere(data_statistikk)
-```
-## Andel statusendringer
-Andel statusendringer gjort av superbrukere.
-```{python}
-andel_statusendringer_gjort_av_superbrukere(data_statistikk)
-```
-## Andel leveranser
-Andel leveranser satt til fullført av superbrukere.
-```{python}
-andel_leveranseregistreringer_gjort_av_superbrukere(data_leveranse)
-```
-:::

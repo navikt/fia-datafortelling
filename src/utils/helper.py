@@ -4,7 +4,9 @@ import pandas as pd
 import plotly.graph_objects as go
 
 
-def annotate_ikke_offisiell_statistikk(fig: go.Figure, x=0.5, y=1.05) -> go.Figure:
+def annotate_ikke_offisiell_statistikk(
+    fig: go.Figure, x=0.5, y=1.05, color="black", weight="normal"
+) -> go.Figure:
     """
     Legger til en annotasjon om at dette ikke er offisiell statistikk
     """
@@ -16,7 +18,7 @@ def annotate_ikke_offisiell_statistikk(fig: go.Figure, x=0.5, y=1.05) -> go.Figu
         y=y,
         showarrow=False,
         opacity=0.7,
-        font_size=11,
+        font=dict(size=11, color=color, weight=weight),
     )
     return fig
 

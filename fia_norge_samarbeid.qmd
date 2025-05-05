@@ -8,37 +8,67 @@ embed-resources: true
 ```{python}
 %load_ext autoreload
 %autoreload 2
-
 import pandas as pd
 
 from src.utils.dataloader import (
+    last_inn_data_statistikk,
     last_inn_samarbeid,
-    last_inn_data_statistikk
+    last_inn_spørreundersøkelser,
 )
+from src.utils.konstanter import Resultatområde
 
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
-
-from src.utils.dataloader import last_inn_spørreundersøkelser
-data_spørreundersøkelse = last_inn_spørreundersøkelser(
-    project=PROJECT,
-    dataset=DATASET,
-)
+RESULTATOMRÅDE = None 
 
 data_statistikk = last_inn_data_statistikk(
     project=PROJECT,
     dataset=DATASET,
     adm_enheter=pd.read_csv("data/administrative_enheter.csv", dtype=str),
+    resultatområde=RESULTATOMRÅDE,
 )
 
 data_samarbeid = last_inn_samarbeid(
     project=PROJECT,
     dataset=DATASET,
     data_statistikk=data_statistikk,
+    resultatområde=RESULTATOMRÅDE,
+)
+
+data_spørreundersøkelse = last_inn_spørreundersøkelser(
+    project=PROJECT,
+    dataset=DATASET,
+    data_statistikk=data_statistikk,
+    resultatområde=RESULTATOMRÅDE,
 )
 
 ```
 
+
+{{< include includes/under_arbeid_callout.qmd >}}
+
+
+```{python}
+from src.plots.samarbeid import plot_antall_samarbeid_over_tid
+from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_tid
+
+plot_antall_samarbeid_over_tid(data_samarbeid=data_samarbeid)
+# plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Behovsvurdering")
+# plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Evaluering")
+```
+
+```{python}
+
+from src.utils.datahandler import fullførte_samarbeid_med_tid
+_, fullførte_samarbeid = fullførte_samarbeid_med_tid(
+    data_samarbeid=data_samarbeid,
+)
+
+from src.plots.samarbeid import plot_tid_brukt_i_samarbeid
+
+plot_tid_brukt_i_samarbeid(df=fullførte_samarbeid)
+
+```
 
 <!-- Samme som resultatområder: -->
 
