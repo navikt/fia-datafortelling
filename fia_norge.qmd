@@ -3,7 +3,7 @@ title: Bruk av Fia nasjonalt
 subtitle: Statistikk som viser Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
-embed-resources: false
+embed-resources: true
 ---
 ```{python}
 %load_ext autoreload

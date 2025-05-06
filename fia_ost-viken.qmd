@@ -3,7 +3,7 @@ title: Bruk av Fia i Øst-Viken
 subtitle: Statistikk som viser bruk av Fia i Øst-Viken.
 title-block-banner: true
 title-block-banner-color: white
-embed-resources: false
+embed-resources: true
 ---
 
 ```{python}

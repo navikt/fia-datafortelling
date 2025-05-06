@@ -3,7 +3,7 @@ title: Fia datakvalitet
 subtitle: Statistikk som viser datakvalitet i Fia - Fagsystemet for oppfølging av IA-oppdraget i NAV.
 title-block-banner: true
 title-block-banner-color: white
-embed-resources: false
+embed-resources: true
 ---
 
 ```{python}
