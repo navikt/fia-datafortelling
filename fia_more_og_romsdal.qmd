@@ -3,7 +3,7 @@ title: Bruk av Fia i Møre og Romsdal
 subtitle: Statistikk som viser bruk av Fia i Møre og Romsdal.
 title-block-banner: true
 title-block-banner-color: white
-embed-resources: true
+embed-resources: false
 ---
 
 ```{python}

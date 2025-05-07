@@ -16,7 +16,7 @@ format:
         toc: true
         toc-title: Indeks
         page-layout: full
-        embed-resources: true
+        embed-resources: false
         code-tools: true
 jupyter: python3
 ---

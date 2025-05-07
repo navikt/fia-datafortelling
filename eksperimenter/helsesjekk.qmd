@@ -14,7 +14,7 @@ execute:
     daemon: false
 format:
     dashboard:
-        embed-resources: true
+        embed-resources: false
         scrolling: false
 jupyter: python3
 ---

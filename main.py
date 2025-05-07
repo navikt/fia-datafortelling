@@ -84,12 +84,11 @@ def render_ia_tjenester_per_resultatområde(resultatområde: str):
 def update_quarto(files_to_upload: list[str]):
     multipart_form_data = {}
     for file_path in files_to_upload:
-        file_name = os.path.basename(file_path)
+        file_name = file_path.replace("pages/", "", 1)
         with open(file_path, "rb") as file:
-            # Read the file contents and store them in the dictionary
             file_contents = file.read()
             multipart_form_data[file_name] = (file_name, file_contents)
-            logging.info(f"Prepared file for upload: {file_name}")
+            logging.info(f"Fil klar for opplasting: {file_name}")
 
     logging.info("multipart form data prepared.")
 
@@ -135,19 +134,34 @@ if __name__ == "__main__":
             )
             render_fia_per_resultatområde(resultatområde=resultatområde)
 
-            # logging.info(
-            #     f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
-            # )
-            # render_samarbeid_per_resultatområde(resultatområde=resultatområde)
+            logging.info(
+                f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
+            )
+            render_samarbeid_per_resultatområde(resultatområde=resultatområde)
 
         logging.info("Henter filer å laste opp til NADA")
+        total_file_size_bytes = 0
+        # Gå gjennom alle filer i mappen og legg dem til i en liste
         files_to_upload = []
         for root, dirs, files in os.walk("pages"):
             for file in files:
                 files_to_upload.append(os.path.join(root, file))
-                logging.debug(os.path.join(root, file))
+                file_size_bytes = os.path.getsize(os.path.join(root, file))
+                total_file_size_bytes += file_size_bytes
+                file_size_kb = file_size_bytes / 1024
+                logging.info(
+                    f"Fil '{os.path.join(root, file)}' på {file_size_kb:.2f} KB lagt til i liste for opplasting"
+                )
 
-        logging.info(f"Fant {len(files_to_upload)} filer å laste opp.")
+        file_size_mb = total_file_size_bytes / 1024 / 1024
+        logging.info(
+            f"Fant {len(files_to_upload)} filer å laste opp på totalt {file_size_mb:.2f} MB."
+        )
+
+        if total_file_size_bytes > 100000000:
+            logging.warning(
+                f"Total filstørrelse: {file_size_mb:.2f} MB overstiger 100 MB. Opplasting vil sannsynligvis feile pga begrensning i NADA."
+            )
 
         update_quarto(files_to_upload=files_to_upload)
 
