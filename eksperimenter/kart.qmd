@@ -52,7 +52,7 @@ DATASET = "pia_bigquery_sink_v1_dataset_prod"
 # Hent data
 adm_enheter = pd.read_csv("administrative_enheter.csv", dtype=str)
 raw_data_statistikk = load_data_deduplicate(PROJECT, DATASET, "ia-sak-statistikk-v1", "endretAvHendelseId")
-raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-bigquery-v1", distinct_colunms="id")
+raw_data_samarbeid = load_data_deduplicate(PROJECT, DATASET, "samarbeid-v1", distinct_colunms="id")
 data_statistikk = preprocess_data_statistikk(raw_data_statistikk)
 data_samarbeid = preprocess_data_samarbeid(raw_data_samarbeid, data_statistikk)
 kommunedata = data_samarbeid.groupby("kommunenummer").id.count().reset_index().rename(columns={"id": "antall_samarbeid"})

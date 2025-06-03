@@ -7,7 +7,7 @@ import plotly.graph_objects as go
 from src.utils.helper import annotate_ikke_offisiell_statistikk
 
 
-def plot_antall_samarbeid_over_tid(data_samarbeid):
+def plot_antall_samarbeid_over_tid(data_samarbeid: pd.DataFrame) -> go.Figure:
     """
     Plotter antall spørreundersøkelser av type spr_type over tid, gruppert per uke.
 
@@ -202,11 +202,129 @@ def plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse,
     return annotate_ikke_offisiell_statistikk(fig, y=1.15, color="red", weight="bold")
 
 
+def plot_tid_mellom_hendelser(
+    df: pd.DataFrame,
+    kolonne_start: str,
+    kolonne_slutt: str,
+    hendelse_navn: str,
+    width: int = 850,
+    farge_gjennomsnitt: str = "#00a693",
+    farge_median: str = "#74afda",
+    farge_stolper: str = "#494e84",
+    yaxis_range_max: float | None = None,
+) -> tuple[go.Figure, float]:
+    # TODO: Dropdown: Næring + Bransje
+    # TODO: Legend: multi plots, antall arbeidsforhold?
+    """
+    Lager et stolpediagram som viser hvor lang tid det mellom hendelser i et samarbeid
+
+    Skal være generisk nok til å brukes for både tid mellom opprettelse og første spørreundersøkelse, og opprettet til fullført samarbeid, eller evaluering
+
+    Args:
+        df: DataFrame av samarbeid som inneholder kolonnene 'opprettet' og 'fullfort'.
+
+    Returns:
+        Plotly figur med histogram og gjennomsnittlig tid mellom hendelser.
+    """
+
+    # Starter med en tom figur for å unngå feil ved tom DataFrame
+    fig = go.Figure()
+
+    # Ved tom DataFrame, vis en melding
+    if df.empty:
+        fig.add_annotation(
+            text="Ingen data tilgjengelig",
+            xref="paper",
+            yref="paper",
+            x=0.5,
+            y=0.5,
+            width=width,
+            showarrow=False,
+            font=dict(size=20),
+        )
+        return fig, 0
+
+    kolonne_tid = "tid_brukt_timer"
+    df[kolonne_tid] = (df[kolonne_slutt] - df[kolonne_start]).dt.total_seconds() / (
+        60 * 60
+    )
+
+    custom_bins = make_custom_bins(bin_type=hendelse_navn)
+    counts = pd.cut(df[kolonne_tid], bins=custom_bins).value_counts().sort_index()
+
+    x_labels = []
+    for i in range(len(custom_bins) - 1):
+        x_labels.append(f"{bin_label(custom_bins[i])}-{bin_label(custom_bins[i + 1])}")
+
+    # lager stolpediagam
+    fig = go.Figure(
+        data=[
+            go.Bar(
+                x=x_labels,
+                y=counts.values,
+                marker_color=farge_stolper,
+                hovertemplate="Tid: %{x}<br>Antall samarbeid: %{y}<extra></extra>",
+            )
+        ]
+    )
+
+    # Annotations og linjer for gjennomsnitt og median
+    gjennomsnitt = df[kolonne_tid].mean()
+    avg_bin_index = pd.cut([gjennomsnitt], bins=custom_bins).codes[0]
+    median = df[kolonne_tid].median()
+    median_bin_index = pd.cut([median], bins=custom_bins).codes[0]
+
+    fig.add_vline(
+        x=median_bin_index,
+        line_width=2,
+        line_dash="dash",
+        line_color=farge_median,
+        annotation_text=f"Median: {(median / 24):.1f} dager",
+        annotation_position="top left" if median <= gjennomsnitt else "top right",
+        annotation_borderwidth=6,
+        annotation_font_color="white",
+        annotation_bgcolor=farge_median,
+    )
+
+    fig.add_vline(
+        x=avg_bin_index,
+        line_width=2,
+        line_dash="dash",
+        line_color=farge_gjennomsnitt,
+        annotation_text=f"Gjennomsnitt: {(gjennomsnitt / 24):.1f} dager",
+        annotation_position="top right" if median <= gjennomsnitt else "top left",
+        annotation_borderwidth=6,
+        annotation_font_color="white",
+        annotation_bgcolor=farge_gjennomsnitt,
+    )
+
+    yaxis_max = int(
+        yaxis_range_max
+        if yaxis_range_max is not None
+        else int(counts.values.max() * 1.4)
+    )
+
+    # Oppdater layout med aksetitler og range for plass til annotasjoner
+    fig.update_layout(
+        xaxis_title=f"Tid fra samarbeid ble opprettet til første {hendelse_navn.lower()} ble gjennomført (dager)",
+        yaxis_title="Antall samarbeid",
+        bargap=0.04,
+        width=width,
+        yaxis_range=[
+            0,
+            yaxis_max,
+        ],
+    )
+
+    # Display the plot
+    return fig, yaxis_max
+
+
 def plot_tid_til_første_spørreundersøkelse(
     df: pd.DataFrame,
-    kolonne: str,
-    kolonne_start: str = "opprettet",
-    type_spørreundersøkelse: str = "Behovsvurdering",
+    kolonne_slutt: str,
+    kolonne_start: str,
+    hendelse_navn: str,
     farge_gjennomsnitt: str = "#daa520",
     farge_median: str = "#ef553b",
 ) -> go.Figure:
@@ -237,9 +355,11 @@ def plot_tid_til_første_spørreundersøkelse(
         return fig
 
     kolonne_tid = "tid_brukt_timer"
-    df[kolonne_tid] = (df[kolonne] - df[kolonne_start]).dt.total_seconds() / (60 * 60)
+    df[kolonne_tid] = (df[kolonne_slutt] - df[kolonne_start]).dt.total_seconds() / (
+        60 * 60
+    )
 
-    custom_bins = make_custom_bins(bin_type=type_spørreundersøkelse)
+    custom_bins = make_custom_bins(bin_type=hendelse_navn)
     counts = pd.cut(df[kolonne_tid], bins=custom_bins).value_counts().sort_index()
 
     x_labels = []
@@ -290,7 +410,7 @@ def plot_tid_til_første_spørreundersøkelse(
 
     # Oppdater layout med aksetitler og range for plass til annotasjoner
     fig.update_layout(
-        xaxis_title=f"Tid fra samarbeid ble opprettet til første {type_spørreundersøkelse.lower()} ble gjennomført (dager)",
+        xaxis_title=f"Tid fra samarbeid ble opprettet til første {hendelse_navn.lower()} ble gjennomført (dager)",
         yaxis_title="Antall samarbeid",
         bargap=0.04,
         yaxis_range=[0, (counts.values.max() * 1.4)],

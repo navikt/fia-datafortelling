@@ -16,6 +16,12 @@ class Resultatområde(Enum):
     ØST_VIKEN = "øst-viken"
 
 
+class Sektor(Enum):
+    STATLIG = "1"
+    KOMMUNAL = "2"
+    PRIVAT = "3"
+
+
 statusordre = [
     "NY",
     "VURDERES",

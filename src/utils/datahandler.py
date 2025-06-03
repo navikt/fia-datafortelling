@@ -15,7 +15,7 @@ from src.utils.konstanter import (
 
 def fullførte_samarbeid_med_tid(
     data_samarbeid: pd.DataFrame,
-) -> tuple[int, pd.DataFrame]:
+) -> pd.DataFrame:
     """
     Hent ut samarbeid som er fullført og har en fullført dato.
     Args:
@@ -27,22 +27,22 @@ def fullførte_samarbeid_med_tid(
     """
 
     if data_samarbeid.empty:
-        return 0, pd.DataFrame()
+        return pd.DataFrame()
 
     fullførte_samarbeid = data_samarbeid[data_samarbeid["status"] == "FULLFØRT"]
 
     if fullførte_samarbeid.empty:
-        return 0, pd.DataFrame()
-
-    antall_rader = fullførte_samarbeid.shape[0]
+        return pd.DataFrame()
 
     fullførte_samarbeid_not_na = fullførte_samarbeid[
         fullførte_samarbeid["fullfort"].notna()
     ]
 
-    antall_rader_filtrert_bort = antall_rader - fullførte_samarbeid_not_na.shape[0]
+    print(
+        f"samarbeid uten fullført dato {len(fullførte_samarbeid) - len(fullførte_samarbeid_not_na)}"
+    )
 
-    return antall_rader_filtrert_bort, fullførte_samarbeid_not_na
+    return fullførte_samarbeid_not_na
 
 
 def samarbeid_med_spørreundersøkelse(
@@ -58,10 +58,6 @@ def samarbeid_med_spørreundersøkelse(
     if samarbeid_ikke_slettet.empty:
         return pd.DataFrame()
 
-    # TODO: Tell kun samarbeid som er opprettet for mindre enn 365 dager siden ?
-    # TODO:  - Evt litt etter samarbeid ble en ting man kunne opprette?
-    # Filtrer behovsvurderinger for data vi er interessert i.
-    # Gjøres stegvis for å vise antall filtrerte rader
     behovsvurderinger = data_spørreundersøkelse[
         data_spørreundersøkelse["type"] == type_spørreundersøkelse
     ]
@@ -114,23 +110,25 @@ def samarbeid_med_spørreundersøkelse(
         > samarbeid_med_tid_for_gjennomføring["opprettet"]
     ].reset_index(drop=True)
 
-    print("Tall med i beregningen")
-    print(f"{type_spørreundersøkelse}er:")
-    print(
-        f"{len(behovsvurderinger)} {type_spørreundersøkelse.lower()}er i alle statuser"
-    )
-    print(f"{len(avsluttede_behovsvurderinger)} av disse er i status 'AVSLUTTET'")
-    print(f"{len(behovsvurderinger_med_svar)} av disse har minst ett svar")
+    # TODO: returner tall i beregningen så det kan brukes i beskrivelse?
 
-    print("Samarbeid:")
-    print(f"{len(samarbeid_ikke_slettet)} samarbeid som ikke er slettet")
-    print(
-        f"{len(samarbeid_med_tid_for_gjennomføring)} samarbeid med minst 1 gjennomført {type_spørreundersøkelse.lower()}"
-    )
-    print(
-        f"Antall samarbeid som ble opprettet etter fullført behovsvurdering {type_spørreundersøkelse.lower()}: {len(samarbeid_med_tid_for_gjennomføring) - len(result)}"
-    )
-    print(f"Totalt antall samarbeid som gjenstår: {len(result)}")
+    # print("Tall med i beregningen")
+    # print(f"{type_spørreundersøkelse}er:")
+    # print(
+    #     f"{len(behovsvurderinger)} {type_spørreundersøkelse.lower()}er i alle statuser"
+    # )
+    # print(f"{len(avsluttede_behovsvurderinger)} av disse er i status 'AVSLUTTET'")
+    # print(f"{len(behovsvurderinger_med_svar)} av disse har minst ett svar")
+
+    # print("Samarbeid:")
+    # print(f"{len(samarbeid_ikke_slettet)} samarbeid som ikke er slettet")
+    # print(
+    #     f"{len(samarbeid_med_tid_for_gjennomføring)} samarbeid med minst 1 gjennomført {type_spørreundersøkelse.lower()}"
+    # )
+    # print(
+    #     f"Antall samarbeid som ble opprettet etter fullført behovsvurdering {type_spørreundersøkelse.lower()}: {len(samarbeid_med_tid_for_gjennomføring) - len(result)}"
+    # )
+    # print(f"Totalt antall samarbeid som gjenstår: {len(result)}")
 
     return result
 
@@ -348,36 +346,81 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
 
 
 def preprocess_data_samarbeid(
-    data_samarbeid: pd.DataFrame, data_statistikk: pd.DataFrame
+    raw_data_samarbeid: pd.DataFrame, data_statistikk: pd.DataFrame
 ) -> pd.DataFrame:
-    # Legge til antall personer i samarbeid-tabellen
-    antall_personer = data_statistikk.sort_values("endretTidspunkt")[
-        ["saksnummer", "antallPersoner"]
-    ].drop_duplicates("saksnummer", keep="last")
-    data_samarbeid = data_samarbeid.merge(antall_personer, on="saksnummer", how="left")
+    data_samarbeid = raw_data_samarbeid[raw_data_samarbeid["status"] != "SLETTET"]
+    data_statistikk = data_statistikk.sort_values("endretTidspunkt")
 
     # Legge til kommunenummer 2024 i samarbeid-tabellen
-    kommunenummer = (
-        data_statistikk.sort_values("endretTidspunkt")[
-            ["saksnummer", "kommunenummer 2024"]
-        ]
-        .drop_duplicates("saksnummer", keep="last")
-        .rename(columns={"kommunenummer 2024": "kommunenummer"})
+    data_samarbeid = data_samarbeid.merge(
+        (
+            data_statistikk[
+                [
+                    "saksnummer",
+                    "kommunenummer 2024",
+                ]
+            ]
+            .drop_duplicates("saksnummer", keep="last")
+            .rename(columns={"kommunenummer 2024": "kommunenummer"})
+        ),
+        on="saksnummer",
+        how="left",
     )
-    data_samarbeid = data_samarbeid.merge(kommunenummer, on="saksnummer", how="left")
+
+    # Legge til antall personer i samarbeid-tabellen
+    data_samarbeid = data_samarbeid.merge(
+        data_statistikk[
+            [
+                "saksnummer",
+                "antallPersoner",
+            ]
+        ].drop_duplicates("saksnummer", keep="last"),
+        on="saksnummer",
+        how="left",
+    )
+    # BUG 37 samarbeid av 3 200 mangler antall personer
+    # TODO: sett til 0?
+
+    # Legge til resultatomrade i samarbeid-tabellen
+    data_samarbeid = data_samarbeid.merge(
+        data_statistikk[
+            [
+                "saksnummer",
+                "resultatomrade",
+            ]
+        ].drop_duplicates("saksnummer", keep="last"),
+        on="saksnummer",
+        how="left",
+    )
+
+    # Legge til sektor i samarbeid-tabellen
+    data_samarbeid = data_samarbeid.merge(
+        data_statistikk[
+            [
+                "saksnummer",
+                "sektor",
+            ]
+        ].drop_duplicates("saksnummer", keep="last"),
+        on="saksnummer",
+        how="left",
+    )
+    # BUG 10 av 3 200 mangler sektor, usikker hvorfor. Fjerner disse
+    data_samarbeid = data_samarbeid[data_samarbeid["sektor"].notna()]
 
     return data_samarbeid
 
 
-def legg_til_resultatområde(
-    data: pd.DataFrame, data_statistikk: pd.DataFrame
+def legg_til_sektor_og_resultatområde(
+    data: pd.DataFrame,
+    data_statistikk: pd.DataFrame,
 ) -> pd.DataFrame:
     """
     Legger til resultatområde basert på data_statistikk.
     Vi filtrerer på resultatområde for å lage en datafortelling per resultatområde.
     """
+
     resultatomrade = data_statistikk.sort_values("endretTidspunkt")[
-        ["saksnummer", "resultatomrade"]
+        ["saksnummer", "resultatomrade", "sektor"]
     ].drop_duplicates("saksnummer", keep="last")
     data = data.merge(resultatomrade, on="saksnummer", how="left")
     return data

@@ -17,7 +17,7 @@ bq_client = Client(project)
 
 dataset = "pia_bigquery_sink_v1_dataset_prod"
 table_behovsvurdering = "sporreundersokelse-v1"
-table_samarbeid = "samarbeid-bigquery-v1"
+table_samarbeid = "samarbeid-v1"
 ```
 
 {{< include behovsvurdering.qmd >}}

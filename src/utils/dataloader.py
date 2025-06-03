@@ -1,7 +1,7 @@
 import pandas as pd
 
 from src.utils.datahandler import (
-    legg_til_resultatområde,
+    legg_til_sektor_og_resultatområde,
     load_data_deduplicate,
     preprocess_data_samarbeid,
     preprocess_data_statistikk,
@@ -23,18 +23,19 @@ def last_inn_spørreundersøkelser(
     )
 
     data_spørreundersøkelse = data_spørreundersøkelse[
-        (data_spørreundersøkelse.harMinstEttSvar)
-        & (data_spørreundersøkelse.status != "SLETTET")
+        (data_spørreundersøkelse["harMinstEttSvar"])
+        & (data_spørreundersøkelse["status"] != "SLETTET")
     ]
 
-    data_spørreundersøkelse = legg_til_resultatområde(
+    # Legg til sektor?
+    data_spørreundersøkelse = legg_til_sektor_og_resultatområde(
         data=data_spørreundersøkelse,
         data_statistikk=data_statistikk,
     )
 
     if resultatområde is not None:
         data_spørreundersøkelse = data_spørreundersøkelse[
-            data_spørreundersøkelse.resultatomrade == resultatområde.value
+            data_spørreundersøkelse["resultatomrade"] == resultatområde.value
         ]
 
     return data_spørreundersøkelse
@@ -53,25 +54,15 @@ def last_inn_samarbeid(
         distinct_colunms="id",
     )
 
-    data_samarbeid = raw_data_samarbeid[raw_data_samarbeid.status != "SLETTET"]
-
-    # TODO: usikker på hva denne gjør, må det være data_statistikk MED resultatområde?
-    #  Se på annen måte å merge dataframes på ?
-    data_samarbeid = legg_til_resultatområde(
-        data=data_samarbeid,
+    data_samarbeid = preprocess_data_samarbeid(
+        raw_data_samarbeid=raw_data_samarbeid,
         data_statistikk=data_statistikk,
     )
 
-    # TODO: Rimelig sikker dette bare legger til resultatområde for allerede filtrert liste av samarbeid
     if resultatområde is not None:
         data_samarbeid = data_samarbeid[
-            data_samarbeid.resultatomrade == resultatområde.value
+            data_samarbeid["resultatomrade"] == resultatområde.value
         ]
-
-    data_samarbeid = preprocess_data_samarbeid(
-        data_samarbeid=data_samarbeid,
-        data_statistikk=data_statistikk,
-    )
 
     return data_samarbeid
 
@@ -98,11 +89,13 @@ def last_inn_data_samarbeidsplan(
         on="samarbeidId",
     )
 
-    data_samarbeidsplan = legg_til_resultatområde(data_samarbeidsplan, data_statistikk)
+    data_samarbeidsplan = legg_til_sektor_og_resultatområde(
+        data_samarbeidsplan, data_statistikk
+    )
 
     if resultatområde is not None:
         data_samarbeidsplan = data_samarbeidsplan[
-            data_samarbeidsplan.resultatomrade == resultatområde.value
+            data_samarbeidsplan["resultatomrade"] == resultatområde.value
         ]
 
     return data_samarbeidsplan
@@ -129,7 +122,7 @@ def last_inn_data_statistikk(
 
     if resultatområde is not None:
         data_statistikk = data_statistikk[
-            data_statistikk.resultatomrade == resultatområde.value
+            data_statistikk["resultatomrade"] == resultatområde.value
         ]
 
     data_statistikk = data_statistikk.dropna(subset=["resultatomrade"])
