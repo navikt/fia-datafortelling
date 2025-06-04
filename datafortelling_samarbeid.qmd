@@ -8,6 +8,146 @@ from src.utils.konstanter import Sektor
 
 {{< include includes/under_arbeid_callout.qmd >}}
 
+
+# Tid brukt i samarbeid - (Opprettet - Gjennomført behovsvurdering)
+Antall dager mellom opprettelse av et samarbeid og gjennomføring av første behovsvurdering.
+
+```{python}
+samarbeid_behovsvurdering = samarbeid_med_spørreundersøkelse(
+    data_samarbeid=data_samarbeid,
+    data_spørreundersøkelse=data_spørreundersøkelse,
+    type_spørreundersøkelse="Behovsvurdering",
+)
+```
+
+::: {.panel-tabset}
+
+## Alle
+Alle behovsvurderinger
+```{python}
+fig, y_max = plot_tid_mellom_hendelser(
+    df=samarbeid_behovsvurdering,
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_behovsvurdering_fullfort",
+    hendelse_navn="Behovsvurdering",
+)
+
+fig.show()
+```
+
+## Statlig sektor
+Alle behovsvurderinger knyttet til virksomheter definert som Statlig forvaltning (i Fia)
+```{python}
+fig, _ = plot_tid_mellom_hendelser(
+    df=samarbeid_behovsvurdering[samarbeid_behovsvurdering["sektor"] == Sektor.STATLIG.name],
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_behovsvurdering_fullfort",
+    hendelse_navn="Behovsvurdering",
+    yaxis_range_max=y_max,
+)
+
+fig.show()
+```
+
+## Kommunal sektor
+Alle behovsvurderinger knyttet til virksomheter definert som Kommunal forvaltning (i Fia)
+```{python}
+fig, _ = plot_tid_mellom_hendelser(
+    df=samarbeid_behovsvurdering[samarbeid_behovsvurdering["sektor"] == Sektor.KOMMUNAL.name],
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_behovsvurdering_fullfort",
+    hendelse_navn="Behovsvurdering",
+    yaxis_range_max=y_max,
+)
+
+fig.show()
+```
+
+## Privat sektor
+Alle behovsvurderinger knyttet til virksomheter definert som Privat og offentlig næringsvirksomhet (i Fia)
+```{python}
+fig, _ = plot_tid_mellom_hendelser(
+    df=samarbeid_behovsvurdering[samarbeid_behovsvurdering["sektor"] == Sektor.PRIVAT.name],
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_behovsvurdering_fullfort",
+    hendelse_navn="Behovsvurdering",
+    yaxis_range_max=y_max,
+)
+
+fig.show()
+```
+
+:::
+
+# Tid brukt i samarbeid - (Opprettet - Gjennomført evaluering)
+Antall dager mellom opprettelse av et samarbeid og gjennomføring av første evaluering.
+```{python}
+samarbeid_evaluering = samarbeid_med_spørreundersøkelse(
+    data_samarbeid=data_samarbeid,
+    data_spørreundersøkelse=data_spørreundersøkelse,
+    type_spørreundersøkelse="Evaluering",
+)
+```
+
+
+::: {.panel-tabset}
+## Alle
+Alle evalueringer
+```{python}
+fig, y_max = plot_tid_mellom_hendelser(
+    df=samarbeid_evaluering,
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_evaluering_fullfort",
+    hendelse_navn="Evaluering",
+)
+
+fig.show()
+```
+
+## Statlig sektor
+Alle evalueringer knyttet til virksomheter kategorisert som Statlig forvaltning (i Fia)
+```{python}
+fig, _ = plot_tid_mellom_hendelser(
+    df=samarbeid_evaluering[samarbeid_evaluering["sektor"] == Sektor.STATLIG.name],
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_evaluering_fullfort",
+    hendelse_navn="Evaluering",
+    yaxis_range_max=y_max,
+)
+
+fig.show()
+```
+
+## Kommunal sektor
+Alle evalueringer knyttet til virksomheter kategorisert som Kommunal forvaltning (i Fia)
+```{python}
+fig, _ = plot_tid_mellom_hendelser(
+    df=samarbeid_evaluering[samarbeid_evaluering["sektor"] == Sektor.KOMMUNAL.name],
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_evaluering_fullfort",
+    hendelse_navn="Evaluering",
+    yaxis_range_max=y_max,
+)
+
+fig.show()
+```
+
+## Privat sektor
+Alle evalueringer knyttet til virksomheter kategorisert som Privat og offentlig næringsvirksomhet (i Fia)
+```{python}
+fig, _ = plot_tid_mellom_hendelser(
+    df=samarbeid_evaluering[samarbeid_evaluering["sektor"] == Sektor.PRIVAT.name],
+    kolonne_start="opprettet",
+    kolonne_slutt="tidligste_evaluering_fullfort",
+    hendelse_navn="Evaluering",
+    yaxis_range_max=y_max,
+)
+
+fig.show()
+```
+
+:::
+
 # Tid brukt i samarbeid - (Opprettet - Fullført samarbeid)
 Antall dager mellom opprettelse av et samarbeid og når det er satt i status 'fullført'
 
@@ -20,7 +160,7 @@ fullførte_samarbeid = fullførte_samarbeid_med_tid(
 )
 ```
 
-## Totalt
+## Alle
 Alle samarbeid som er fullført
 
 ```{python}
@@ -81,147 +221,6 @@ fig.show()
 ```
 
 :::
-
-# Tid brukt i samarbeid - (Opprettet - Gjennomført behovsvurdering)
-Antall dager mellom opprettelse av et samarbeid og gjennomføring av første behovsvurdering.
-
-```{python}
-samarbeid_behovsvurdering = samarbeid_med_spørreundersøkelse(
-    data_samarbeid=data_samarbeid,
-    data_spørreundersøkelse=data_spørreundersøkelse,
-    type_spørreundersøkelse="Behovsvurdering",
-)
-```
-
-::: {.panel-tabset}
-
-## Totalt
-Alle behovsvurderinger
-```{python}
-fig, y_max = plot_tid_mellom_hendelser(
-    df=samarbeid_behovsvurdering,
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_behovsvurdering_fullfort",
-    hendelse_navn="Behovsvurdering",
-)
-
-fig.show()
-```
-
-## Statlig sektor
-Alle behovsvurderinger knyttet til samarbeid som igjen er knyttet til virksomheter definert som Statlig forvaltning (i Fia)
-```{python}
-fig, _ = plot_tid_mellom_hendelser(
-    df=samarbeid_behovsvurdering[samarbeid_behovsvurdering["sektor"] == Sektor.STATLIG.name],
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_behovsvurdering_fullfort",
-    hendelse_navn="Behovsvurdering",
-    yaxis_range_max=y_max,
-)
-
-fig.show()
-```
-
-## Kommunal sektor
-Alle behovsvurderinger knyttet til samarbeid som igjen er knyttet til virksomheter definert som Kommunal forvaltning (i Fia)
-```{python}
-fig, _ = plot_tid_mellom_hendelser(
-    df=samarbeid_behovsvurdering[samarbeid_behovsvurdering["sektor"] == Sektor.KOMMUNAL.name],
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_behovsvurdering_fullfort",
-    hendelse_navn="Behovsvurdering",
-    yaxis_range_max=y_max,
-)
-
-fig.show()
-```
-
-## Privat sektor
-Alle behovsvurderinger knyttet til samarbeid som igjen er knyttet til virksomheter definert som Privat og offentlig næringsvirksomhet (i Fia)
-```{python}
-fig, _ = plot_tid_mellom_hendelser(
-    df=samarbeid_behovsvurdering[samarbeid_behovsvurdering["sektor"] == Sektor.PRIVAT.name],
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_behovsvurdering_fullfort",
-    hendelse_navn="Behovsvurdering",
-    yaxis_range_max=y_max,
-)
-
-fig.show()
-```
-
-:::
-
-# Tid brukt i samarbeid - (Opprettet - Gjennomført evaluering)
-Antall dager mellom opprettelse av et samarbeid og gjennomføring av første evaluering.
-```{python}
-samarbeid_evaluering = samarbeid_med_spørreundersøkelse(
-    data_samarbeid=data_samarbeid,
-    data_spørreundersøkelse=data_spørreundersøkelse,
-    type_spørreundersøkelse="Evaluering",
-)
-```
-
-
-::: {.panel-tabset}
-## Totalt
-Alle evalueringer
-```{python}
-fig, y_max = plot_tid_mellom_hendelser(
-    df=samarbeid_evaluering,
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_evaluering_fullfort",
-    hendelse_navn="Evaluering",
-)
-
-fig.show()
-```
-
-## Statlig sektor
-Alle gjennomførte evalueringer knyttet til samarbeid som igjen er knyttet til virksomheter kategorisert som Statlig forvaltning (i Fia)
-```{python}
-fig, _ = plot_tid_mellom_hendelser(
-    df=samarbeid_evaluering[samarbeid_evaluering["sektor"] == Sektor.STATLIG.name],
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_evaluering_fullfort",
-    hendelse_navn="Evaluering",
-    yaxis_range_max=y_max,
-)
-
-fig.show()
-```
-
-## Kommunal sektor
-Alle gjennomførte evalueringer knyttet til samarbeid som igjen er knyttet til virksomheter kategorisert som Kommunal forvaltning (i Fia)
-```{python}
-fig, _ = plot_tid_mellom_hendelser(
-    df=samarbeid_evaluering[samarbeid_evaluering["sektor"] == Sektor.KOMMUNAL.name],
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_evaluering_fullfort",
-    hendelse_navn="Evaluering",
-    yaxis_range_max=y_max,
-)
-
-fig.show()
-```
-
-## Privat sektor
-Alle gjennomførte evalueringer knyttet til samarbeid som igjen er knyttet til virksomheter kategorisert som Privat og offentlig næringsvirksomhet (i Fia)
-```{python}
-fig, _ = plot_tid_mellom_hendelser(
-    df=samarbeid_evaluering[samarbeid_evaluering["sektor"] == Sektor.PRIVAT.name],
-    kolonne_start="opprettet",
-    kolonne_slutt="tidligste_evaluering_fullfort",
-    hendelse_navn="Evaluering",
-    yaxis_range_max=y_max,
-)
-
-fig.show()
-```
-
-:::
-
-
 
 
 <!-- 

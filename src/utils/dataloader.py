@@ -81,8 +81,6 @@ def last_inn_data_samarbeidsplan(
         distinct_colunms="id",
     )
 
-    # Må legge til saksnummer
-    # TODO: Send inn orgnr per samarbeid?
     data_samarbeidsplan = data_samarbeidsplan.merge(
         data_samarbeid[["id", "saksnummer"]].rename({"id": "samarbeidId"}, axis=1),
         how="left",
