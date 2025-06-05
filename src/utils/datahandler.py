@@ -1,8 +1,9 @@
+import json
 from datetime import datetime, timedelta
+from typing import Any, Dict
 
-import numpy as np
 import pandas as pd
-from google.cloud.bigquery import Client
+from google.cloud import bigquery
 
 from src.utils.konstanter import (
     fylker,
@@ -16,16 +17,6 @@ from src.utils.konstanter import (
 def fullførte_samarbeid_med_tid(
     data_samarbeid: pd.DataFrame,
 ) -> pd.DataFrame:
-    """
-    Hent ut samarbeid som er fullført og har en fullført dato.
-    Args:
-        data_samarbeid: DataFrame med samarbeid data
-    Returns:
-        tuple som inneholder:
-        - int: antall rader uten fullført dato
-        - DataFrame: DataFrame med fullførte samarbeid som har fullført dato
-    """
-
     if data_samarbeid.empty:
         return pd.DataFrame()
 
@@ -37,10 +28,6 @@ def fullførte_samarbeid_med_tid(
     fullførte_samarbeid_not_na = fullførte_samarbeid[
         fullførte_samarbeid["fullfort"].notna()
     ]
-
-    print(
-        f"samarbeid uten fullført dato {len(fullførte_samarbeid) - len(fullførte_samarbeid_not_na)}"
-    )
 
     return fullførte_samarbeid_not_na
 
@@ -110,31 +97,15 @@ def samarbeid_med_spørreundersøkelse(
         > samarbeid_med_tid_for_gjennomføring["opprettet"]
     ].reset_index(drop=True)
 
-    # TODO: returner tall i beregningen så det kan brukes i beskrivelse?
-
-    # print("Tall med i beregningen")
-    # print(f"{type_spørreundersøkelse}er:")
-    # print(
-    #     f"{len(behovsvurderinger)} {type_spørreundersøkelse.lower()}er i alle statuser"
-    # )
-    # print(f"{len(avsluttede_behovsvurderinger)} av disse er i status 'AVSLUTTET'")
-    # print(f"{len(behovsvurderinger_med_svar)} av disse har minst ett svar")
-
-    # print("Samarbeid:")
-    # print(f"{len(samarbeid_ikke_slettet)} samarbeid som ikke er slettet")
-    # print(
-    #     f"{len(samarbeid_med_tid_for_gjennomføring)} samarbeid med minst 1 gjennomført {type_spørreundersøkelse.lower()}"
-    # )
-    # print(
-    #     f"Antall samarbeid som ble opprettet etter fullført behovsvurdering {type_spørreundersøkelse.lower()}: {len(samarbeid_med_tid_for_gjennomføring) - len(result)}"
-    # )
-    # print(f"Totalt antall samarbeid som gjenstår: {len(result)}")
-
     return result
 
 
 def load_data_deduplicate(
-    project: str, dataset: str, table: str, distinct_colunms: str
+    project: str,
+    dataset: str,
+    table: str,
+    distinct_colunms: str,
+    dtypes: Dict[str, Any] | None = None,
 ) -> pd.DataFrame:
     """
     Henter data fra BigQuery og fjerner duplikater med å beholde siste tidsstempel av repeterende distinct_colunms.
@@ -149,9 +120,9 @@ def load_data_deduplicate(
             FROM `{project}.{dataset}.{table}`
         ) WHERE radnummerBasertPaaTidsstempel = 1;
     """
-    bq_client = Client(project=project)
-    data = bq_client.query(query=sql_query).to_dataframe()
-    return data
+    bq_client = bigquery.Client(project=project)
+    query_job = bq_client.query(query=sql_query)
+    return query_job.to_dataframe(dtypes=dtypes)  # type: ignore
 
 
 def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
@@ -164,44 +135,40 @@ def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
     return data
 
 
-def parse_næring(rad):
-    if type(rad) is not np.ndarray:
-        return "Feil ved innhenting av hovednæring, feil format"
-    elif rad.size < 1:
-        # ca 6 tilfeller hvor rad == []
-        return "Feil ved innhenting av hovednæring, mangler næring"
+def parse_næring(json_string: str) -> str:
+    data = json.loads(json_string)
+
+    if len(data) < 1:
+        raise Exception("Feil ved innhenting av hovednæring, mangler næring")
     else:
-        return rad[0]["navn"]
+        return data[0]["navn"]
 
 
-def preprocess_data_statistikk(
-    data_statistikk: pd.DataFrame, adm_enheter: pd.DataFrame
+def legg_til_regional_tilhørighet(
+    data: pd.DataFrame,
+    adm_enheter: pd.DataFrame,
 ) -> pd.DataFrame:
-    # Sorter basert på endrettidspunkt
-    data_statistikk = data_statistikk.sort_values(
-        "endretTidspunkt", ascending=True
-    ).reset_index(drop=True)
+    # BUG: noen kolonner mangler data, dropper disse for å unngå følgefeil i utledede kolonner som resultatområde
+    # Dette gjelder (per 2025-06-04): 6 rader uten kommunenummer, 22 rader uten fylkesnummer
+    data_statistikk = data.copy()
+    data_statistikk = data_statistikk.dropna(subset=["kommunenummer", "fylkesnummer"])
 
-    # Måned til endrettidspunkt
-    data_statistikk["endretTidspunkt_måned"] = (
-        data_statistikk.endretTidspunkt.dt.strftime("%Y-%m")
-    )
+    # Legger til en kolonne fylkesnavn basert på fylkesnummer
+    data_statistikk["fylkesnavn"] = data_statistikk["fylkesnummer"].map(fylker)
 
-    # Fylkesnavn
-    data_statistikk["fylkesnavn"] = data_statistikk.fylkesnummer.map(fylker)
-
-    # Resultatområde
-    data_statistikk["resultatomrade"] = data_statistikk.fylkesnummer.map(
+    # Legger til en kolonne resultatomrade basert på fylkesnummer (før og etter 2024 kommune- og fylkesendringer)
+    data_statistikk["resultatomrade"] = data_statistikk["fylkesnummer"].map(
         resultatområder
     )
 
-    # Del akershus på øst og vest-viken
+    # Akershus fylke (fylkesnummer 32), må deles i øst- og vest-viken for å få rett grenser i resultatområde
     data_statistikk.loc[data_statistikk["fylkesnummer"] == "32", "resultatomrade"] = (
-        data_statistikk.kommunenummer.map(viken_akershus)
+        data_statistikk["kommunenummer"].map(viken_akershus)
     )
-    # Flytt Lund kommune i Rogaland til Agder da de er der de blir fulgt opp
+
+    # Lund kommune i Rogaland følges opp av resultatområdet Agder, så regnes som en del av Agder resultatområde
     data_statistikk.loc[data_statistikk["fylkesnummer"] == "11", "resultatomrade"] = (
-        data_statistikk.kommunenummer.map(rogaland_lund)
+        data_statistikk["kommunenummer"].map(rogaland_lund)
     )
 
     data_statistikk["resultatomrade"] = data_statistikk["resultatomrade"].apply(
@@ -209,6 +176,8 @@ def preprocess_data_statistikk(
     )
 
     # Leser alle kommunenummer og mapper til 2024 kommunenummer
+    # TODO: Bør dette skje før vi ordner fylkesnavn og resultatområde?
+    # Kan gjøre mapping enklere
     alle_kommunenummer = adm_enheter[["kommunenummer", "kommunenummer 2023"]]
 
     data_statistikk["kommunenummer 2024"] = (
@@ -217,29 +186,95 @@ def preprocess_data_statistikk(
         .fillna(data_statistikk["kommunenummer"])
     )
 
-    # Hovednæring
-    data_statistikk["hoved_nering"] = data_statistikk.neringer.apply(parse_næring)
+    return data_statistikk
 
-    data_statistikk["hoved_nering_truncated"] = data_statistikk.hoved_nering
+
+def preprocess_data_statistikk(
+    raw_data_statistikk: pd.DataFrame, adm_enheter: pd.DataFrame
+) -> pd.DataFrame:
+    # Noen kolonner hentes ut fra BigQuery uten at vi tar de i bruk, dropper fra dataframe
+    kolonner_ikke_i_bruk_i_datafortellinger = [
+        "arstall",
+        "kvartal",
+        "kvartaler",
+        "tapteDagsverkGradert",
+        "graderingsprosent",
+        "enhetsnummer",
+        "postnummer",
+        "muligeDagsverkSiste4Kvartal",
+        "sykefraversprosentSiste4Kvartal",
+        "tapteDagsverkSiste4Kvartal",
+        "tapteDagsverkGradertSiste4Kvartal",
+        "graderingsprosentSiste4Kvartal",
+    ]
+    # TODO: Her droppes status slettet på et eller annet tidspunkt
+
+    # TODO: Det droppes en del rader, sørg for å nullstille index
+
+    raw_data_statistikk = raw_data_statistikk.drop(
+        columns=kolonner_ikke_i_bruk_i_datafortellinger
+    )
+
+    # TODO: trenger slettet noen steder i datafortellinger, bør filtreres der de ikke blir brukt
+    # raw_data_statistikk = raw_data_statistikk[
+    #     raw_data_statistikk["status"] != "SLETTET"
+    # ]
+
+    # BUG: 6 rader mangler neringer, dropper disse
+    raw_data_statistikk = raw_data_statistikk[raw_data_statistikk["neringer"] != "[]"]
+
+    # Sorter basert på endrettidspunkt # TODO: HVORFOR?
+    data_statistikk = raw_data_statistikk.sort_values(
+        "endretTidspunkt", ascending=True
+    ).reset_index(drop=True)
+
+    # Måned til endrettidspunkt
+    data_statistikk["endretTidspunkt_måned"] = data_statistikk[
+        "endretTidspunkt"
+    ].dt.strftime("%Y-%m")
+
+    data_statistikk = legg_til_regional_tilhørighet(
+        data=data_statistikk,
+        adm_enheter=adm_enheter,
+    )
+
+    # TODO: Ordne opp i neringer og hovednering under:
+    # data_statistikk["neringer"] er en liste av næringer
+    #  - i få tilfeller er den tom
+    #  - i noen tilfeller er det flere næringer
+    # Vi bryr oss kun om den første i listen, og den er alltid en dict med "kode" og "navn"
+    # f.eks:
+    # [{"kode":"30.113","navn":"Bygging av oljeplattformer og moduler"}]
+    # Vi vil ha en kolonne som heter "hoved_naringskode" som er næringskoden til den første næringen i listen
+    # Vi vil også ha
+
+    data_statistikk["hoved_nering"] = data_statistikk["neringer"].apply(parse_næring)
+
+    # TODO: Bruker vi egentlig bare hoved_nering_truncated
+    data_statistikk["hoved_nering_truncated"] = data_statistikk["hoved_nering"]
     data_statistikk.loc[
-        data_statistikk.hoved_nering.str.len() > 50, "hoved_nering_truncated"
-    ] = data_statistikk.hoved_nering.str[:47] + "..."
+        data_statistikk["hoved_nering"].str.len() > 50, "hoved_nering_truncated"
+    ] = data_statistikk["hoved_nering"].str[:47] + "..."
+
+    ####################
 
     # Gruppering av virksomheter per antall ansatte
     col_name = "antallPersoner_gruppe"
-    data_statistikk.loc[data_statistikk.antallPersoner == 0, col_name] = "0"
-    data_statistikk.loc[data_statistikk.antallPersoner.between(1, 4), col_name] = "1-4"
-    data_statistikk.loc[data_statistikk.antallPersoner.between(5, 19), col_name] = (
+    data_statistikk.loc[data_statistikk["antallPersoner"] == 0, col_name] = "0"
+    data_statistikk.loc[data_statistikk["antallPersoner"].between(1, 4), col_name] = (
+        "1-4"
+    )
+    data_statistikk.loc[data_statistikk["antallPersoner"].between(5, 19), col_name] = (
         "5-19"
     )
-    data_statistikk.loc[data_statistikk.antallPersoner.between(20, 49), col_name] = (
+    data_statistikk.loc[data_statistikk["antallPersoner"].between(20, 49), col_name] = (
         "20-49"
     )
-    data_statistikk.loc[data_statistikk.antallPersoner.between(50, 99), col_name] = (
+    data_statistikk.loc[data_statistikk["antallPersoner"].between(50, 99), col_name] = (
         "50-99"
     )
-    data_statistikk.loc[data_statistikk.antallPersoner >= 100, col_name] = "100+"
-    data_statistikk.loc[data_statistikk.antallPersoner.isna(), col_name] = "Ukjent"
+    data_statistikk.loc[data_statistikk["antallPersoner"] >= 100, col_name] = "100+"
+    data_statistikk.loc[data_statistikk["antallPersoner"].isna(), col_name] = "Ukjent"
 
     return data_statistikk
 
@@ -254,13 +289,14 @@ def split_data_statistikk(
     data_statistikk = fjern_tidssone(data_statistikk)
 
     # Split data_statistikk inn i data_status og data_eierskap
-    eierskap = data_statistikk.hendelse == "TA_EIERSKAP_I_SAK"
-    prosess = data_statistikk.hendelse.isin(
+    eierskap_mask = data_statistikk["hendelse"] == "TA_EIERSKAP_I_SAK"
+    prosess_mask = data_statistikk["hendelse"].isin(
         ["NY_PROSESS", "ENDRE_PROSESS", "SLETT_PROSESS"]
     )
-    data_status = data_statistikk[~eierskap & ~prosess].reset_index(drop=True)
-    data_eierskap = data_statistikk[eierskap].reset_index(drop=True)
-    data_prosess = data_statistikk[prosess].reset_index(drop=True)
+
+    data_eierskap = data_statistikk[eierskap_mask].reset_index(drop=True)
+    data_prosess = data_statistikk[prosess_mask].reset_index(drop=True)
+    data_status = data_statistikk[~eierskap_mask & ~prosess_mask].reset_index(drop=True)
 
     return preprocess_data_status(data_status), data_eierskap, data_prosess
 
@@ -273,11 +309,11 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
 
     # Fjern rader når tilbake-knappen ikke funket
     data_status.loc[
-        data_status.saksnummer == data_status.saksnummer.shift(1),
+        data_status["saksnummer"] == data_status["saksnummer"].shift(1),
         "forrige_status_med_tilbake",
-    ] = data_status.status.shift(1)
-    feil_tilbake = (data_status.hendelse == "TILBAKE") & (
-        data_status.status == data_status.forrige_status_med_tilbake
+    ] = data_status["status"].shift(1)
+    feil_tilbake = (data_status["hendelse"] == "TILBAKE") & (
+        data_status["status"] == data_status["forrige_status_med_tilbake"]
     )
     # Det er forventet kun 2 rader, mer enn dette er en ny bug
     if feil_tilbake.sum() > 10:
@@ -289,7 +325,7 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
 
     # Fjern rader som var angret med bruk av tilbake-knappen
     data_status.reset_index(drop=True, inplace=True)
-    tilbake_rader = data_status[data_status.hendelse == "TILBAKE"].index.tolist()
+    tilbake_rader = data_status[data_status["hendelse"] == "TILBAKE"].index.tolist()
     fjern_rader = set(tilbake_rader)
     for index in tilbake_rader:
         rad = index - 1
@@ -300,15 +336,15 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
 
     # Forrige status
     data_status.loc[
-        data_status.saksnummer == data_status.saksnummer.shift(1),
+        data_status["saksnummer"] == data_status["saksnummer"].shift(1),
         "forrige_status",
-    ] = data_status.status.shift(1)
+    ] = data_status["status"].shift(1)
 
     # Forrige endret tidspunkt
     data_status.loc[
-        data_status.saksnummer == data_status.saksnummer.shift(1),
+        data_status["saksnummer"] == data_status["saksnummer"].shift(1),
         "forrige_endretTidspunkt",
-    ] = data_status.endretTidspunkt.shift(1)
+    ] = data_status["endretTidspunkt"].shift(1)
 
     # Siste status
     siste_status = (
@@ -320,7 +356,7 @@ def preprocess_data_status(data_status: pd.DataFrame) -> pd.DataFrame:
 
     # Aktive saker
     aktive_statuser = ["VURDERES", "KONTAKTES", "KARTLEGGES", "VI_BISTÅR"]
-    data_status["aktiv_sak"] = data_status.siste_status.isin(aktive_statuser)
+    data_status["aktiv_sak"] = data_status["siste_status"].isin(aktive_statuser)
 
     return data_status
 
@@ -392,6 +428,29 @@ def preprocess_data_samarbeid(
         on="saksnummer",
         how="left",
     )
+
+    data_samarbeid = data_samarbeid.merge(
+        data_statistikk[
+            [
+                "saksnummer",
+                "hoved_nering",
+            ]
+        ].drop_duplicates("saksnummer", keep="last"),
+        on="saksnummer",
+        how="left",
+    )
+
+    # TODO Legge til bransjeprogram i samarbeid-tabellen
+    # data_samarbeid = data_samarbeid.merge(
+    #     data_statistikk[
+    #         [
+    #             "saksnummer",
+    #             "bransjeprogram",
+    #         ]
+    #     ].drop_duplicates("saksnummer", keep="last"),
+    #     on="saksnummer",
+    #     how="left",
+    # )
 
     # Legge til sektor i samarbeid-tabellen
     data_samarbeid = data_samarbeid.merge(

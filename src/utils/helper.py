@@ -63,7 +63,8 @@ def ikke_aktuell_begrunnelse_sortering(ikke_aktuell: pd.DataFrame) -> list:
 
 
 def alle_måneder_mellom_datoer(
-    første_dato: str, siste_dato=datetime.now()
+    første_dato: str,
+    siste_dato: datetime = datetime.now(),
 ) -> pd.Series:
     """
     Returnerer alle måneder mellom to datoer

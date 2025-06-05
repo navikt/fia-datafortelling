@@ -22,20 +22,20 @@ def saker_per_status_per_måned(data_status: pd.DataFrame) -> go.Figure:
         data_status, antall_dager=365
     )
 
-    alle_måneder = alle_måneder_mellom_datoer(data_status.endretTidspunkt.min())
+    alle_måneder = alle_måneder_mellom_datoer(data_status["endretTidspunkt"].min())
     statuser = [status for status in statusordre if status != "NY"]
 
     status_per_måned = dict(zip(statuser, [[0]] * len(statuser)))
     for måned in alle_måneder:
         data_måned = data_status[
-            data_status.endretTidspunkt.dt.strftime("%Y-%m") == måned
+            data_status["endretTidspunkt"].dt.strftime("%Y-%m") == måned
         ]
         for status in statuser:
             sist_count = status_per_måned[status][-1]
             count = (
                 sist_count
-                - sum(data_måned.forrige_status == status)
-                + sum(data_måned.status == status)
+                - len(data_måned[data_måned["forrige_status"] == status])
+                + len(data_måned[data_måned["status"] == status])
             )
             status_per_måned[status] = status_per_måned[status] + [count]
 
@@ -63,7 +63,7 @@ def saker_per_status_per_måned(data_status: pd.DataFrame) -> go.Figure:
 def saker_per_status_over_tid(
     data_status: pd.DataFrame, valgte_resultatområder=None
 ) -> go.Figure:
-    første_dato = data_status.endretTidspunkt.min()
+    første_dato = data_status["endretTidspunkt"].min()
     siste_dato = datetime.now()
     alle_datoer = pd.date_range(første_dato, siste_dato, freq="d", normalize=True)
     statuser = [status for status in statusordre if status != "NY"]
@@ -71,13 +71,13 @@ def saker_per_status_over_tid(
     def beregn_status_per_dato(data, datoer):
         status_per_dato = dict(zip(statuser, [[0]] * len(statuser)))
         for dato in datoer:
-            data_dato = data[data.endretTidspunkt.dt.date == dato.date()]
+            data_dato = data[data["endretTidspunkt"].dt.date == dato.date()]
             for status in statuser:
                 sist_count = status_per_dato[status][-1]
                 count = (
                     sist_count
-                    - sum(data_dato.forrige_status == status)
-                    + sum(data_dato.status == status)
+                    - len(data_dato[data_dato["forrige_status"] == status])
+                    + len(data_dato[data_dato["status"] == status])
                 )
                 status_per_dato[status] = status_per_dato[status] + [count]
         return status_per_dato
@@ -207,8 +207,8 @@ def aktive_saker_per_kolonne(data_status: pd.DataFrame, kolonne: str) -> go.Figu
 
 def antall_saker_per_status(data_status: pd.DataFrame) -> go.Figure:
     saker_per_status = (
-        data_status.groupby("siste_status")
-        .saksnummer.nunique()
+        data_status.groupby("siste_status")["saksnummer"]
+        .nunique()
         .reset_index()
         .sort_values(
             by="siste_status", key=lambda col: -col.map(lambda e: statusordre.index(e))
@@ -339,18 +339,18 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
 
     # Hoved næring
     virksomheter_per_nering = (
-        data.groupby("hoved_nering")
-        .saksnummer.nunique()
+        data.groupby("hoved_nering")["saksnummer"]
+        .nunique()
         .sort_values(ascending=True)
         .reset_index()
     )
-    show_n_neringer = 10
-    truncation_map = dict(zip(data.hoved_nering, data.hoved_nering_truncated))
+    antall_næringer_å_vise = 10
+    truncation_map = dict(zip(data["hoved_nering"], data["hoved_nering_truncated"]))
     fig.add_trace(
         go.Bar(
-            y=virksomheter_per_nering[-show_n_neringer:].hoved_nering,
-            x=virksomheter_per_nering[-show_n_neringer:].saksnummer,
-            text=virksomheter_per_nering[-show_n_neringer:].saksnummer,
+            y=virksomheter_per_nering[-antall_næringer_å_vise:]["hoved_nering"],
+            x=virksomheter_per_nering[-antall_næringer_å_vise:]["saksnummer"],
+            text=virksomheter_per_nering[-antall_næringer_å_vise:]["saksnummer"],
             orientation="h",
         ),
         row=3,

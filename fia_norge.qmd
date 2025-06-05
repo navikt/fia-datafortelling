@@ -11,42 +11,42 @@ embed-resources: false
 
 import pandas as pd
 
-from src.utils.datahandler import (
-    explode_ikke_aktuell_begrunnelse,
-    split_data_statistikk,
-)
-from src.utils.dataloader import (
-    last_inn_data_samarbeidsplan,
-    last_inn_data_statistikk,
-    last_inn_samarbeid,
-    last_inn_spørreundersøkelser,
-)
-
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
 RESULTATOMRÅDE = None  # Resultatområde er ikke relevant for nasjonal statistikk
+```
 
+```{python}
+from src.utils.dataloader import last_inn_data_statistikk
 data_statistikk = last_inn_data_statistikk(
     project=PROJECT,
     dataset=DATASET,
     adm_enheter=pd.read_csv("data/administrative_enheter.csv", dtype=str),
     resultatområde=RESULTATOMRÅDE,
 )
+```
 
+```{python}
+from src.utils.dataloader import last_inn_samarbeid
 data_samarbeid = last_inn_samarbeid(
     project=PROJECT,
     dataset=DATASET,
     data_statistikk=data_statistikk,
     resultatområde=RESULTATOMRÅDE,
 )
+```
 
+```{python}
+from src.utils.dataloader import last_inn_spørreundersøkelser
 data_spørreundersøkelse = last_inn_spørreundersøkelser(
     project=PROJECT,
     dataset=DATASET,
     data_statistikk=data_statistikk,
     resultatområde=RESULTATOMRÅDE,
 )
-
+```
+```{python}
+from src.utils.dataloader import last_inn_data_samarbeidsplan
 data_samarbeidsplan = last_inn_data_samarbeidsplan(
     project=PROJECT,
     dataset=DATASET,
@@ -54,13 +54,18 @@ data_samarbeidsplan = last_inn_data_samarbeidsplan(
     data_statistikk=data_statistikk,
     resultatområde=RESULTATOMRÅDE,
 )
-
-data_status, _, _ = split_data_statistikk(data_statistikk)
-
-ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
-
 ```
 
+
+```{python}
+from src.utils.datahandler import split_data_statistikk
+data_status, _, _ = split_data_statistikk(data_statistikk)
+```
+
+```{python}
+from src.utils.datahandler import explode_ikke_aktuell_begrunnelse
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
+```
 
 <!-- Samme som resultatområder: -->
 

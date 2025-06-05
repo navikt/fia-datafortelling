@@ -1,3 +1,5 @@
+from typing import Any, Dict
+
 import pandas as pd
 
 from src.utils.datahandler import (
@@ -27,7 +29,6 @@ def last_inn_spørreundersøkelser(
         & (data_spørreundersøkelse["status"] != "SLETTET")
     ]
 
-    # Legg til sektor?
     data_spørreundersøkelse = legg_til_sektor_og_resultatområde(
         data=data_spørreundersøkelse,
         data_statistikk=data_statistikk,
@@ -110,11 +111,12 @@ def last_inn_data_statistikk(
         dataset=dataset,
         table="ia-sak-statistikk-v1",
         distinct_colunms="endretAvHendelseId",
+        dtypes=statistikk_dtypes,
     )
 
     # Legger på resultatområde, data statistikk har alltid resultatområde kolonne
     data_statistikk = preprocess_data_statistikk(
-        data_statistikk=raw_data_statistikk,
+        raw_data_statistikk=raw_data_statistikk,
         adm_enheter=adm_enheter,
     )
 
@@ -123,6 +125,36 @@ def last_inn_data_statistikk(
             data_statistikk["resultatomrade"] == resultatområde.value
         ]
 
-    data_statistikk = data_statistikk.dropna(subset=["resultatomrade"])
-
     return data_statistikk
+
+
+statistikk_dtypes: Dict[str, Any] = {
+    "saksnummer": pd.StringDtype(storage="pyarrow"),  # REQUIRED
+    "orgnr": pd.StringDtype(storage="pyarrow"),  # REQUIRED
+    "eierAvSak": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "status": pd.StringDtype(storage="pyarrow"),  # REQUIRED
+    "endretAvHendelseId": pd.StringDtype(storage="pyarrow"),  # REQUIRED
+    "ikkeAktuelBegrunnelse": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "antallPersoner": pd.Int64Dtype(),  # NULLABLE
+    "tapteDagsverk": pd.Float64Dtype(),  # NULLABLE
+    "muligeDagsverk": pd.Float64Dtype(),  # NULLABLE
+    "sykefraversprosent": pd.Float64Dtype(),  # NULLABLE
+    "arstall": pd.Int64Dtype(),  # NULLABLE
+    "kvartal": pd.Int64Dtype(),  # NULLABLE
+    "tapteDagsverkSiste4Kvartal": pd.Float64Dtype(),  # NULLABLE
+    "muligeDagsverkSiste4Kvartal": pd.Float64Dtype(),  # NULLABLE
+    "sykefraversprosentSiste4Kvartal": pd.Float64Dtype(),  # NULLABLE
+    "sektor": pd.StringDtype(storage="pyarrow"),  # NULLABLEE
+    "bransjeprogram": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "postnummer": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "kommunenummer": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "fylkesnummer": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "endretAv": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "endretAvRolle": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "enhetsnummer": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "enhetsnavn": pd.StringDtype(storage="pyarrow"),  # NULLABLE
+    "tapteDagsverkGradert": pd.Float64Dtype(),  # NULLABLE
+    "graderingsprosent": pd.Float64Dtype(),  # NULLABLE
+    "tapteDagsverkGradertSiste4Kvartal": pd.Float64Dtype(),  # NULLABLE
+    "graderingsprosentSiste4Kvartal": pd.Float64Dtype(),  # NULLABLE
+}
