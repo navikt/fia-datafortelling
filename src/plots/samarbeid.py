@@ -466,43 +466,105 @@ def trakt_antall_samarbeid(
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def bin_label(timer: float) -> str:
-    if timer < 1:
-        return f"{int(timer * 60)} min"
-    elif timer < 24:
-        return f"{int(timer)} {'time' if timer == 1 else 'timer'}"
-    elif timer < 24 * 7:
-        return daglig_bin_label(timer)
-    elif timer <= 24 * 7 * 4:
-        return ukentlig_bin_label(timer)
-    elif timer < 24 * 365:
-        return månedlig_bin_label(timer)
+def _format_number(value: float) -> str:
+    return f"{int(value)}" if value.is_integer() else f"{value:.1f}"
+
+
+def _timer_label(input: str) -> str:
+    return "timer" if input != "1" else "time"
+
+
+def _dager_label(input: str):
+    return "dager" if input != "1" else "dag"
+
+
+def _uke_label(input: str):
+    return "uker" if input != "1" else "uke"
+
+
+def _måned_label(input: str):
+    return "mnder" if input != "1" else "mnd"
+
+
+def finn_tidsenhet(timer_input: float) -> tuple[str, str]:
+    if timer_input < 1:
+        minutter = round(timer_input * 60, 1)
+        return _format_number(minutter), "minutter"
+    elif timer_input < 24:
+        timer = round(timer_input, 1)
+        return _format_number(timer), "timer"
+    elif timer_input < 24 * 7:
+        dager = round(timer_input / 24, 1)
+        return _format_number(dager), "dager"
+    elif timer_input < 24 * 7 * 4:
+        uker = round(timer_input / (24 * 7), 1)
+        return _format_number(uker), "uker"
+    elif timer_input < 24 * 365:
+        måneder = round(timer_input / (24 * (365 / 12)), 1)
+        return _format_number(måneder), "måneder"
     else:
-        return årlig_bin_label(timer)
+        år = round(timer_input / (24 * 365), 1)
+        return _format_number(år), "år"
 
 
-def daglig_bin_label(timer: float) -> str:
-    dager = round(timer / 24, 1)
-    val = f"{int(dager)}" if dager.is_integer() else f"{dager:.1f}"
-    return f"{val} {'dag' if dager == 1 else 'dager'}"
+def _bin_label(timerStart: float = 0.0, timerSlutt: float = 0.0) -> str:
+    start_str, start_unit = finn_tidsenhet(timerStart)
 
+    end_str, end_unit = finn_tidsenhet(timerSlutt)
 
-def ukentlig_bin_label(timer: float) -> str:
-    uker = round(timer / 24 / 7, 1)
-    val = f"{int(uker)}" if uker.is_integer() else f"{uker:.1f}"
-    return f"{val} {'uke' if uker == 1 else 'uker'}"
+    minutt_label = "min"
+    år_label = "år"
 
+    if start_unit == end_unit:
+        if end_unit == "minutter":
+            unit_label = minutt_label
+        elif end_unit == "timer":
+            unit_label = _timer_label(end_str)
+        elif end_unit == "dager":
+            unit_label = _dager_label(end_str)
+        elif end_unit == "uker":
+            unit_label = _uke_label(end_str)
+        elif end_unit == "måneder":
+            unit_label = _måned_label(end_str)
+        elif end_unit == "år":
+            unit_label = år_label
+        else:
+            raise ValueError(f"Ukjent tidsenhet: {end_unit}")
 
-def månedlig_bin_label(timer: float) -> str:
-    måneder = round(timer / 24 / (365 / 12), 1)
-    val = f"{int(måneder)}" if måneder.is_integer() else f"{måneder:.1f}"
-    return f"{val} mnd"
+        return f"{start_str} - {end_str} {unit_label}"
 
+    else:
+        if start_unit == "minutter":
+            start_unit_label = minutt_label
+        elif start_unit == "timer":
+            start_unit_label = _timer_label(start_str)
+        elif start_unit == "dager":
+            start_unit_label = _dager_label(start_str)
+        elif start_unit == "uker":
+            start_unit_label = _uke_label(start_str)
+        elif start_unit == "måneder":
+            start_unit_label = _måned_label(end_str)
+        elif start_unit == "år":
+            start_unit_label = år_label
+        else:
+            raise ValueError(f"Ukjent tidsenhet: {start_unit}")
 
-def årlig_bin_label(timer: float) -> str:
-    år = timer / 24 / 365
-    val = f"{int(år)}" if år.is_integer() else f"{år:.1f}"
-    return f"{val} år"
+        if end_unit == "minutter":
+            end_unit_label = minutt_label
+        elif end_unit == "timer":
+            end_unit_label = _timer_label(start_str)
+        elif end_unit == "dager":
+            end_unit_label = _dager_label(start_str)
+        elif end_unit == "uker":
+            end_unit_label = _uke_label(start_str)
+        elif end_unit == "måneder":
+            end_unit_label = _måned_label(end_str)
+        elif end_unit == "år":
+            end_unit_label = år_label
+        else:
+            raise ValueError(f"Ukjent tidsenhet: {end_unit}")
+
+        return f"{start_str} {start_unit_label} - {end_str} {end_unit_label}"
 
 
 def bins_and_labels(bin_type: str) -> tuple[list[float], list[str]]:
@@ -510,7 +572,7 @@ def bins_and_labels(bin_type: str) -> tuple[list[float], list[str]]:
 
     x_labels: list[str] = []
     for i in range(len(custom_bins) - 1):
-        x_labels.append(f"{bin_label(custom_bins[i])}-{bin_label(custom_bins[i + 1])}")
+        x_labels.append(_bin_label(custom_bins[i], custom_bins[i + 1]))
 
     return custom_bins, x_labels
 
