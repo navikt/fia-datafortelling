@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd
 
@@ -68,28 +68,47 @@ def last_inn_samarbeid(
     return data_samarbeid
 
 
+def antall_planer(data_samarbeidsplan: pd.DataFrame) -> int:
+    return data_samarbeidsplan["plan_id"].nunique()
+
+
 def last_inn_data_samarbeidsplan(
     project: str,
     dataset: str,
     data_samarbeid: pd.DataFrame,
-    data_statistikk: pd.DataFrame,
     resultatområde: Resultatområde | None = None,
-):
-    data_samarbeidsplan = load_data_deduplicate(
-        project,
-        dataset,
-        "samarbeidsplan-bigquery-v1",
+) -> pd.DataFrame:
+    """
+    Henter data for samarbeidsplaner og legger til mer data fra samarbeid.
+    Args:
+        project (str): GCP prosjekt
+        dataset (str): BigQuery dataset
+        data_samarbeid (pd.DataFrame): DataFrame med samarbeid
+        resultatområde (Resultatområde | None): Filtrering på resultatområde, hvis None hentes alle
+    Returns:
+        pd.DataFrame: DataFrame med samarbeidsplaner og data om samarbeid
+    """
+
+    data_samarbeidsplan: pd.DataFrame = load_data_deduplicate(
+        project=project,
+        dataset=dataset,
+        table="samarbeidsplan-v1",
         distinct_colunms="id",
     )
 
     data_samarbeidsplan = data_samarbeidsplan.merge(
-        data_samarbeid[["id", "saksnummer"]].rename({"id": "samarbeidId"}, axis=1),
+        data_samarbeid[
+            [
+                "id",
+                "saksnummer",
+                "resultatomrade",
+                "sektor",
+                "hoved_nering",
+                "status",
+            ]
+        ].rename(columns={"status": "samarbeid_status", "id": "samarbeid_id"}),
+        on="samarbeid_id",
         how="left",
-        on="samarbeidId",
-    )
-
-    data_samarbeidsplan = legg_til_sektor_og_resultatområde(
-        data_samarbeidsplan, data_statistikk
     )
 
     if resultatområde is not None:
@@ -128,7 +147,7 @@ def last_inn_data_statistikk(
     return data_statistikk
 
 
-statistikk_dtypes: Dict[str, Any] = {
+statistikk_dtypes: dict[str, Any] = {
     "saksnummer": pd.StringDtype(storage="pyarrow"),  # REQUIRED
     "orgnr": pd.StringDtype(storage="pyarrow"),  # REQUIRED
     "eierAvSak": pd.StringDtype(storage="pyarrow"),  # NULLABLE

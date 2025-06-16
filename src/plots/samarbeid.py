@@ -413,39 +413,51 @@ def trakt_antall_samarbeid(
     data_spørreundersøkelse: pd.DataFrame,
     data_samarbeidsplan: pd.DataFrame,
 ) -> go.Figure:
-    # Aktive samarbeid
-    aktive_samarbeid = data_samarbeid[data_samarbeid.status == "AKTIV"].id.unique()
+    aktive_samarbeid_mask: pd.Series[bool] = data_samarbeid["status"].isin(
+        ["AKTIVE", "FULLFØRT"]
+    )
 
-    # Antall aktive samarbeid
-    antall_aktive_samarbeid = len(aktive_samarbeid)
+    aktive_samarbeid_series = data_samarbeid.loc[aktive_samarbeid_mask, "id"].dropna()
 
-    # Antall aktive samarbeid med fullført behovsvurdering
-    antall_aktive_samarbeid_med_fullfort_behovsvurdering = data_spørreundersøkelse[
-        data_spørreundersøkelse.samarbeidId.isin(aktive_samarbeid)
-        & (data_spørreundersøkelse.status == "AVSLUTTET")
-        & (data_spørreundersøkelse.type == "Behovsvurdering")
-    ].samarbeidId.nunique()
+    aktive_samarbeid_ider: list[int] = aktive_samarbeid_series.unique().tolist()
 
-    antall_aktive_samarbeid_med_fullfort_evaluering = data_spørreundersøkelse[
-        data_spørreundersøkelse.samarbeidId.isin(aktive_samarbeid)
-        & (data_spørreundersøkelse.status == "AVSLUTTET")
-        & (data_spørreundersøkelse.type == "Evaluering")
-    ].samarbeidId.nunique()
+    aktive_samarbeidsplaner_mask: pd.Series[bool] = data_samarbeidsplan[
+        "samarbeid_id"
+    ].isin(aktive_samarbeid_ider)
 
-    # Antall aktive samarbeid med opprettet samarbeidsplan
-    antall_aktive_samarbeid_med_samarbeidsplan = data_samarbeidsplan[
-        data_samarbeidsplan.samarbeidId.isin(aktive_samarbeid)
-    ].samarbeidId.nunique()
+    aktive_spørreundersøkelse_mask: pd.Series[bool] = data_spørreundersøkelse[
+        "samarbeidId"
+    ].isin(aktive_samarbeid_ider)
 
-    # TODO: hvordan fjerne null?
+    # "Antall fullførte og aktive samarbeid/underavdelinger",
+    antall_aktive_samarbeid: int = len(aktive_samarbeid_ider)
+
+    # "Antall aktive samarbeid/underavdelinger<br>med fullført behovsvudering med minst ett svar",
+    antall_aktive_samarbeid_med_fullfort_behovsvurdering: int = data_spørreundersøkelse[
+        aktive_spørreundersøkelse_mask
+        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
+        & (data_spørreundersøkelse["type"] == "Behovsvurdering")
+    ]["samarbeidId"].nunique()
+
+    # "Antall aktive samarbeid/underavdelinger<br>med opprettet samarbeidsplan",
+    antall_aktive_samarbeid_med_samarbeidsplan: int = data_samarbeidsplan[
+        aktive_samarbeidsplaner_mask
+    ]["samarbeid_id"].nunique()
+
+    # "Antall aktive samarbeid/underavdelinger<br>med fullført evaluering med minst ett svar",
+    antall_aktive_samarbeid_med_fullfort_evaluering: int = data_spørreundersøkelse[
+        aktive_spørreundersøkelse_mask
+        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
+        & (data_spørreundersøkelse["type"] == "Evaluering")
+    ]["samarbeidId"].nunique()
 
     fig = go.Figure(
         go.Funnel(
             y=[
-                "Antall aktive samarbeid/underavdelinger",
-                "Antall aktive samarbeid/underavdelinger<br>med fullført behovsvudering med minst ett svar",
-                "Antall aktive samarbeid/underavdelinger<br>med opprettet samarbeidsplan",
-                "Antall aktive samarbeid/underavdelinger<br>med fullført evaluering med minst ett svar",
+                "Antall fullførte og aktive samarbeid/underavdelinger",
+                "Antall fullførte og aktive samarbeid/underavdelinger<br>med fullført behovsvurdering med minst ett svar",
+                "Antall fullførte og aktive samarbeid/underavdelinger<br>med opprettet samarbeidsplan",
+                "Antall fullførte og aktive samarbeid/underavdelinger<br>med fullført evaluering med minst ett svar",
             ],
             x=[
                 antall_aktive_samarbeid,
@@ -458,6 +470,7 @@ def trakt_antall_samarbeid(
             hoverinfo="x+y+text+percent initial+percent previous",
         )
     )
+
     fig.update_layout(
         height=400,
         plot_bgcolor="rgba(0,0,0,0)",

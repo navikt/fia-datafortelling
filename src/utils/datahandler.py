@@ -384,7 +384,9 @@ def preprocess_data_leveranse(data_leveranse: pd.DataFrame) -> pd.DataFrame:
 def preprocess_data_samarbeid(
     raw_data_samarbeid: pd.DataFrame, data_statistikk: pd.DataFrame
 ) -> pd.DataFrame:
-    data_samarbeid = raw_data_samarbeid[raw_data_samarbeid["status"] != "SLETTET"]
+    data_samarbeid: pd.DataFrame = raw_data_samarbeid[
+        raw_data_samarbeid["status"] != "SLETTET"
+    ]
     data_statistikk = data_statistikk.sort_values("endretTidspunkt")
 
     # Legge til kommunenummer 2024 i samarbeid-tabellen
@@ -478,7 +480,7 @@ def legg_til_sektor_og_resultatområde(
     Vi filtrerer på resultatområde for å lage en datafortelling per resultatområde.
     """
 
-    resultatomrade = data_statistikk.sort_values("endretTidspunkt")[
+    resultatomrade: pd.DataFrame = data_statistikk.sort_values("endretTidspunkt")[
         ["saksnummer", "resultatomrade", "sektor"]
     ].drop_duplicates("saksnummer", keep="last")
     data = data.merge(resultatomrade, on="saksnummer", how="left")

@@ -111,8 +111,6 @@ if __name__ == "__main__":
     try:
         logging.info("Kjører quarto render for forside til datafortellingene")
         render_quarto(file_to_render="index")
-        logging.info("Kjører quarto render for datakvalitet datafortelling")
-        render_quarto(file_to_render="datakvalitet")
 
         for resultatområde in [
             "norge",

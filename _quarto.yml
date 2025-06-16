@@ -50,8 +50,6 @@ website:
     logo: assets/nav_logo_hvit.png
     logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
     left:
-      - text: Datakvalitet
-        href: datakvalitet.qmd
       - text: Bruk av Fia
         menu:
         - href: fia_norge.qmd
@@ -81,34 +79,34 @@ website:
         - href: fia_vestland.qmd
           text: Vestland
       # TODO: fjern når samarbeid er klart
-      # - text: Samarbeid
-      #   menu:
-      #   - href: fia_norge_samarbeid.qmd
-      #     text: Hele Norge
-      #   - href: fia_agder_samarbeid.qmd
-      #     text: Agder
-      #   - href: fia_innlandet_samarbeid.qmd
-      #     text: Innlandet
-      #   - href: fia_more_og_romsdal_samarbeid.qmd
-      #     text: Møre og Romsdal
-      #   - href: fia_nordland_samarbeid.qmd
-      #     text: Nordland
-      #   - href: fia_oslo_samarbeid.qmd
-      #     text: Oslo
-      #   - href: fia_ost-viken_samarbeid.qmd
-      #     text: Øst-Viken
-      #   - href: fia_rogaland_samarbeid.qmd
-      #     text: Rogaland
-      #   - href: fia_troms_og_finnmark_samarbeid.qmd
-      #     text: Troms og Finnmark
-      #   - href: fia_trondelag_samarbeid.qmd
-      #     text: Trøndelag
-      #   - href: fia_vest-viken_samarbeid.qmd
-      #     text: Vest-Viken
-      #   - href: fia_vestfold_og_telemark_samarbeid.qmd
-      #     text: Vestfold og Telemark
-      #   - href: fia_vestland_samarbeid.qmd
-      #     text: Vestland
+      - text: Samarbeid
+        menu:
+        - href: fia_norge_samarbeid.qmd
+          text: Hele Norge
+        - href: fia_agder_samarbeid.qmd
+          text: Agder
+        - href: fia_innlandet_samarbeid.qmd
+          text: Innlandet
+        - href: fia_more_og_romsdal_samarbeid.qmd
+          text: Møre og Romsdal
+        - href: fia_nordland_samarbeid.qmd
+          text: Nordland
+        - href: fia_oslo_samarbeid.qmd
+          text: Oslo
+        - href: fia_ost-viken_samarbeid.qmd
+          text: Øst-Viken
+        - href: fia_rogaland_samarbeid.qmd
+          text: Rogaland
+        - href: fia_troms_og_finnmark_samarbeid.qmd
+          text: Troms og Finnmark
+        - href: fia_trondelag_samarbeid.qmd
+          text: Trøndelag
+        - href: fia_vest-viken_samarbeid.qmd
+          text: Vest-Viken
+        - href: fia_vestfold_og_telemark_samarbeid.qmd
+          text: Vestfold og Telemark
+        - href: fia_vestland_samarbeid.qmd
+          text: Vestland
     right:
       - icon: people-fill
         target: _blank

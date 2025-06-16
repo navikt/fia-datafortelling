@@ -1,19 +1,52 @@
 ```{python}
-from src.utils.datahandler import fullførte_samarbeid_med_tid,samarbeid_med_spørreundersøkelse
-from src.plots.samarbeid import  plot_tid_mellom_hendelser
-from src.utils.konstanter import Sektor
+# Definer prosjekt og dataset
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
+```
+
+```{python}
+# Hent data om IA-saker
 import pandas as pd
+from src.utils.dataloader import last_inn_data_statistikk
+data_statistikk = last_inn_data_statistikk(
+    project=PROJECT,
+    dataset=DATASET,
+    adm_enheter=pd.read_csv("data/administrative_enheter.csv", dtype=str),
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om samarbeid
+from src.utils.dataloader import last_inn_samarbeid
+data_samarbeid = last_inn_samarbeid(
+    project=PROJECT,
+    dataset=DATASET,
+    data_statistikk=data_statistikk,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om spørreundersøkelser
+from src.utils.dataloader import last_inn_spørreundersøkelser
+data_spørreundersøkelse = last_inn_spørreundersøkelser(
+    project=PROJECT,
+    dataset=DATASET,
+    data_statistikk=data_statistikk,
+    resultatområde=RESULTATOMRÅDE,
+)
 
 ```
 
-
 {{< include includes/under_arbeid_callout.qmd >}}
 
-
-# Tid brukt i samarbeid - (Opprettet - Gjennomført behovsvurdering)
-Antall dager mellom opprettelse av et samarbeid og gjennomføring av første behovsvurdering.
+# Fra opprettet til gjennomført behovsvurdering
+Antall dager mellom opprettelse av samarbeid og gjennomføring av første behovsvurdering.
 
 ```{python}
+from src.utils.konstanter import Sektor
+from src.utils.datahandler import samarbeid_med_spørreundersøkelse
 data_i_alle_sektorer = samarbeid_med_spørreundersøkelse(
     data_samarbeid=data_samarbeid,
     data_spørreundersøkelse=data_spørreundersøkelse,
@@ -30,7 +63,9 @@ data_i_privat_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_
 
 ## Alle
 Alle behovsvurderinger
+
 ```{python}
+from src.plots.samarbeid import  plot_tid_mellom_hendelser
 fig, y_max = plot_tid_mellom_hendelser(
     df=data_i_alle_sektorer,
     kolonne_start="opprettet",
@@ -43,6 +78,7 @@ fig.show()
 
 ## Statlig sektor
 Alle behovsvurderinger knyttet til virksomheter definert som Statlig forvaltning (i Fia)
+
 ```{python}
 fig, _ = plot_tid_mellom_hendelser(
     df=data_i_statlig_sektor,
@@ -57,6 +93,7 @@ fig.show()
 
 ## Kommunal sektor
 Alle behovsvurderinger knyttet til virksomheter definert som Kommunal forvaltning (i Fia)
+
 ```{python}
 fig, _ = plot_tid_mellom_hendelser(
     df=data_i_kommunal_sektor,
@@ -71,6 +108,7 @@ fig.show()
 
 ## Privat sektor
 Alle behovsvurderinger knyttet til virksomheter definert som Privat og offentlig næringsvirksomhet (i Fia)
+
 ```{python}
 fig, _ = plot_tid_mellom_hendelser(
     df=data_i_privat_sektor,
@@ -85,8 +123,9 @@ fig.show()
 
 :::
 
-# Tid brukt i samarbeid - (Opprettet - Gjennomført evaluering)
-Antall dager mellom opprettelse av et samarbeid og gjennomføring av første evaluering.
+# Fra opprettet til gjennomført evaluering
+Antall dager mellom opprettelse av samarbeid og gjennomføring av første evaluering.
+
 ```{python}
 data_i_alle_sektorer = samarbeid_med_spørreundersøkelse(
     data_samarbeid=data_samarbeid,
@@ -104,6 +143,7 @@ data_i_privat_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_
 ::: {.panel-tabset}
 ## Alle
 Alle evalueringer
+
 ```{python}
 fig, y_max = plot_tid_mellom_hendelser(
     df=data_i_alle_sektorer,
@@ -117,6 +157,7 @@ fig.show()
 
 ## Statlig sektor
 Alle evalueringer knyttet til virksomheter kategorisert som Statlig forvaltning (i Fia)
+
 ```{python}
 fig, _ = plot_tid_mellom_hendelser(
     df=data_i_statlig_sektor,
@@ -131,6 +172,7 @@ fig.show()
 
 ## Kommunal sektor
 Alle evalueringer knyttet til virksomheter kategorisert som Kommunal forvaltning (i Fia)
+
 ```{python}
 fig, _ = plot_tid_mellom_hendelser(
     df=data_i_kommunal_sektor,
@@ -145,6 +187,7 @@ fig.show()
 
 ## Privat sektor
 Alle evalueringer knyttet til virksomheter kategorisert som Privat og offentlig næringsvirksomhet (i Fia)
+
 ```{python}
 fig, _ = plot_tid_mellom_hendelser(
     df=data_i_privat_sektor,
@@ -159,12 +202,13 @@ fig.show()
 
 :::
 
-# Tid brukt i samarbeid - (Opprettet - Fullført samarbeid)
-Antall dager mellom opprettelse av et samarbeid og når det er satt i status 'fullført'
+# Fra opprettet til fullført samarbeid
+Antall dager mellom opprettelse av samarbeid til fullføring.
 
 ::: {.panel-tabset}
 
 ```{python}
+from src.utils.datahandler import fullførte_samarbeid_med_tid
 # Samarbeid som er fullført og tid det tok å fullføre
 data_i_alle_sektorer = fullførte_samarbeid_med_tid(
     data_samarbeid=data_samarbeid,
@@ -238,37 +282,3 @@ fig.show()
 ```
 
 :::
-
-
-<!-- 
-#TODO:
-- Fra gjennomført evaluering til gjennomført samarbeid
-- Filtrer inn-data på sektor
-- Dropdown: Næring + Bransje
-- Legend: multi plots, antall arbeidsforhold?
-
-todo
-# Plan
-
-## Varighet innhold
-Hvor lang varighet settes det for undertemaer / innhold i plan?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
-
-## Innhold i plan
-Hvilke innhold er oftest med i plan?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
-
-## Endring av plan
-Skjer det endringer på statuser på innhold en plan?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde) ?
-
-## Fullføring / Avbryting av plan
-Skjer dette lenge før eller etter fristen?
-Se datakvalitet fordeling før og etter antall dager.
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
-
-
-# SF
-## Aktiviteter på innhold
-Hvor mange aktiviteter settes det i salesforce per type innhold?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde) -->

@@ -1,17 +1,64 @@
 ```{python}
-from src.utils.konstanter import ikkeaktuell_hovedgrunn
-from src.utils.helper import ikke_aktuell_begrunnelse_sortering
-from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
-from src.plots.leveranse import begrunnelse_ikke_aktuell
+# Definer prosjekt og dataset
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
+```
 
-from src.plots.statistikk import (
-    statusflyt,
-    gjennomstrømmingstall,
-    saker_per_status_per_måned,
-    antall_saker_per_status,
-    virksomhetsprofil,
+```{python}
+# Hent data om IA-saker
+import pandas as pd
+from src.utils.dataloader import last_inn_data_statistikk
+data_statistikk = last_inn_data_statistikk(
+    project=PROJECT,
+    dataset=DATASET,
+    adm_enheter=pd.read_csv("data/administrative_enheter.csv", dtype=str),
+    resultatområde=RESULTATOMRÅDE,
 )
+```
 
+```{python}
+# Hent data om samarbeid
+from src.utils.dataloader import last_inn_samarbeid
+data_samarbeid = last_inn_samarbeid(
+    project=PROJECT,
+    dataset=DATASET,
+    data_statistikk=data_statistikk,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om spørreundersøkelser
+from src.utils.dataloader import last_inn_spørreundersøkelser
+data_spørreundersøkelse = last_inn_spørreundersøkelser(
+    project=PROJECT,
+    dataset=DATASET,
+    data_statistikk=data_statistikk,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om samarbeidsplaner
+from src.utils.dataloader import last_inn_data_samarbeidsplan
+data_samarbeidsplan = last_inn_data_samarbeidsplan(
+    project=PROJECT,
+    dataset=DATASET,
+    data_samarbeid=data_samarbeid,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om statusendringer for saker
+from src.utils.datahandler import split_data_statistikk
+data_status, _, _ = split_data_statistikk(data_statistikk)
+```
+
+```{python}
+# Hent data om ikke aktuelle saker
+from src.utils.datahandler import explode_ikke_aktuell_begrunnelse
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
 
@@ -77,6 +124,8 @@ plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data
 {{< include includes/statusflyt_i_fia_forklaring.qmd >}}
 
 ```{python}
+from src.plots.statistikk import statusflyt
+from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 statusflyt(data_input)
 ```
@@ -91,12 +140,14 @@ statusflyt(data_input)
 ::: {.panel-tabset}
 # Nåsituasjon
 ```{python}
+from src.plots.statistikk import antall_saker_per_status
 antall_saker_per_status(data_status[data_status.aktiv_sak])
 ```
 
 # Historikk
 Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år siden.
 ```{python}
+from src.plots.statistikk import saker_per_status_per_måned
 saker_per_status_per_måned(data_status)
 ```
 
@@ -104,6 +155,7 @@ saker_per_status_per_måned(data_status)
 Viser hvor mange saker som går inn og ut av status **Vi bistår**.
 Fra status Vi bistår er det mulig å skifte til enten Fullført eller Ikke aktuell.
 ```{python}
+from src.plots.statistikk import gjennomstrømmingstall
 gjennomstrømmingstall(data_status)
 ```
 
@@ -124,6 +176,7 @@ gjennomstrømmingstall(data_status)
 ## Før bistand
 Saker med nåværende status "Vurderes", "Kontaktes" eller "Kartlegges".\
 ```{python}
+from src.plots.statistikk import virksomhetsprofil
 data_input = data_status[data_status.siste_status.isin(["VURDERES", "KONTAKTES", "KARTLEGGES"])]
 virksomhetsprofil(data_input)
 ```
@@ -161,6 +214,9 @@ virksomhetsprofil(data_input)
 
 
 ```{python}
+from src.utils.helper import ikke_aktuell_begrunnelse_sortering
+from src.utils.konstanter import ikkeaktuell_hovedgrunn
+
 begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
 bare_dagens_begrunnelser = ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())
 ```
@@ -169,6 +225,7 @@ bare_dagens_begrunnelser = ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_h
 
 ## Fra alle mulige statuser
 ```{python}
+from src.plots.leveranse import begrunnelse_ikke_aktuell
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(ikke_aktuell[bare_dagens_begrunnelser])
 begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
