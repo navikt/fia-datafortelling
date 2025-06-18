@@ -216,7 +216,6 @@ def plot_tid_mellom_hendelser(
     farge_stolper: str = "#494e84",
     yaxis_range_max: float | None = None,
 ) -> tuple[go.Figure, float]:
-    # TODO: Dropdown: Næring + Bransje
     """
     Lager et stolpediagram som viser hvor lang tid det mellom hendelser i et samarbeid
 

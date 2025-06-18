@@ -4,7 +4,7 @@ import geojson_rewind
 import geopandas as gpd
 import plotly.express as px
 
-from helper import annotate_ikke_offisiell_statistikk
+from src.utils.helper import annotate_ikke_offisiell_statistikk
 
 
 def last_kart():
@@ -18,7 +18,7 @@ def last_kart():
     )
 
 
-def plot_kart(data, kartdata, label, colormap="mint"):
+def plot_kart(data, kartdata, label, colormap="mint", width=800, height=800):
     fig = px.choropleth(
         data,
         geojson=kartdata,
@@ -39,8 +39,8 @@ def plot_kart(data, kartdata, label, colormap="mint"):
         featureidkey="properties.kommunenummer",
         color=label,
         color_continuous_scale=colormap,
-        width=800,
-        height=800,
+        width=width,
+        height=height,
     )
 
     fig.update_traces(marker_line_width=0)

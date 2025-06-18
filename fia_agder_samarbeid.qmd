@@ -5,6 +5,7 @@ title-block-banner-color: white
 embed-resources: false
 ---
 
+
 ```{python}
 # Definerer resultatområde
 %load_ext autoreload

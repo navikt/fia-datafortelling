@@ -1,5 +1,5 @@
 ---
-title: Tid brukt i samarbeid - Oslo
+title: Samarbeidsplan - Norge
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false
@@ -11,8 +11,8 @@ embed-resources: false
 %load_ext autoreload
 %autoreload 2
 
-from src.utils.konstanter import Resultatområde
-RESULTATOMRÅDE = Resultatområde.OSLO
+RESULTATOMRÅDE = None
 ```
 
-{{< include datafortelling_samarbeid.qmd >}}
+{{< include datafortelling_samarbeidsplan.qmd >}}
+

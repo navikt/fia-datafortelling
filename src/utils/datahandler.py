@@ -14,6 +14,51 @@ from src.utils.konstanter import (
 )
 
 
+def grupper_samarbeid_etter_samarbeid_status(
+    data: pd.DataFrame, status: list[str]
+) -> tuple[int, int, pd.DataFrame]:
+    """
+    Grupperer samarbeidsplaner etter samarbeidets status og returnerer antall planer med innhold og totalt antall planer.
+
+    Args:
+        data (pd.DataFrame): DataFrame med samarbeid og tilhørende planer.
+        status (list[str]): Liste over samarbeidstatus som skal inkluderes i analysen.
+    Returns:
+        tuple[int, int, pd.DataFrame]: Antall planer med innhold, totalt antall planer, og DataFrame med inkluderte undertemaer.
+    Raises:
+        ValueError: Hvis det mangler data før eller etter filtrering.
+    """
+
+    if data.empty:
+        raise ValueError("Data er tomt, kan ikke gruppere samarbeid etter status.")
+
+    # Alle samarbeid med samarbeidsplaner hvor samarbeidet er i en gitt status
+    samarbeid_i_status: pd.DataFrame = data[data["samarbeid_status"].isin(status)]
+
+    if samarbeid_i_status.empty:
+        raise ValueError(
+            "Ingen samarbeid i valgt status, kan ikke gruppere samarbeid etter status."
+        )
+
+    # Antall planer knyttet til disse samarbeidene
+    antall_planer_totalt: int = len(samarbeid_i_status.groupby("plan_id"))
+
+    # Filtrer ut undertemaer som ikke er inkludert fra data
+    inkluderte_undertemaer: pd.DataFrame = samarbeid_i_status[
+        samarbeid_i_status["inkludert"]
+    ]
+
+    if inkluderte_undertemaer.empty:
+        raise ValueError(
+            "Ingen inkluderte undertemaer i valgt status, kan ikke gruppere samarbeid etter status."
+        )
+
+    # antall planer med noe inkludert innhold. (har én eller flere rader med innhold i filtrert liste)
+    antall_planer_med_innhold: int = len(inkluderte_undertemaer.groupby("plan_id"))
+
+    return antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer
+
+
 def fullførte_samarbeid_med_tid(
     data_samarbeid: pd.DataFrame,
 ) -> pd.DataFrame:

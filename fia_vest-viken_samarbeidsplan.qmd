@@ -1,5 +1,5 @@
 ---
-title: Tid brukt i samarbeid - Oslo
+title: Samarbeidsplan - Vest-Viken
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false
@@ -12,7 +12,8 @@ embed-resources: false
 %autoreload 2
 
 from src.utils.konstanter import Resultatområde
-RESULTATOMRÅDE = Resultatområde.OSLO
+RESULTATOMRÅDE = Resultatområde.VEST_VIKEN
 ```
 
-{{< include datafortelling_samarbeid.qmd >}}
+{{< include datafortelling_samarbeidsplan.qmd >}}
+

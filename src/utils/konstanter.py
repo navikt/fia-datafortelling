@@ -22,7 +22,36 @@ class Sektor(Enum):
     PRIVAT = "3"
 
 
-statusordre = [
+# Nødvendig som konstant i tilfelle et sett av samarbeidsplaner ikke har inkludert alle undertemaer minst én gang
+undertema_navn: list[str] = [
+    "Endring og omstilling",
+    "HelseIArbeid",
+    "Livsfaseorientert personalpolitikk",
+    "Oppfølging av arbeidsmiljøundersøkelser",
+    "Oppfølgingssamtaler",
+    "Psykisk helse",
+    "Sykefravær - enkeltsaker",
+    "Sykefraværsrutiner",
+    "Tilretteleggings- og medvirkningsplikt",
+    "Utvikle arbeidsmiljøet",
+    "Utvikle partssamarbeidet",
+]
+undertema_labels: dict[str, str] = {
+    "Endring og omstilling": "Endring og omstilling",
+    "HelseIArbeid": "HelseIArbeid",
+    "Livsfaseorientert personalpolitikk": "Livsfaseorientert <br>personalpolitikk",
+    "Oppfølging av arbeidsmiljøundersøkelser": "Oppfølging av <br>arbeidsmiljøundersøkelser",
+    "Oppfølgingssamtaler": "Oppfølgingssamtaler",
+    "Psykisk helse": "Psykisk helse",
+    "Sykefravær - enkeltsaker": "Sykefravær - enkeltsaker",
+    "Sykefraværsrutiner": "Sykefraværsrutiner",
+    "Tilretteleggings- og medvirkningsplikt": "Tilretteleggings- <br>og medvirkningsplikt",
+    "Utvikle arbeidsmiljøet": "Utvikle arbeidsmiljøet",
+    "Utvikle partssamarbeidet": "Utvikle partssamarbeidet",
+}
+
+
+statusordre: list[str] = [
     "NY",
     "VURDERES",
     "KONTAKTES",
@@ -34,7 +63,7 @@ statusordre = [
 ]
 
 # 'fylker' er fylker før og etter kommune- og fylkesendringer 1.1.2024
-fylker = {
+fylker: dict[str, str] = {
     "03": "Oslo",
     "11": "Rogaland",
     "15": "Møre og Romsdal",
@@ -57,7 +86,7 @@ fylker = {
 }
 
 # Resultatområder forblir uendret etter kommune- og fylkesendringer 1.1.2024
-resultatområder = {
+resultatområder: dict[str, str] = {
     "03": "Oslo",
     "11": "Rogaland",
     "15": "Møre og Romsdal",
@@ -78,7 +107,7 @@ resultatområder = {
     "31": "Øst-Viken",
 }
 
-viken_akershus = {
+viken_akershus: dict[str, str] = {
     "3201": "Vest-Viken",  # Bærum kommune
     "3203": "Vest-Viken",  # Asker kommune
     "3236": "Vest-Viken",  # Jevnaker kommune
@@ -102,7 +131,7 @@ viken_akershus = {
     "3242": "Øst-Viken",  # Hurdal kommune
 }
 
-rogaland_lund = {
+rogaland_lund: dict[str, str] = {
     "1112": "Agder",  # Lund kommune
     "1101": "Rogaland",  # Eigersund kommune
     "1103": "Rogaland",  # Stavanger kommune
@@ -129,7 +158,7 @@ rogaland_lund = {
 }
 
 
-intervall_sortering = [
+intervall_sortering: list[str] = [
     "0-1 min",
     "1-10 min",
     "10-60 min",
@@ -142,7 +171,7 @@ intervall_sortering = [
     "fra 365 dager",
 ]
 
-plotly_colors = [
+plotly_colors: list[str] = [
     "#636EFA",
     "#EF553B",
     "#00CC96",
@@ -155,7 +184,7 @@ plotly_colors = [
     "#FECB52",
 ]
 
-ikkeaktuell_hovedgrunn = {
+ikkeaktuell_hovedgrunn: dict[str, str] = {
     # NAV
     "IKKE_DIALOG_MELLOM_PARTENE": "NAV",
     "FOR_FÅ_TAPTE_DAGSVERK": "NAV",

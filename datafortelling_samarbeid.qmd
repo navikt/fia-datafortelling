@@ -36,7 +36,6 @@ data_spørreundersøkelse = last_inn_spørreundersøkelser(
     data_statistikk=data_statistikk,
     resultatområde=RESULTATOMRÅDE,
 )
-
 ```
 
 {{< include includes/under_arbeid_callout.qmd >}}

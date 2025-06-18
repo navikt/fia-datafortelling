@@ -10,6 +10,7 @@ logging.basicConfig(
 
 
 def render_quarto(file_to_render: str):
+    logging.info("Kjører quarto render for forside til datafortellingene")
     try:
         result = subprocess.run(
             ["quarto", "render", file_to_render + ".qmd"],
@@ -24,6 +25,9 @@ def render_quarto(file_to_render: str):
 
 
 def render_samarbeid_per_resultatområde(resultatområde: str):
+    logging.info(
+        f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
+    )
     try:
         result = subprocess.run(
             [
@@ -42,7 +46,30 @@ def render_samarbeid_per_resultatområde(resultatområde: str):
         raise
 
 
+def render_samarbeidsplan_per_resultatområde(resultatområde: str):
+    logging.info(
+        f"Kjører quarto render for datafortelling om samarbeidsplaner - {resultatområde}"
+    )
+    try:
+        result = subprocess.run(
+            [
+                "quarto",
+                "render",
+                f"fia_{resultatområde}_samarbeidsplan.qmd",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+
+        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
+        raise
+
+
 def render_fia_per_resultatområde(resultatområde: str):
+    logging.info(f"Kjører quarto render for datafortelling om Fia - {resultatområde}")
     try:
         result = subprocess.run(
             [
@@ -109,7 +136,6 @@ def update_quarto(files_to_upload: list[str]):
 if __name__ == "__main__":
     logging.info("Starter render av datafortellinger.")
     try:
-        logging.info("Kjører quarto render for forside til datafortellingene")
         render_quarto(file_to_render="index")
 
         for resultatområde in [
@@ -127,15 +153,9 @@ if __name__ == "__main__":
             "vestfold_og_telemark",
             "vestland",
         ]:
-            logging.info(
-                f"Kjører quarto render for datafortelling om Fia - {resultatområde}"
-            )
             render_fia_per_resultatområde(resultatområde=resultatområde)
-
-            logging.info(
-                f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
-            )
             render_samarbeid_per_resultatområde(resultatområde=resultatområde)
+            render_samarbeidsplan_per_resultatområde(resultatområde=resultatområde)
 
         logging.info("Henter filer å laste opp til NADA")
         total_file_size_bytes = 0
