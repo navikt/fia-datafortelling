@@ -30,15 +30,13 @@ def grupper_samarbeid_etter_samarbeid_status(
     """
 
     if data.empty:
-        raise ValueError("Data er tomt, kan ikke gruppere samarbeid etter status.")
+        return 0, 0, pd.DataFrame()
 
     # Alle samarbeid med samarbeidsplaner hvor samarbeidet er i en gitt status
     samarbeid_i_status: pd.DataFrame = data[data["samarbeid_status"].isin(status)]
 
     if samarbeid_i_status.empty:
-        raise ValueError(
-            "Ingen samarbeid i valgt status, kan ikke gruppere samarbeid etter status."
-        )
+        return 0, 0, pd.DataFrame()
 
     # Antall planer knyttet til disse samarbeidene
     antall_planer_totalt: int = len(samarbeid_i_status.groupby("plan_id"))
@@ -49,9 +47,7 @@ def grupper_samarbeid_etter_samarbeid_status(
     ]
 
     if inkluderte_undertemaer.empty:
-        raise ValueError(
-            "Ingen inkluderte undertemaer i valgt status, kan ikke gruppere samarbeid etter status."
-        )
+        return 0, 0, pd.DataFrame()
 
     # antall planer med noe inkludert innhold. (har én eller flere rader med innhold i filtrert liste)
     antall_planer_med_innhold: int = len(inkluderte_undertemaer.groupby("plan_id"))

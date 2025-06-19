@@ -14,6 +14,9 @@ def plot_samarbeidsplaner_etter_status(
     farge_fullført: str = "#06893a",
     farge_avbrutt: str = "#c30000",
 ) -> go.Figure:
+    if data.empty:
+        return go.Figure()
+
     # Data PÅGÅR
     inkluderte_undertemaer: pd.DataFrame = data[data["inkludert"]]
     pågående_undertemaer: pd.DataFrame = inkluderte_undertemaer[
