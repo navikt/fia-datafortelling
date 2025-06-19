@@ -54,7 +54,7 @@ Denne datafortellingen gir en oversikt over samarbeidsplaner. Det blir ikke inkl
 # Filtrerer samarbeidsplaner etter status Aktiv, Avbrutt og Fullført
 from src.utils.datahandler import grupper_samarbeid_etter_samarbeid_status
 samarbeid_status = ["AKTIV", "AVBRUTT", "FULLFØRT"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
+antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_alle = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
 ```
 
 For alle samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer har noe innhold.
@@ -62,7 +62,7 @@ For alle samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{
 ```{python}
 # Plotter innhold i samarbeidsplaner etter status på innhold
 from src.plots.samarbeidsplaner import plot_samarbeidsplaner_etter_status
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer)
+plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_alle)
 ```
 
 ## Aktive
@@ -70,7 +70,7 @@ plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer)
 ```{python}
 # Filtrerer samarbeidsplaner etter status Aktiv
 samarbeid_status = ["AKTIV"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
+antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_aktive = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
 ```
 
 For aktive samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer har noe innhold.
@@ -78,7 +78,24 @@ For aktive samarbeid med en plan er det `{python} antall_planer_med_innhold` av 
 
 ```{python}
 # Plotter innhold i samarbeidsplaner etter status på innhold
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer)
+plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_aktive)
+```
+
+
+## Fullførte
+
+```{python}
+# Filtrerer samarbeidsplaner etter status Fullført
+samarbeid_status = ["FULLFØRT"]
+antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_fullført = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
+```
+
+For fullførte samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer har noe innhold.
+
+
+```{python}
+# Plotter innhold i samarbeidsplaner etter status på innhold
+plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_fullført)
 ```
 
 
@@ -87,122 +104,18 @@ plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer)
 ```{python}
 # Filtrerer samarbeidsplaner etter status Avbrutt
 samarbeid_status = ["AVBRUTT"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
+antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_avbrutt = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
 ```
 
 For avbrutte samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer har noe innhold.
 
 ```{python}
 # Plotter innhold i samarbeidsplaner etter status på innhold
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer)
-```
-
-## Fullførte
-
-```{python}
-# Filtrerer samarbeidsplaner etter status Fullført
-samarbeid_status = ["FULLFØRT"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
-```
-
-For fullførte samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer har noe innhold.
-
-
-```{python}
-# Plotter innhold i samarbeidsplaner etter status på innhold
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer)
+plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_avbrutt)
 ```
 
 
 :::
 
-
-```{python}
-# Utforsk data
-
-
-
-
-
-
-# ['id', 'samarbeidId', 'endret', 'tidsstempel', 'saksnummer','resultatomrade', 'sektor']
-# plan Id = UUID string
-# samarbeidId = Int
-# endret = datetime
-# tidsstempel = datetime # sendt til bigquery
-# saksnummer = usikker på når dette er relevant for sjekk av innhold
-# resultatområde = Resultatområde
-# TODO: drop nan resultatområde
-# sektor = sektor
-# TODO: drop <NA> sektor
-
-
-
-# Da rader er lik undertemaer i plan, så kan vi telle antall rader for å finne antall innhold i plan hvor plan_id er unik.
-# Bør være samme som group by plan_id og så telle sum
-
-
-
-
-
-
-
-
-# TODO: Bør legge til status på samarbeid?
-# print(len(data_samarbeidsplan.groupby("plan_id")))
-
-# TODO: må sjekke innhold i plan også
-# Det betyr at vi må hente innhold og kanskje knytte det til samarbeidsplanen via tematabellen?
-
-
-
-
-
-
-```
-
-
-
-
-<!-- 
-#TODO:
-- Fra gjennomført evaluering til gjennomført samarbeid
-- Filtrer inn-data på sektor
-- Dropdown: Næring + Bransje
-- Legend: multi plots, antall arbeidsforhold?
-
-todo
-# Plan
-
-## Varighet innhold
-Hvor lang varighet settes det for undertemaer / innhold i plan?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
-
-## Innhold i plan
-Hvilke innhold er oftest med i plan?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
-
-## Endring av plan
-Skjer det endringer på statuser på innhold en plan?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde) ?
-
-## Fullføring / Avbryting av plan
-Skjer dette lenge før eller etter fristen?
-Se datakvalitet fordeling før og etter antall dager.
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde)
-
-
-# SF
-## Aktiviteter på innhold
-Hvor mange aktiviteter settes det i salesforce per type innhold?
-Fordel dette på sektor / Næring / Bransje (geografi skjer på resultatområde) -->
-
-
-
-<!-- Samme som resultatområder: -->
-
-<!-- Include datafortelling_samarbeidsplan -->
-
-<!-- Kun for Norge: -->
 
 

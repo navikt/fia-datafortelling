@@ -96,6 +96,13 @@ def last_inn_data_samarbeidsplan(
         distinct_colunms="id",
     )
 
+    data_samarbeidsplan[["start_dato", "slutt_dato"]] = data_samarbeidsplan[
+        ["start_dato", "slutt_dato"]
+    ].apply(pd.to_datetime)
+    data_samarbeidsplan["varighet"] = (
+        data_samarbeidsplan["slutt_dato"] - data_samarbeidsplan["start_dato"]
+    ).dt.days
+
     data_samarbeidsplan = data_samarbeidsplan.merge(
         data_samarbeid[
             [
