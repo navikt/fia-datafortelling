@@ -54,7 +54,7 @@ date-format: "DD.MM.YYYY HH:mm:ss z"
 published-title: "Sist oppdatert"
 
 website:
-  title: "Team Pia"
+  title: "Fia - datafortelling"
   repo-url: https://github.com/navikt/fia-datafortelling
   search:
     location: navbar
@@ -64,7 +64,7 @@ website:
     logo: assets/nav_logo_hvit.png
     logo-alt: "Logo til NAV - Arbeids- og velferdsetaten"
     left:
-      - text: Bruk av Fia
+      - text: Saksflyt
         menu:
         - href: fia_norge.qmd
           text: Hele Norge

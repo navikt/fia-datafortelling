@@ -1,5 +1,5 @@
 ---
-title: Tid brukt i samarbeid - Vestfold og Telemark
+title: Samarbeid i Fia - Vestfold og Telemark
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

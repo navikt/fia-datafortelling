@@ -40,15 +40,7 @@ data_samarbeidsplan = last_inn_data_samarbeidsplan(
 
 {{< include includes/under_arbeid_callout.qmd >}}
 
-
-
-# Innhold i samarbeidsplaner
-
-Denne datafortellingen gir en oversikt over samarbeidsplaner. Det blir ikke inkludert samarbeid som ikke har en tilknyttet samarbeidsplan i visninger nedenfor.
-
-::: {.panel-tabset}
-
-## Alle samarbeid
+# Fordeling av undertemaer i samarbeidsplaner
 
 ```{python}
 # Filtrerer samarbeidsplaner etter status Aktiv, Avbrutt og Fullført
@@ -57,7 +49,7 @@ samarbeid_status = ["AKTIV", "AVBRUTT", "FULLFØRT"]
 antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_alle = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
 ```
 
-For alle samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer som har noe innhold. (`{python} antall_planer_totalt-antall_planer_med_innhold` har ikke inkludert undertemaer i samarbeidsplanen enda).
+Det er totalt `{python} antall_planer_med_innhold` planer som har minst ett inkludert undertema. De er fordelt:
 
 ```{python}
 # Plotter innhold i samarbeidsplaner etter status på innhold
@@ -65,55 +57,15 @@ from src.plots.samarbeidsplaner import plot_samarbeidsplaner_etter_status
 plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_alle)
 ```
 
-## Aktive
 
-```{python}
-# Filtrerer samarbeidsplaner etter status Aktiv
-samarbeid_status = ["AKTIV"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_aktive = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
-```
+<!-- 
 
-For aktive samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer som har noe innhold. (`{python} antall_planer_totalt-antall_planer_med_innhold` har ikke inkludert undertemaer i samarbeidsplanen enda).
+# TODO: Finn en eller annen måte å vise om det er mange planer som ikke har inkluderte undertemaer i forskjellige statuser. 
+Av alle samarbeid med en plan er det x av y planer som har minst ett undertema inkludert.
 
+Av de z uten inkluderte undertemaer.
 
-```{python}
-# Plotter innhold i samarbeidsplaner etter status på innhold
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_aktive)
-```
+if antall_planer_totalt-antall_planer_med_innhold > 0:
+ -->
 
-
-## Fullførte
-
-```{python}
-# Filtrerer samarbeidsplaner etter status Fullført
-samarbeid_status = ["FULLFØRT"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_fullført = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
-```
-
-For fullførte samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer som har noe innhold. (`{python} antall_planer_totalt-antall_planer_med_innhold` har ikke inkludert undertemaer i samarbeidsplanen enda).
-
-
-```{python}
-# Plotter innhold i samarbeidsplaner etter status på innhold
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_fullført)
-```
-
-
-## Avbrutte
-
-```{python}
-# Filtrerer samarbeidsplaner etter status Avbrutt
-samarbeid_status = ["AVBRUTT"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_avbrutt = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
-```
-
-For avbrutte samarbeid med en plan er det `{python} antall_planer_med_innhold` av `{python} antall_planer_totalt` planer som har noe innhold. (`{python} antall_planer_totalt-antall_planer_med_innhold` har ikke inkludert undertemaer i samarbeidsplanen enda).
-
-```{python}
-# Plotter innhold i samarbeidsplaner etter status på innhold
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_avbrutt)
-```
-
-
-:::
 

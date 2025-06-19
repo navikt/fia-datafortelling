@@ -1,6 +1,5 @@
 ---
-title: Bruk av Fia i Agder
-subtitle: Statistikk som viser bruk av Fia i Agder.
+title: Saksflyt i Fia - Agder
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

@@ -1,6 +1,5 @@
 ---
-title: Bruk av Fia i Rogaland
-subtitle: Statistikk som viser bruk av Fia i Rogaland.
+title: Saksflyt i Fia - Rogaland
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

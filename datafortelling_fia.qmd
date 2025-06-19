@@ -39,17 +39,6 @@ data_spørreundersøkelse = last_inn_spørreundersøkelser(
 ```
 
 ```{python}
-# Hent data om samarbeidsplaner
-from src.utils.dataloader import last_inn_data_samarbeidsplan
-data_samarbeidsplan = last_inn_data_samarbeidsplan(
-    project=PROJECT,
-    dataset=DATASET,
-    data_samarbeid=data_samarbeid,
-    resultatområde=RESULTATOMRÅDE,
-)
-```
-
-```{python}
 # Hent data om statusendringer for saker
 from src.utils.datahandler import split_data_statistikk
 data_status, _, _ = split_data_statistikk(data_statistikk)
@@ -62,64 +51,7 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
 
-## Antall samarbeid
-{{< include includes/antall_samarbeid_forklaring.qmd >}}
-
-```{python}
-from src.plots.samarbeid import trakt_antall_samarbeid
-trakt_antall_samarbeid(
-    data_samarbeid,
-    data_spørreundersøkelse,
-    data_samarbeidsplan,
-)
-```
-
-{{< include includes/begrep-forklaring.qmd >}}
-
-
-## Antall samarbeid per virksomhet
-
-{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
-
-::: {.panel-tabset}
-# Antall
-```{python}
-from src.plots.samarbeid import plot_antall_saker_per_antall_samarbeid
-plot_antall_saker_per_antall_samarbeid(data_samarbeid)
-```
-
-# Andel
-```{python}
-plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
-```
-
-:::
-
-## Opprettede samarbeid
-Antall samarbeid opprettet over tid, gruppert per uke.
-
-```{python}
-from src.plots.samarbeid import plot_antall_samarbeid_over_tid
-plot_antall_samarbeid_over_tid(data_samarbeid=data_samarbeid)
-```
-
-## Gjennomførte behovsvurderinger
-Antall behovsvurderinger gjennomført over tid, gruppert per uke.
-
-```{python}
-from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_tid
-plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Behovsvurdering")
-```
-
-## Gjennomførte evalueringer
-Antall evalueringer gjennomført over tid, gruppert per uke.
-
-```{python}
-plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Evaluering")
-```
-
-
-## Statusflyt i Fia
+## Statusendringer i saker
 
 {{< include includes/statusflyt_i_fia_forklaring.qmd >}}
 
@@ -133,25 +65,22 @@ statusflyt(data_input)
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
 
-
-
-
 ## Antall saker per status
 ::: {.panel-tabset}
-# Nåsituasjon
+### Nåsituasjon
 ```{python}
 from src.plots.statistikk import antall_saker_per_status
 antall_saker_per_status(data_status[data_status.aktiv_sak])
 ```
 
-# Historikk
+### Historikk
 Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år siden.
 ```{python}
 from src.plots.statistikk import saker_per_status_per_måned
 saker_per_status_per_måned(data_status)
 ```
 
-# Gjennomstrømmingstall
+### Gjennomstrømmingstall
 Viser hvor mange saker som går inn og ut av status **Vi bistår**.
 Fra status Vi bistår er det mulig å skifte til enten Fullført eller Ikke aktuell.
 ```{python}
@@ -163,8 +92,6 @@ gjennomstrømmingstall(data_status)
 
 {{< include includes/sak-forklaring.qmd >}}
 {{< include includes/saksstatus-forklaring.qmd >}}
-
-
 
 
 ## Virksomhetsprofil

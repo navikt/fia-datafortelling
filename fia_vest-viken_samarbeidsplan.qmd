@@ -1,5 +1,5 @@
 ---
-title: Samarbeidsplan - Vest-Viken
+title: Samarbeidsplan i Fia - Vest-Viken
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

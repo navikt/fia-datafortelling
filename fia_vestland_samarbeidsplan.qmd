@@ -1,5 +1,5 @@
 ---
-title: Samarbeidsplan - Vestland
+title: Samarbeidsplan i Fia - Vestland
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

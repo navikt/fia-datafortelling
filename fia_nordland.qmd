@@ -1,6 +1,5 @@
 ---
-title: Bruk av Fia i Nordland
-subtitle: Statistikk som viser bruk av Fia i Nordland.
+title: Saksflyt i Fia - Nordland
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

@@ -1,5 +1,5 @@
 ---
-title: Samarbeidsplan - Troms og Finnmark
+title: Samarbeidsplan i Fia - Troms og Finnmark
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

@@ -1,5 +1,5 @@
 ---
-title: Tid brukt i samarbeid - Innlandet
+title: Samarbeid i Fia - Innlandet
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

@@ -1,6 +1,5 @@
 ---
-title: Bruk av Fia i Vestland
-subtitle: Statistikk som viser bruk av Fia i Vestland.
+title: Saksflyt i Fia - Vestland
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

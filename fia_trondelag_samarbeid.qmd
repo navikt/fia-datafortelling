@@ -1,5 +1,5 @@
 ---
-title: Tid brukt i samarbeid - Trøndelag
+title: Samarbeid i Fia - Trøndelag
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

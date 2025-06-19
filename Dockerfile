@@ -56,9 +56,8 @@ COPY main.py .
 
 # Generelle datafortellinger
 COPY index.qmd .
-COPY datakvalitet.qmd .
 
-# Fia Tall
+# Saksflyt i Fia
 COPY datafortelling_fia.qmd .
 COPY fia_agder.qmd .
 COPY fia_innlandet.qmd .
@@ -75,7 +74,7 @@ COPY fia_vestfold_og_telemark.qmd .
 COPY fia_vestland.qmd .
 
 
-# Samarbeid datafortelling
+# Samarbeid i Fia
 COPY datafortelling_samarbeid.qmd .
 COPY fia_agder_samarbeid.qmd .
 COPY fia_innlandet_samarbeid.qmd .
@@ -91,7 +90,7 @@ COPY fia_vest-viken_samarbeid.qmd .
 COPY fia_vestfold_og_telemark_samarbeid.qmd .
 COPY fia_vestland_samarbeid.qmd .
 
-# Samarbeid datafortelling
+# Samarbeidsplan i Fia
 COPY datafortelling_samarbeidsplan.qmd .
 COPY fia_agder_samarbeidsplan.qmd .
 COPY fia_innlandet_samarbeidsplan.qmd .

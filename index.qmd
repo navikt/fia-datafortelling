@@ -1,11 +1,18 @@
 ---
 title: Startside
-subtitle: Startside for datafortellinger fra Team Pia.
+subtitle: Datafortelling om fagsystemet Fia
 title-block-banner: true
 title-block-banner-color: white
 toc: false
 embed-resources: false
 ---
+
+::: {.callout-tip collapse="false"}
+## Om denne datafortellingen
+
+Disse datafortellingene viser tall fra Fagsystemet for oppfølging av IA-oppdraget i NAV (Fia). De illustrerer hvordan Fia brukes nasjonalt og i ulike resultatområder.
+
+:::
 
 **Vi ønsker tilbakemelding fra dere! Meld inn forslag til datafortellingen i [Porten](https://jira.adeo.no/plugins/servlet/desk/portal/541/create/4362).**
 
@@ -14,4 +21,4 @@ Kontakt oss på [slack](https://nav-it.slack.com/archives/C02DL347ZT2) eller på
 
 Kildekoden finnes på [GitHub](https://github.com/navikt/fia-datafortelling).
 
-Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).
+Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/fag-og-ytelser-arbeid-inkluderende-arbeidsliv/SitePages/FIA-brukerveiledning.aspx).

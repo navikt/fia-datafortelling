@@ -537,7 +537,7 @@ def trakt_antall_samarbeid(
                 antall_aktive_samarbeid_med_samarbeidsplan,
                 antall_aktive_samarbeid_med_fullfort_evaluering,
             ],
-            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av første nivå,<br>%{percentPrevious} prosent av forrige nivå",
+            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av aktive samarbeid",
             textposition="inside",
             textinfo="value+percent initial",
         )
@@ -556,7 +556,7 @@ def trakt_antall_samarbeid(
                 antall_fullførte_samarbeid_med_samarbeidsplan,
                 antall_fullførte_samarbeid_med_fullfort_evaluering,
             ],
-            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av første nivå,<br>%{percentPrevious} prosent av forrige nivå",
+            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av fullførte samarbeid",
             textposition="inside",
             textinfo="value+percent initial",
         )
@@ -575,7 +575,7 @@ def trakt_antall_samarbeid(
                 antall_avbrutte_samarbeid_med_samarbeidsplan,
                 antall_avbrutte_samarbeid_med_fullfort_evaluering,
             ],
-            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av første nivå,<br>%{percentPrevious} prosent av forrige nivå",
+            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av avbrutte samarbeid",
             textposition="inside",
             textinfo="value+percent initial",
         )

@@ -1,5 +1,5 @@
 ---
-title: Tid brukt i samarbeid - Øst-Viken
+title: Samarbeid i Fia - Øst-Viken
 title-block-banner: true
 title-block-banner-color: white
 embed-resources: false

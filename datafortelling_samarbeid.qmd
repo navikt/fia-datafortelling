@@ -38,9 +38,80 @@ data_spørreundersøkelse = last_inn_spørreundersøkelser(
 )
 ```
 
+```{python}
+# Hent data om samarbeidsplaner
+from src.utils.dataloader import last_inn_data_samarbeidsplan
+data_samarbeidsplan = last_inn_data_samarbeidsplan(
+    project=PROJECT,
+    dataset=DATASET,
+    data_samarbeid=data_samarbeid,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
 {{< include includes/under_arbeid_callout.qmd >}}
 
-# Fra opprettet til gjennomført behovsvurdering
+
+## Antall samarbeid
+{{< include includes/antall_samarbeid_forklaring.qmd >}}
+
+```{python}
+from src.plots.samarbeid import trakt_antall_samarbeid
+trakt_antall_samarbeid(
+    data_samarbeid,
+    data_spørreundersøkelse,
+    data_samarbeidsplan,
+)
+```
+
+{{< include includes/begrep-forklaring.qmd >}}
+
+
+## Antall samarbeid per virksomhet
+
+{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+
+::: {.panel-tabset}
+
+# Antall
+```{python}
+from src.plots.samarbeid import plot_antall_saker_per_antall_samarbeid
+plot_antall_saker_per_antall_samarbeid(data_samarbeid)
+```
+
+# Andel
+```{python}
+plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
+```
+
+:::
+
+## Antall samarbeid opprettet over tid
+Antall samarbeid opprettet over tid, gruppert per uke.
+
+```{python}
+from src.plots.samarbeid import plot_antall_samarbeid_over_tid
+plot_antall_samarbeid_over_tid(data_samarbeid=data_samarbeid)
+```
+
+## Behovsvurderinger gjennomført over tid
+Antall behovsvurderinger gjennomført over tid, gruppert per uke.
+
+```{python}
+from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_tid
+plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Behovsvurdering")
+```
+
+## Evalueringer gjennomført over tid
+Antall evalueringer gjennomført over tid, gruppert per uke.
+
+```{python}
+plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Evaluering")
+```
+
+
+
+## Tid fra opprettet samarbeid til gjennomført behovsvurdering
 Antall dager mellom opprettelse av samarbeid og gjennomføring av første behovsvurdering.
 
 ```{python}
@@ -60,7 +131,7 @@ data_i_privat_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_
 
 ::: {.panel-tabset}
 
-## Alle
+### Alle
 Alle behovsvurderinger
 
 ```{python}
@@ -75,7 +146,7 @@ fig, y_max = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Statlig sektor
+### Statlig sektor
 Alle behovsvurderinger knyttet til virksomheter definert som Statlig forvaltning (i Fia)
 
 ```{python}
@@ -90,7 +161,7 @@ fig, _ = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Kommunal sektor
+### Kommunal sektor
 Alle behovsvurderinger knyttet til virksomheter definert som Kommunal forvaltning (i Fia)
 
 ```{python}
@@ -105,7 +176,7 @@ fig, _ = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Privat sektor
+### Privat sektor
 Alle behovsvurderinger knyttet til virksomheter definert som Privat og offentlig næringsvirksomhet (i Fia)
 
 ```{python}
@@ -122,7 +193,7 @@ fig.show()
 
 :::
 
-# Fra opprettet til gjennomført evaluering
+## Tid fra opprettet samarbeid til gjennomført evaluering
 Antall dager mellom opprettelse av samarbeid og gjennomføring av første evaluering.
 
 ```{python}
@@ -140,7 +211,7 @@ data_i_privat_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_
 
 
 ::: {.panel-tabset}
-## Alle
+### Alle
 Alle evalueringer
 
 ```{python}
@@ -154,7 +225,7 @@ fig, y_max = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Statlig sektor
+### Statlig sektor
 Alle evalueringer knyttet til virksomheter kategorisert som Statlig forvaltning (i Fia)
 
 ```{python}
@@ -169,7 +240,7 @@ fig, _ = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Kommunal sektor
+### Kommunal sektor
 Alle evalueringer knyttet til virksomheter kategorisert som Kommunal forvaltning (i Fia)
 
 ```{python}
@@ -184,7 +255,7 @@ fig, _ = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Privat sektor
+### Privat sektor
 Alle evalueringer knyttet til virksomheter kategorisert som Privat og offentlig næringsvirksomhet (i Fia)
 
 ```{python}
@@ -201,7 +272,7 @@ fig.show()
 
 :::
 
-# Fra opprettet til fullført samarbeid
+## Tid fra opprettet samarbeid til fullført samarbeid
 Antall dager mellom opprettelse av samarbeid til fullføring.
 
 ::: {.panel-tabset}
@@ -220,7 +291,7 @@ data_i_kommunal_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_
 data_i_privat_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_alle_sektorer[data_i_alle_sektorer["sektor"] == Sektor.PRIVAT.name]
 ```
 
-## Alle
+### Alle
 Alle samarbeid som er fullført
 
 ```{python}
@@ -233,7 +304,7 @@ fig, y_max = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Statlig sektor
+### Statlig sektor
 Alle samarbeid tilhørende virksomheter som i Fia kategoriserers som Statlig forvaltning
 
 ```{python}
@@ -248,7 +319,7 @@ fig, _ = plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Kommunal sektor
+### Kommunal sektor
 Alle samarbeid tilhørende virksomheter som i Fia kategoriserers som Kommunal forvaltning
 
 ```{python}
@@ -264,7 +335,7 @@ fig, _ =plot_tid_mellom_hendelser(
 fig.show()
 ```
 
-## Privat sektor
+### Privat sektor
 Alle samarbeid tilhørende virksomheter som i Fia kategoriserers som Privat og offentlig næringsvirksomhet
 
 ```{python}
