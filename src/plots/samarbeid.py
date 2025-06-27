@@ -413,173 +413,75 @@ def trakt_antall_samarbeid(
     data_samarbeidsplan: pd.DataFrame,
     height: int = 400,
     width: int = 850,
-    farge_aktiv: str = "#368da8",
-    farge_fullført: str = "#06893a",
-    farge_avbrutt: str = "#c30000",
+    farger: dict[str, str] = {
+        "AKTIV": "#368da8",
+        "FULLFØRT": "#06893a",
+        "AVBRUTT": "#c30000",
+    },
 ) -> go.Figure:
-    #### AKTIVE SAMARBEID ####
-    aktive_samarbeid_ider: list[int] = (
-        data_samarbeid.loc[data_samarbeid["status"] == "AKTIV", "id"]
-        .dropna()
-        .unique()
-        .tolist()
-    )
-
-    aktive_spørreundersøkelse_mask: pd.Series[bool] = data_spørreundersøkelse[
-        "samarbeidId"
-    ].isin(aktive_samarbeid_ider)
-
-    antall_aktive_samarbeid: int = len(aktive_samarbeid_ider)
-
-    antall_aktive_samarbeid_med_fullfort_behovsvurdering: int = data_spørreundersøkelse[
-        aktive_spørreundersøkelse_mask
-        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
+    avsluttede_behovsvurderinger: pd.DataFrame = data_spørreundersøkelse[
+        (data_spørreundersøkelse["status"] == "AVSLUTTET")
         & (data_spørreundersøkelse["type"] == "Behovsvurdering")
-    ]["samarbeidId"].nunique()
-
-    antall_aktive_samarbeid_med_samarbeidsplan: int = data_samarbeidsplan[
-        data_samarbeidsplan["samarbeid_id"].isin(aktive_samarbeid_ider)
-    ]["samarbeid_id"].nunique()
-
-    antall_aktive_samarbeid_med_fullfort_evaluering: int = data_spørreundersøkelse[
-        aktive_spørreundersøkelse_mask
-        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
-        & (data_spørreundersøkelse["type"] == "Evaluering")
-    ]["samarbeidId"].nunique()
-
-    #### FULLFØRTE SAMARBEID ####
-    fullførte_samarbeid_ider: list[int] = (
-        data_samarbeid.loc[data_samarbeid["status"] == "FULLFØRT", "id"]
-        .dropna()
-        .unique()
-        .tolist()
-    )
-
-    fullførte_spørreundersøkelse_mask: pd.Series[bool] = data_spørreundersøkelse[
-        "samarbeidId"
-    ].isin(fullførte_samarbeid_ider)
-
-    antall_fullførte_samarbeid: int = len(fullførte_samarbeid_ider)
-
-    antall_fullførte_samarbeid_med_fullfort_behovsvurdering: int = (
-        data_spørreundersøkelse[
-            fullførte_spørreundersøkelse_mask
-            & (data_spørreundersøkelse["status"] == "AVSLUTTET")
-            & (data_spørreundersøkelse["type"] == "Behovsvurdering")
-        ]["samarbeidId"].nunique()
-    )
-
-    antall_fullførte_samarbeid_med_samarbeidsplan: int = data_samarbeidsplan[
-        data_samarbeidsplan["samarbeid_id"].isin(fullførte_samarbeid_ider)
-    ]["samarbeid_id"].nunique()
-
-    antall_fullførte_samarbeid_med_fullfort_evaluering: int = data_spørreundersøkelse[
-        fullførte_spørreundersøkelse_mask
-        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
-        & (data_spørreundersøkelse["type"] == "Evaluering")
-    ]["samarbeidId"].nunique()
-
-    #### AVBRUTTE SAMARBEID ####
-    avbrutte_samarbeid_ider: list[int] = (
-        data_samarbeid.loc[data_samarbeid["status"] == "AVBRUTT", "id"]
-        .dropna()
-        .unique()
-        .tolist()
-    )
-
-    avbrutte_spørreundersøkelse_mask: pd.Series[bool] = data_spørreundersøkelse[
-        "samarbeidId"
-    ].isin(avbrutte_samarbeid_ider)
-
-    antall_avbrutte_samarbeid: int = len(avbrutte_samarbeid_ider)
-
-    antall_avbrutte_samarbeid_med_fullfort_behovsvurdering: int = (
-        data_spørreundersøkelse[
-            avbrutte_spørreundersøkelse_mask
-            & (data_spørreundersøkelse["status"] == "AVSLUTTET")
-            & (data_spørreundersøkelse["type"] == "Behovsvurdering")
-        ]["samarbeidId"].nunique()
-    )
-
-    antall_avbrutte_samarbeid_med_samarbeidsplan: int = data_samarbeidsplan[
-        data_samarbeidsplan["samarbeid_id"].isin(avbrutte_samarbeid_ider)
-    ]["samarbeid_id"].nunique()
-
-    antall_avbrutte_samarbeid_med_fullfort_evaluering: int = data_spørreundersøkelse[
-        avbrutte_spørreundersøkelse_mask
-        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
-        & (data_spørreundersøkelse["type"] == "Evaluering")
-    ]["samarbeidId"].nunique()
-
-    #### LAG FIGUR ####
-
-    nivå_tekster: list[str] = [
-        "Antall samarbeid/underavdelinger",
-        "Antall samarbeid med en fullført"
-        + "<br>"
-        + "behovsvurdering (minst ett svar)",
-        "Antall samarbeid med en" + "<br>" + "opprettet samarbeidsplan",
-        "Antall samarbeid med en" + "<br>" + "fullført evaluering (minst ett svar)",
     ]
+    avsluttede_evalueringer: pd.DataFrame = data_spørreundersøkelse[
+        (data_spørreundersøkelse["status"] == "AVSLUTTET")
+        & (data_spørreundersøkelse["type"] == "Evaluering")
+    ]
+
+    trakt_dict: dict[str, int] = {}
+    for samarbeid_status in ["AKTIV", "FULLFØRT", "AVBRUTT"]:
+        trakt_dict[f"samarbeid_{samarbeid_status}"] = data_samarbeid[
+            data_samarbeid["status"] == samarbeid_status
+        ]["id"].nunique()
+
+        trakt_dict[f"behovsvurderinger_{samarbeid_status}"] = (
+            avsluttede_behovsvurderinger[
+                avsluttede_behovsvurderinger["samarbeid_status"] == samarbeid_status
+            ]["samarbeid_id"].nunique()
+        )
+
+        trakt_dict[f"samarbeidsplaner_{samarbeid_status}"] = data_samarbeidsplan[
+            data_samarbeidsplan["samarbeid_status"] == samarbeid_status
+        ]["samarbeid_id"].nunique()
+
+        trakt_dict[f"evalueringer_{samarbeid_status}"] = avsluttede_evalueringer[
+            avsluttede_evalueringer["samarbeid_status"] == samarbeid_status
+        ]["samarbeid_id"].nunique()
 
     fig = go.Figure()
 
-    fig.add_trace(
-        go.Funnel(
-            name="Aktive samarbeid",
-            marker={
-                "color": farge_aktiv,
-            },
-            y=nivå_tekster,
-            x=[
-                antall_aktive_samarbeid,
-                antall_aktive_samarbeid_med_fullfort_behovsvurdering,
-                antall_aktive_samarbeid_med_samarbeidsplan,
-                antall_aktive_samarbeid_med_fullfort_evaluering,
-            ],
-            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av aktive samarbeid",
-            textposition="inside",
-            textinfo="value+percent initial",
+    for samarbeid_status in ["AKTIV", "FULLFØRT", "AVBRUTT"]:
+        fig.add_trace(
+            go.Funnel(
+                name=f"{samarbeid_status.capitalize()}e samarbeid",
+                marker={
+                    "color": farger[samarbeid_status],
+                },
+                y=[
+                    "Antall samarbeid/" + "<br>" + "underavdelinger",
+                    "Antall samarbeid"
+                    + "<br>"
+                    + "med fullført behovsvurdering"
+                    + "<br>"
+                    + "(minst ett svar)",
+                    "Antall samarbeid med" + "<br>" + "opprettet samarbeidsplan",
+                    "Antall samarbeid med"
+                    + "<br>"
+                    + "fullført evaluering"
+                    + "<br>"
+                    + "(minst ett svar)",
+                ],
+                x=[
+                    trakt_dict[f"samarbeid_{samarbeid_status}"],
+                    trakt_dict[f"behovsvurderinger_{samarbeid_status}"],
+                    trakt_dict[f"samarbeidsplaner_{samarbeid_status}"],
+                    trakt_dict[f"evalueringer_{samarbeid_status}"],
+                ],
+                hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av {name}",
+                textposition="inside",
+                textinfo="value+percent initial",
+            )
         )
-    )
-
-    fig.add_trace(
-        go.Funnel(
-            name="Fullførte samarbeid",
-            marker={
-                "color": farge_fullført,
-            },
-            y=nivå_tekster,
-            x=[
-                antall_fullførte_samarbeid,
-                antall_fullførte_samarbeid_med_fullfort_behovsvurdering,
-                antall_fullførte_samarbeid_med_samarbeidsplan,
-                antall_fullførte_samarbeid_med_fullfort_evaluering,
-            ],
-            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av fullførte samarbeid",
-            textposition="inside",
-            textinfo="value+percent initial",
-        )
-    )
-
-    fig.add_trace(
-        go.Funnel(
-            name="Avbrutte samarbeid",
-            marker={
-                "color": farge_avbrutt,
-            },
-            y=nivå_tekster,
-            x=[
-                antall_avbrutte_samarbeid,
-                antall_avbrutte_samarbeid_med_fullfort_behovsvurdering,
-                antall_avbrutte_samarbeid_med_samarbeidsplan,
-                antall_avbrutte_samarbeid_med_fullfort_evaluering,
-            ],
-            hovertemplate="%{y}: %{x},<br>%{percentInitial} prosent av avbrutte samarbeid",
-            textposition="inside",
-            textinfo="value+percent initial",
-        )
-    )
 
     fig.update_layout(
         height=height,
@@ -588,7 +490,7 @@ def trakt_antall_samarbeid(
         legend=dict(yanchor="bottom", y=0.01, xanchor="right", x=0.99),
     )
 
-    return annotate_ikke_offisiell_statistikk(fig)
+    return annotate_ikke_offisiell_statistikk(fig=fig)
 
 
 def _format_number(value: float) -> str:

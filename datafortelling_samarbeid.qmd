@@ -33,7 +33,7 @@ from src.utils.dataloader import last_inn_spørreundersøkelser
 data_spørreundersøkelse = last_inn_spørreundersøkelser(
     project=PROJECT,
     dataset=DATASET,
-    data_statistikk=data_statistikk,
+    data_samarbeid=data_samarbeid,
     resultatområde=RESULTATOMRÅDE,
 )
 ```
@@ -48,9 +48,6 @@ data_samarbeidsplan = last_inn_data_samarbeidsplan(
     resultatområde=RESULTATOMRÅDE,
 )
 ```
-
-{{< include includes/under_arbeid_callout.qmd >}}
-
 
 ## Antall samarbeid
 {{< include includes/antall_samarbeid_forklaring.qmd >}}

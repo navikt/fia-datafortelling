@@ -38,34 +38,20 @@ data_samarbeidsplan = last_inn_data_samarbeidsplan(
 )
 ```
 
-{{< include includes/under_arbeid_callout.qmd >}}
-
 # Fordeling av undertemaer i samarbeidsplaner
 
 ```{python}
-# Filtrerer samarbeidsplaner etter status Aktiv, Avbrutt og Fullført
-from src.utils.datahandler import grupper_samarbeid_etter_samarbeid_status
-samarbeid_status = ["AKTIV", "AVBRUTT", "FULLFØRT"]
-antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer_alle = grupper_samarbeid_etter_samarbeid_status(data_samarbeidsplan, samarbeid_status)
+# Filtrerer samarbeidsplaner etter status Aktiv og Fullført
+
+samarbeid_i_status = data_samarbeidsplan[data_samarbeidsplan["samarbeid_status"].isin(["AKTIV", "FULLFØRT"])] 
+
+antall_planer_med_innhold: int = len(samarbeid_i_status.groupby("plan_id"))
 ```
 
-Det er totalt `{python} antall_planer_med_innhold` planer som har minst ett inkludert undertema. De er fordelt:
+Fordeling av undertemaer i totalt `{python} antall_planer_med_innhold` samarbeidsplaner, både aktive og fullførte samarbeid er inkludert.
 
 ```{python}
 # Plotter innhold i samarbeidsplaner etter status på innhold
 from src.plots.samarbeidsplaner import plot_samarbeidsplaner_etter_status
-plot_samarbeidsplaner_etter_status(data=inkluderte_undertemaer_alle)
+plot_samarbeidsplaner_etter_status(data=samarbeid_i_status)
 ```
-
-
-<!-- 
-
-# TODO: Finn en eller annen måte å vise om det er mange planer som ikke har inkluderte undertemaer i forskjellige statuser. 
-Av alle samarbeid med en plan er det x av y planer som har minst ett undertema inkludert.
-
-Av de z uten inkluderte undertemaer.
-
-if antall_planer_totalt-antall_planer_med_innhold > 0:
- -->
-
-

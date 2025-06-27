@@ -55,7 +55,7 @@ dict(
 #| title: Antall samarbeider som har fullført behovsvurdering
 dict(
     color = "light",
-    value = df_bv_sistoppdatering[df_bv_sistoppdatering.status=="AVSLUTTET"].samarbeidId.nunique()
+    value = df_bv_sistoppdatering[df_bv_sistoppdatering.status=="AVSLUTTET"]["samarbeid_id"].nunique()
 )
 ```
 
@@ -93,7 +93,7 @@ fig.show()
 #| title: Antall samarbeider per antall fullførte behovsvurderinger
 antall_smb_per_antall_bv = (
     df_bv_sistoppdatering[df_bv_sistoppdatering.status=="AVSLUTTET"]
-    .groupby("samarbeidId")
+    .groupby("samarbeid_id")
     .id
     .count()
     .value_counts()

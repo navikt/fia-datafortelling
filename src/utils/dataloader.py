@@ -3,7 +3,6 @@ from typing import Any
 import pandas as pd
 
 from src.utils.datahandler import (
-    legg_til_sektor_og_resultatområde,
     load_data_deduplicate,
     preprocess_data_samarbeid,
     preprocess_data_statistikk,
@@ -14,24 +13,36 @@ from src.utils.konstanter import Resultatområde
 def last_inn_spørreundersøkelser(
     project: str,
     dataset: str,
-    data_statistikk: pd.DataFrame,
+    data_samarbeid: pd.DataFrame,
     resultatområde: Resultatområde | None = None,
-):
-    data_spørreundersøkelse = load_data_deduplicate(
+) -> pd.DataFrame:
+    data_spørreundersøkelse: pd.DataFrame = load_data_deduplicate(
         project=project,
         dataset=dataset,
         table="sporreundersokelse-v1",
         distinct_colunms="id",
-    )
+    ).rename(columns={"samarbeidId": "samarbeid_id"})
 
+    # filtrer ut spørreundersøkelser uten svar og de som har blitt slettet.
     data_spørreundersøkelse = data_spørreundersøkelse[
         (data_spørreundersøkelse["harMinstEttSvar"])
         & (data_spørreundersøkelse["status"] != "SLETTET")
     ]
 
-    data_spørreundersøkelse = legg_til_sektor_og_resultatområde(
-        data=data_spørreundersøkelse,
-        data_statistikk=data_statistikk,
+    # Merge med samarbeid for rikere data
+    data_spørreundersøkelse = data_spørreundersøkelse.merge(
+        data_samarbeid[
+            [
+                "id",
+                "saksnummer",
+                "resultatomrade",
+                "sektor",
+                "hoved_nering",
+                "status",
+            ]
+        ].rename(columns={"status": "samarbeid_status", "id": "samarbeid_id"}),
+        on="samarbeid_id",
+        how="left",
     )
 
     if resultatområde is not None:
@@ -55,6 +66,7 @@ def last_inn_samarbeid(
         distinct_colunms="id",
     )
 
+    # TODO: Trekk denne koden inn i denne metoden og rydd opp ? Filtrer først, så prosesser
     data_samarbeid = preprocess_data_samarbeid(
         raw_data_samarbeid=raw_data_samarbeid,
         data_statistikk=data_statistikk,
@@ -96,13 +108,13 @@ def last_inn_data_samarbeidsplan(
         distinct_colunms="id",
     )
 
-    data_samarbeidsplan[["start_dato", "slutt_dato"]] = data_samarbeidsplan[
-        ["start_dato", "slutt_dato"]
-    ].apply(pd.to_datetime)
-    data_samarbeidsplan["varighet"] = (
-        data_samarbeidsplan["slutt_dato"] - data_samarbeidsplan["start_dato"]
-    ).dt.days
+    # Filtrer ut ikke-inkludert innhold.
+    # Bryr oss kun om undertemaer som er inkludert.
+    data_samarbeidsplan: pd.DataFrame = data_samarbeidsplan[
+        data_samarbeidsplan["inkludert"]
+    ]
 
+    # Merge med samarbeid for rikere data
     data_samarbeidsplan = data_samarbeidsplan.merge(
         data_samarbeid[
             [
@@ -118,10 +130,20 @@ def last_inn_data_samarbeidsplan(
         how="left",
     )
 
+    # Filtrer ut basert på geografi
     if resultatområde is not None:
         data_samarbeidsplan = data_samarbeidsplan[
             data_samarbeidsplan["resultatomrade"] == resultatområde.value
         ]
+
+    # Gjør kolonner til datetime og beregn varighet
+    data_samarbeidsplan[["start_dato", "slutt_dato"]] = data_samarbeidsplan[
+        ["start_dato", "slutt_dato"]
+    ].apply(pd.to_datetime)
+
+    data_samarbeidsplan["varighet"] = (
+        data_samarbeidsplan["slutt_dato"] - data_samarbeidsplan["start_dato"]
+    ).dt.days
 
     return data_samarbeidsplan
 
@@ -140,7 +162,7 @@ def last_inn_data_statistikk(
         dtypes=statistikk_dtypes,
     )
 
-    # Legger på resultatområde, data statistikk har alltid resultatområde kolonne
+    # TODO: Trekk denne koden inn i denne metoden og rydd opp ? Filtrer først, så prosesser
     data_statistikk = preprocess_data_statistikk(
         raw_data_statistikk=raw_data_statistikk,
         adm_enheter=adm_enheter,

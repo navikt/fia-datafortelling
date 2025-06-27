@@ -33,7 +33,7 @@ from src.utils.dataloader import last_inn_spørreundersøkelser
 data_spørreundersøkelse = last_inn_spørreundersøkelser(
     project=PROJECT,
     dataset=DATASET,
-    data_statistikk=data_statistikk,
+    data_samarbeid=data_samarbeid,
     resultatområde=RESULTATOMRÅDE,
 )
 ```

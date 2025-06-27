@@ -14,47 +14,6 @@ from src.utils.konstanter import (
 )
 
 
-def grupper_samarbeid_etter_samarbeid_status(
-    data: pd.DataFrame, status: list[str]
-) -> tuple[int, int, pd.DataFrame]:
-    """
-    Grupperer samarbeidsplaner etter samarbeidets status og returnerer antall planer med innhold og totalt antall planer.
-
-    Args:
-        data (pd.DataFrame): DataFrame med samarbeid og tilhørende planer.
-        status (list[str]): Liste over samarbeidstatus som skal inkluderes i analysen.
-    Returns:
-        tuple[int, int, pd.DataFrame]: Antall planer med innhold, totalt antall planer, og DataFrame med inkluderte undertemaer.
-    Raises:
-        ValueError: Hvis det mangler data før eller etter filtrering.
-    """
-
-    if data.empty:
-        return 0, 0, pd.DataFrame()
-
-    # Alle samarbeid med samarbeidsplaner hvor samarbeidet er i en gitt status
-    samarbeid_i_status: pd.DataFrame = data[data["samarbeid_status"].isin(status)]
-
-    if samarbeid_i_status.empty:
-        return 0, 0, pd.DataFrame()
-
-    # Antall planer knyttet til disse samarbeidene
-    antall_planer_totalt: int = len(samarbeid_i_status.groupby("plan_id"))
-
-    # Filtrer ut undertemaer som ikke er inkludert fra data
-    inkluderte_undertemaer: pd.DataFrame = samarbeid_i_status[
-        samarbeid_i_status["inkludert"]
-    ]
-
-    if inkluderte_undertemaer.empty:
-        return 0, 0, pd.DataFrame()
-
-    # antall planer med noe inkludert innhold. (har én eller flere rader med innhold i filtrert liste)
-    antall_planer_med_innhold: int = len(inkluderte_undertemaer.groupby("plan_id"))
-
-    return antall_planer_med_innhold, antall_planer_totalt, inkluderte_undertemaer
-
-
 def fullførte_samarbeid_med_tid(
     data_samarbeid: pd.DataFrame,
 ) -> pd.DataFrame:
@@ -106,13 +65,13 @@ def samarbeid_med_spørreundersøkelse(
 
     ny_kolonne = f"tidligste_{type_spørreundersøkelse.lower()}_fullfort"
     tidligste_fullført = (
-        behovsvurderinger_med_svar.groupby("samarbeidId")["fullfort_or_endret"]
+        behovsvurderinger_med_svar.groupby("samarbeid_id")["fullfort_or_endret"]
         .min()
         .reset_index()
         .rename(
             columns={
                 "fullfort_or_endret": ny_kolonne,
-                "samarbeidId": "id",
+                "samarbeid_id": "id",
             }
         )
     )
@@ -120,7 +79,7 @@ def samarbeid_med_spørreundersøkelse(
     # Filter samarbeid to include only those with completed behovsvurdering
     samarbeid_med_fullført_behovsvurdering = samarbeid_ikke_slettet[
         samarbeid_ikke_slettet["id"].isin(
-            behovsvurderinger_med_svar["samarbeidId"].unique()
+            behovsvurderinger_med_svar["samarbeid_id"].unique()
         )
     ]
 
@@ -510,22 +469,6 @@ def preprocess_data_samarbeid(
     data_samarbeid = data_samarbeid[data_samarbeid["sektor"].notna()]
 
     return data_samarbeid
-
-
-def legg_til_sektor_og_resultatområde(
-    data: pd.DataFrame,
-    data_statistikk: pd.DataFrame,
-) -> pd.DataFrame:
-    """
-    Legger til resultatområde basert på data_statistikk.
-    Vi filtrerer på resultatområde for å lage en datafortelling per resultatområde.
-    """
-
-    resultatomrade: pd.DataFrame = data_statistikk.sort_values("endretTidspunkt")[
-        ["saksnummer", "resultatomrade", "sektor"]
-    ].drop_duplicates("saksnummer", keep="last")
-    data = data.merge(resultatomrade, on="saksnummer", how="left")
-    return data
 
 
 def hent_leveranse_sistestatus(data_leveranse: pd.DataFrame) -> pd.DataFrame:
