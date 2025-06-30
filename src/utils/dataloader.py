@@ -4,7 +4,6 @@ import pandas as pd
 
 from src.utils.datahandler import (
     load_data_deduplicate,
-    preprocess_data_samarbeid,
     preprocess_data_statistikk,
 )
 from src.utils.konstanter import Resultatområde
@@ -66,11 +65,33 @@ def last_inn_samarbeid(
         distinct_colunms="id",
     )
 
-    # TODO: Trekk denne koden inn i denne metoden og rydd opp ? Filtrer først, så prosesser
-    data_samarbeid = preprocess_data_samarbeid(
-        raw_data_samarbeid=raw_data_samarbeid,
-        data_statistikk=data_statistikk,
+    data_samarbeid: pd.DataFrame = raw_data_samarbeid[
+        raw_data_samarbeid["status"] != "SLETTET"
+    ]
+
+    data_statistikk = data_statistikk.sort_values("endretTidspunkt").drop_duplicates(
+        "saksnummer", keep="last"
     )
+
+    data_samarbeid = data_samarbeid.merge(
+        (
+            data_statistikk[
+                [
+                    "saksnummer",
+                    "kommunenummer 2024",
+                    "antallPersoner",
+                    "resultatomrade",
+                    "hoved_nering",
+                    "sektor",
+                ]
+            ].rename(columns={"kommunenummer 2024": "kommunenummer"})
+        ),
+        on="saksnummer",
+        how="left",
+    )
+
+    # BUG 10 av 3 200 mangler sektor, usikker hvorfor. Fjerner disse
+    data_samarbeid = data_samarbeid[data_samarbeid["sektor"].notna()]
 
     if resultatområde is not None:
         data_samarbeid = data_samarbeid[

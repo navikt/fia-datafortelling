@@ -459,9 +459,9 @@ def trakt_antall_samarbeid(
                 },
                 y=[
                     "Antall samarbeid/" + "<br>" + "underavdelinger",
-                    "Antall samarbeid"
+                    "Antall samarbeid med"
                     + "<br>"
-                    + "med fullført behovsvurdering"
+                    + "fullført behovsvurdering"
                     + "<br>"
                     + "(minst ett svar)",
                     "Antall samarbeid med" + "<br>" + "opprettet samarbeidsplan",
