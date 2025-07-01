@@ -51,9 +51,8 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
 
-## Statusendringer i saker
-
-{{< include includes/statusflyt_i_fia_forklaring.qmd >}}
+## Statusflyt det siste 12 månedene
+En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
 
 ```{python}
 from src.plots.statistikk import statusflyt
@@ -62,8 +61,6 @@ data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
 statusflyt(data_input)
 ```
 
-{{< include includes/sak-forklaring.qmd >}}
-{{< include includes/saksstatus-forklaring.qmd >}}
 
 ## Antall saker per status
 ::: {.panel-tabset}
@@ -90,13 +87,15 @@ gjennomstrømmingstall(data_status)
 
 :::
 
-{{< include includes/sak-forklaring.qmd >}}
-{{< include includes/saksstatus-forklaring.qmd >}}
-
 
 ## Virksomhetsprofil
 
-{{< include includes/virksomhetsprofil_forklaring.qmd >}}
+Her vises profilen til virksomheter som er registrert i Fia. Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+
+::: {.callout-tip}
+## Obs!
+Alle tallene er basert på informasjon vi hadde ved siste statusendring.
+:::
 
 ::: {.panel-tabset}
 
@@ -137,7 +136,8 @@ virksomhetsprofil(data_input)
 
 ## Begrunnelse på ikke aktuell
 
-{{< include includes/begrunnelse_ikke_aktuell_forklaring.qmd >}}
+
+Her vises begrunnelser på hvorfor saker er satt til "Ikke aktuell". En sak kan ha flere begrunnelser, det betyr at summen kan bli over 100%.
 
 
 ```{python}
@@ -202,7 +202,3 @@ begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
 ```
 
 :::
-
-{{< include includes/ikke-aktuell-forklaring.qmd >}}
-
-Du finner flere detaljer om statistikk i [Brukerveiledning for Fia på Navet](https://navno.sharepoint.com/sites/intranett-produktomrader-og-prosjekter/SitePages/FIA-brukerveiledning.aspx).

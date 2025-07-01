@@ -48,7 +48,7 @@ samarbeid_i_status = data_samarbeidsplan[data_samarbeidsplan["samarbeid_status"]
 antall_planer_med_innhold: int = len(samarbeid_i_status.groupby("plan_id"))
 ```
 
-Fordeling av undertemaer i totalt `{python} antall_planer_med_innhold` samarbeidsplaner, både aktive og fullførte samarbeid er inkludert.
+Grafen viser antall ganger et undertema er lagt til i en samarbeidsplan. Samarbeidsplaner i både aktive og fullførte samarbeid vises, totalt `{python} antall_planer_med_innhold` samarbeidsplaner.
 
 ```{python}
 # Plotter innhold i samarbeidsplaner etter status på innhold

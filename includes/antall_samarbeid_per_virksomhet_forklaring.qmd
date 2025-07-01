@@ -1,3 +1,0 @@
-Grafen nedenfor viser antall og andel virksomheter fordelt på antall ansatte som har et visst antall samarbeid. De fleste virksomhetene har kun ett samarbeid. Jo større virksomheten er, jo flere samarbeid kan de ha.
-
-Du kan filtrere grafen ved å klikke og dra for å markere et område i grafen.

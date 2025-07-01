@@ -49,8 +49,9 @@ data_samarbeidsplan = last_inn_data_samarbeidsplan(
 )
 ```
 
+
 ## Antall samarbeid
-{{< include includes/antall_samarbeid_forklaring.qmd >}}
+Grafen viser antall samarbeid i Fia. Under totalen ser man hvor mange samarbeid som har gjennomført behovsvurdering, har en samarbeidsplan og gjennomført evaluering.
 
 ```{python}
 from src.plots.samarbeid import trakt_antall_samarbeid
@@ -61,12 +62,9 @@ trakt_antall_samarbeid(
 )
 ```
 
-{{< include includes/begrep-forklaring.qmd >}}
-
 
 ## Antall samarbeid per virksomhet
-
-{{< include includes/antall_samarbeid_per_virksomhet_forklaring.qmd >}}
+Grafen viser antall samarbeid per virksomhet. Fargene indikerer størrelsen på virksomheten. De fleste virksomheter har 1-2 samarbeid.
 
 ::: {.panel-tabset}
 
@@ -83,33 +81,54 @@ plot_antall_saker_per_antall_samarbeid(data_samarbeid, normalisert=True)
 
 :::
 
-## Antall samarbeid opprettet over tid
-Antall samarbeid opprettet over tid, gruppert per uke.
+## Antall samarbeid opprettet
+
+```{python}
+antall_opprettede_samarbeid = len(data_samarbeid)
+```
+
+Antall samarbeid opprettet, gruppert per uke. Siden 01.10.2024 har det blitt opprettet totalt `{python} antall_opprettede_samarbeid` samarbeid.
 
 ```{python}
 from src.plots.samarbeid import plot_antall_samarbeid_over_tid
 plot_antall_samarbeid_over_tid(data_samarbeid=data_samarbeid)
 ```
 
-## Behovsvurderinger gjennomført over tid
-Antall behovsvurderinger gjennomført over tid, gruppert per uke.
+## Antall behovsvurderinger gjennomført
+```{python}
+avsluttede_behovsvurderinger = data_spørreundersøkelse[
+    (data_spørreundersøkelse["type"] == "Behovsvurdering")
+    & (data_spørreundersøkelse["status"] == "AVSLUTTET")
+]
+antall_fullførte_behovsvurderinger = len(avsluttede_behovsvurderinger)
+```
+
+Antall behovsvurderinger gjennomført. Totalt er det gjennomført `{python} antall_fullførte_behovsvurderinger` behovsvurderinger.
 
 ```{python}
 from src.plots.samarbeid import plot_gjennomførte_spørreundersøkelser_over_tid
-plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Behovsvurdering")
+plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=avsluttede_behovsvurderinger, spr_type= "Behovsvurdering")
 ```
 
-## Evalueringer gjennomført over tid
-Antall evalueringer gjennomført over tid, gruppert per uke.
+## Antall evalueringer gjennomført
 
 ```{python}
-plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=data_spørreundersøkelse, spr_type= "Evaluering")
+avsluttede_evalueringer = data_spørreundersøkelse[
+    (data_spørreundersøkelse["type"] == "Evaluering")
+    & (data_spørreundersøkelse["status"] == "AVSLUTTET")
+]
+antall_fullførte_evalueringer = len(avsluttede_evalueringer)
+```
+
+Antall evalueringer gjennomført. Totalt er det gjennomført `{python} antall_fullførte_evalueringer` evalueringer.
+
+```{python}
+plot_gjennomførte_spørreundersøkelser_over_tid(data_spørreundersøkelse=avsluttede_evalueringer, spr_type= "Evaluering")
 ```
 
 
 
 ## Tid fra opprettet samarbeid til gjennomført behovsvurdering
-Antall dager mellom opprettelse av samarbeid og gjennomføring av første behovsvurdering.
 
 ```{python}
 from src.utils.konstanter import Sektor
@@ -191,7 +210,6 @@ fig.show()
 :::
 
 ## Tid fra opprettet samarbeid til gjennomført evaluering
-Antall dager mellom opprettelse av samarbeid og gjennomføring av første evaluering.
 
 ```{python}
 data_i_alle_sektorer = samarbeid_med_spørreundersøkelse(
@@ -270,22 +288,31 @@ fig.show()
 :::
 
 ## Tid fra opprettet samarbeid til fullført samarbeid
-Antall dager mellom opprettelse av samarbeid til fullføring.
+
+```{python}
+
+fullførte_samarbeid = data_samarbeid[
+        (data_samarbeid["status"] == "FULLFØRT") & (data_samarbeid["fullfort"].notna())
+    ]
+
+antall_fullførte_samarbeid = len(fullførte_samarbeid)
+```
+
+Grafen viser tiden det har tatt fra et samarbeid ble opprettet til det ble fullført. Totalt er det `{python} antall_fullførte_samarbeid` samarbeid som har blitt fullført.
+
+::: {.callout-tip collapse="false"}
+## Maskinell fullføring av samarbeid 15.05.2025
+Team Pia satte 402 samarbeid til status "FULLFØRT" 15.05.2025, det ble gjort da 382 fullførte IA-saker hadde aktive samarbeid. Så lenge disse 402 samarbeidene utgjør en betydelig andel av de totalt `{python} antall_fullførte_samarbeid` fullførte samarbeidene, kan dette påvirke fordelingen i grafen.
+:::
 
 ::: {.panel-tabset}
 
 ```{python}
-from src.utils.datahandler import fullførte_samarbeid_med_tid
-# Samarbeid som er fullført og tid det tok å fullføre
-data_i_alle_sektorer = fullførte_samarbeid_med_tid(
-    data_samarbeid=data_samarbeid,
-)
+data_i_statlig_sektor = pd.DataFrame() if fullførte_samarbeid.empty else fullførte_samarbeid[fullførte_samarbeid["sektor"] == Sektor.STATLIG.name]
 
-data_i_statlig_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_alle_sektorer[data_i_alle_sektorer["sektor"] == Sektor.STATLIG.name]
+data_i_kommunal_sektor = pd.DataFrame() if fullførte_samarbeid.empty else fullførte_samarbeid[fullførte_samarbeid["sektor"] == Sektor.KOMMUNAL.name]
 
-data_i_kommunal_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_alle_sektorer[data_i_alle_sektorer["sektor"] == Sektor.KOMMUNAL.name]
-
-data_i_privat_sektor = pd.DataFrame() if data_i_alle_sektorer.empty else data_i_alle_sektorer[data_i_alle_sektorer["sektor"] == Sektor.PRIVAT.name]
+data_i_privat_sektor = pd.DataFrame() if fullførte_samarbeid.empty else fullførte_samarbeid[fullførte_samarbeid["sektor"] == Sektor.PRIVAT.name]
 ```
 
 ### Alle
@@ -293,7 +320,7 @@ Alle samarbeid som er fullført
 
 ```{python}
 fig, y_max = plot_tid_mellom_hendelser(
-    df=data_i_alle_sektorer,
+    df=fullførte_samarbeid,
     kolonne_start="opprettet",
     kolonne_slutt="fullfort",
     hendelse_navn="Samarbeid",

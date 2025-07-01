@@ -1,35 +1,12 @@
-import json
 from datetime import datetime, timedelta
-from typing import Any, Dict
+from typing import Any
 
 import pandas as pd
 from google.cloud import bigquery
 
 from src.utils.konstanter import (
-    fylker,
     intervall_sortering,
-    resultatområder,
-    rogaland_lund,
-    viken_akershus,
 )
-
-
-def fullførte_samarbeid_med_tid(
-    data_samarbeid: pd.DataFrame,
-) -> pd.DataFrame:
-    if data_samarbeid.empty:
-        return pd.DataFrame()
-
-    fullførte_samarbeid = data_samarbeid[data_samarbeid["status"] == "FULLFØRT"]
-
-    if fullførte_samarbeid.empty:
-        return pd.DataFrame()
-
-    fullførte_samarbeid_not_na = fullførte_samarbeid[
-        fullførte_samarbeid["fullfort"].notna()
-    ]
-
-    return fullførte_samarbeid_not_na
 
 
 def samarbeid_med_spørreundersøkelse(
@@ -105,7 +82,7 @@ def load_data_deduplicate(
     dataset: str,
     table: str,
     distinct_colunms: str,
-    dtypes: Dict[str, Any] | None = None,
+    dtypes: dict[str, Any] | None = None,
 ) -> pd.DataFrame:
     """
     Henter data fra BigQuery og fjerner duplikater med å beholde siste tidsstempel av repeterende distinct_colunms.
@@ -133,150 +110,6 @@ def fjern_tidssone(data: pd.DataFrame) -> pd.DataFrame:
     for col in date_columns:
         data[col] = data[col].dt.tz_localize(None)
     return data
-
-
-def parse_næring(json_string: str) -> str:
-    data = json.loads(json_string)
-
-    if len(data) < 1:
-        raise Exception("Feil ved innhenting av hovednæring, mangler næring")
-    else:
-        return data[0]["navn"]
-
-
-def legg_til_regional_tilhørighet(
-    data: pd.DataFrame,
-    adm_enheter: pd.DataFrame,
-) -> pd.DataFrame:
-    # BUG: noen kolonner mangler data, dropper disse for å unngå følgefeil i utledede kolonner som resultatområde
-    # Dette gjelder (per 2025-06-04): 6 rader uten kommunenummer, 22 rader uten fylkesnummer
-    data_statistikk = data.copy()
-    data_statistikk = data_statistikk.dropna(subset=["kommunenummer", "fylkesnummer"])
-
-    # Legger til en kolonne fylkesnavn basert på fylkesnummer
-    data_statistikk["fylkesnavn"] = data_statistikk["fylkesnummer"].map(fylker)
-
-    # Legger til en kolonne resultatomrade basert på fylkesnummer (før og etter 2024 kommune- og fylkesendringer)
-    data_statistikk["resultatomrade"] = data_statistikk["fylkesnummer"].map(
-        resultatområder
-    )
-
-    # Akershus fylke (fylkesnummer 32), må deles i øst- og vest-viken for å få rett grenser i resultatområde
-    data_statistikk.loc[data_statistikk["fylkesnummer"] == "32", "resultatomrade"] = (
-        data_statistikk["kommunenummer"].map(viken_akershus)
-    )
-
-    # Lund kommune i Rogaland følges opp av resultatområdet Agder, så regnes som en del av Agder resultatområde
-    data_statistikk.loc[data_statistikk["fylkesnummer"] == "11", "resultatomrade"] = (
-        data_statistikk["kommunenummer"].map(rogaland_lund)
-    )
-
-    data_statistikk["resultatomrade"] = data_statistikk["resultatomrade"].apply(
-        lambda x: str(x).replace(" ", "_").lower()
-    )
-
-    # Leser alle kommunenummer og mapper til 2024 kommunenummer
-    # TODO: Bør dette skje før vi ordner fylkesnavn og resultatområde?
-    # Kan gjøre mapping enklere
-    alle_kommunenummer = adm_enheter[["kommunenummer", "kommunenummer 2023"]]
-
-    data_statistikk["kommunenummer 2024"] = (
-        data_statistikk["kommunenummer"]
-        .map(alle_kommunenummer.set_index("kommunenummer 2023")["kommunenummer"])
-        .fillna(data_statistikk["kommunenummer"])
-    )
-
-    return data_statistikk
-
-
-def preprocess_data_statistikk(
-    raw_data_statistikk: pd.DataFrame, adm_enheter: pd.DataFrame
-) -> pd.DataFrame:
-    # Noen kolonner hentes ut fra BigQuery uten at vi tar de i bruk, dropper fra dataframe
-    kolonner_ikke_i_bruk_i_datafortellinger = [
-        "arstall",
-        "kvartal",
-        "kvartaler",
-        "tapteDagsverkGradert",
-        "graderingsprosent",
-        "enhetsnummer",
-        "postnummer",
-        "muligeDagsverkSiste4Kvartal",
-        "sykefraversprosentSiste4Kvartal",
-        "tapteDagsverkSiste4Kvartal",
-        "tapteDagsverkGradertSiste4Kvartal",
-        "graderingsprosentSiste4Kvartal",
-    ]
-    # TODO: Her droppes status slettet på et eller annet tidspunkt
-
-    # TODO: Det droppes en del rader, sørg for å nullstille index
-
-    raw_data_statistikk = raw_data_statistikk.drop(
-        columns=kolonner_ikke_i_bruk_i_datafortellinger
-    )
-
-    # TODO: trenger slettet noen steder i datafortellinger, bør filtreres der de ikke blir brukt
-    # raw_data_statistikk = raw_data_statistikk[
-    #     raw_data_statistikk["status"] != "SLETTET"
-    # ]
-
-    # BUG: 6 rader mangler neringer, dropper disse
-    raw_data_statistikk = raw_data_statistikk[raw_data_statistikk["neringer"] != "[]"]
-
-    # Sorter basert på endrettidspunkt # TODO: HVORFOR?
-    data_statistikk = raw_data_statistikk.sort_values(
-        "endretTidspunkt", ascending=True
-    ).reset_index(drop=True)
-
-    # Måned til endrettidspunkt
-    data_statistikk["endretTidspunkt_måned"] = data_statistikk[
-        "endretTidspunkt"
-    ].dt.strftime("%Y-%m")
-
-    data_statistikk = legg_til_regional_tilhørighet(
-        data=data_statistikk,
-        adm_enheter=adm_enheter,
-    )
-
-    # TODO: Ordne opp i neringer og hovednering under:
-    # data_statistikk["neringer"] er en liste av næringer
-    #  - i få tilfeller er den tom
-    #  - i noen tilfeller er det flere næringer
-    # Vi bryr oss kun om den første i listen, og den er alltid en dict med "kode" og "navn"
-    # f.eks:
-    # [{"kode":"30.113","navn":"Bygging av oljeplattformer og moduler"}]
-    # Vi vil ha en kolonne som heter "hoved_naringskode" som er næringskoden til den første næringen i listen
-    # Vi vil også ha
-
-    data_statistikk["hoved_nering"] = data_statistikk["neringer"].apply(parse_næring)
-
-    # TODO: Bruker vi egentlig bare hoved_nering_truncated
-    data_statistikk["hoved_nering_truncated"] = data_statistikk["hoved_nering"]
-    data_statistikk.loc[
-        data_statistikk["hoved_nering"].str.len() > 50, "hoved_nering_truncated"
-    ] = data_statistikk["hoved_nering"].str[:47] + "..."
-
-    ####################
-
-    # Gruppering av virksomheter per antall ansatte
-    col_name = "antallPersoner_gruppe"
-    data_statistikk.loc[data_statistikk["antallPersoner"] == 0, col_name] = "0"
-    data_statistikk.loc[data_statistikk["antallPersoner"].between(1, 4), col_name] = (
-        "1-4"
-    )
-    data_statistikk.loc[data_statistikk["antallPersoner"].between(5, 19), col_name] = (
-        "5-19"
-    )
-    data_statistikk.loc[data_statistikk["antallPersoner"].between(20, 49), col_name] = (
-        "20-49"
-    )
-    data_statistikk.loc[data_statistikk["antallPersoner"].between(50, 99), col_name] = (
-        "50-99"
-    )
-    data_statistikk.loc[data_statistikk["antallPersoner"] >= 100, col_name] = "100+"
-    data_statistikk.loc[data_statistikk["antallPersoner"].isna(), col_name] = "Ukjent"
-
-    return data_statistikk
 
 
 def split_data_statistikk(

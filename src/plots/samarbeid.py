@@ -32,19 +32,6 @@ def plot_antall_samarbeid_over_tid(data_samarbeid: pd.DataFrame) -> go.Figure:
         )
         return fig
 
-    # Create completion date column using fullfort if available, otherwise endret
-
-    # Drop rows with no completion date
-
-    # Convert to datetime
-    data_samarbeid["opprettet"] = pd.to_datetime(data_samarbeid["opprettet"])
-
-    # Filter data to only include dates on or after 24.09.2024
-    target_date = pd.to_datetime("2024-09-24", utc=True)
-    data_samarbeid = data_samarbeid[data_samarbeid["opprettet"] >= target_date]
-
-    # Sort by completion date
-
     # Group by week and count occurrences
     weekly_counts = data_samarbeid.resample("W-MON", on="opprettet").size()
 
@@ -90,13 +77,14 @@ def plot_antall_samarbeid_over_tid(data_samarbeid: pd.DataFrame) -> go.Figure:
         ),
     )
 
-    # Add annotation for unofficial statistics
     return annotate_ikke_offisiell_statistikk(fig, y=1.15, color="red", weight="bold")
 
 
 def plot_gjennomførte_spørreundersøkelser_over_tid(
-    data_spørreundersøkelse: pd.DataFrame, spr_type: str
-):
+    data_spørreundersøkelse: pd.DataFrame,
+    spr_type: str,
+    width: int = 850,
+) -> go.Figure:
     """
     Plotter antall spørreundersøkelser av type spr_type over tid, gruppert per uke.
 
@@ -107,18 +95,14 @@ def plot_gjennomførte_spørreundersøkelser_over_tid(
     Returns:
         Plotly figur som viser antall gjennomførte spørreundersøkelser per uke
     """
-    # Create a base figure
     fig = go.Figure()
 
-    # Filter by survey type
-    filtered_df = data_spørreundersøkelse[
-        data_spørreundersøkelse["type"] == spr_type
+    fullførte_spørreundersøkelser = data_spørreundersøkelse[
+        (data_spørreundersøkelse["type"] == spr_type)
+        & (data_spørreundersøkelse["status"] == "AVSLUTTET")
     ].copy()
 
-    # Filter for completed surveys (status = "AVSLUTTET")
-    completed_df = filtered_df[filtered_df["status"] == "AVSLUTTET"].copy()
-
-    if completed_df.empty:
+    if fullførte_spørreundersøkelser.empty:
         fig.add_annotation(
             text="Ingen data tilgjengelig",
             xref="paper",
@@ -130,25 +114,30 @@ def plot_gjennomførte_spørreundersøkelser_over_tid(
         )
         return fig
 
-    # Create completion date column using fullfort if available, otherwise endret
-    completed_df["completion_date"] = completed_df["fullfort"].fillna(
-        completed_df["endret"]
-    )
-
-    # Drop rows with no completion date
-    completed_df = completed_df.dropna(subset=["completion_date"])
+    # BUG: noen spørreundersøkelser har per 01.07.2025 ikke fullført dato som de burde ha.
+    # Se trello oppg: https://trello.com/c/MQxBbpDU/3372-rydding-i-databasen-for-sp%C3%B8rreunders%C3%B8kelser
+    # TODO: Gjør oppgave og kjør reeksport, så kan vi fjerne denne koden.
+    fullførte_spørreundersøkelser["completion_date"] = fullførte_spørreundersøkelser[
+        "fullfort"
+    ].fillna(fullførte_spørreundersøkelser["endret"])
 
     # Convert to datetime
-    completed_df["completion_date"] = pd.to_datetime(completed_df["completion_date"])
+    fullførte_spørreundersøkelser["completion_date"] = pd.to_datetime(
+        fullførte_spørreundersøkelser["completion_date"]
+    )
 
     # Sort by completion date
-    completed_df = completed_df.sort_values("completion_date")
+    fullførte_spørreundersøkelser: pd.DataFrame = (
+        fullførte_spørreundersøkelser.sort_values("completion_date")
+    )
 
     # Group by week and count occurrences
-    weekly_counts = completed_df.resample("W-MON", on="completion_date").size()
+    weekly_counts: pd.Series[int] = fullførte_spørreundersøkelser.resample(
+        "W-MON", on="completion_date"
+    ).size()
 
     # Reset index to get a dataframe with date and count columns
-    weekly_counts_df = weekly_counts.reset_index()
+    weekly_counts_df: pd.DataFrame = weekly_counts.reset_index()
 
     # Add week number and year columns
     weekly_counts_df["week_num"] = weekly_counts_df["completion_date"].dt.isocalendar()[
@@ -195,13 +184,12 @@ def plot_gjennomførte_spørreundersøkelser_over_tid(
             range=[
                 0,
                 max(weekly_counts_df[0].max() * 1.1, 3),
-            ],  # Ensures minimum height
+            ],
         ),
-        bargap=0.5,  # Controls space between bars (0-1)
-        width=850,  # Fixed width for the entire plot
+        bargap=0.5,
+        width=width,
     )
 
-    # Add annotation for unofficial statistics
     return annotate_ikke_offisiell_statistikk(fig, y=1.15, color="red", weight="bold")
 
 
@@ -304,7 +292,7 @@ def plot_tid_mellom_hendelser(
 
     # Oppdater layout med aksetitler og range for plass til annotasjoner
     fig.update_layout(
-        xaxis_title=f"Tid fra samarbeid ble opprettet til første {hendelse_navn.lower()} ble gjennomført (dager)",
+        xaxis_title=f"Tid fra samarbeid ble opprettet til første {hendelse_navn.lower()} ble gjennomført",
         yaxis_title="Antall samarbeid",
         bargap=0.04,
         width=width,

@@ -114,7 +114,7 @@ def plot_samarbeidsplaner_etter_status(
     )
 
     fig.update_layout(
-        xaxis_title="Antall planer med undertema inkludert",
+        xaxis_title="Antall ganger et undertema er lagt til i en samarbeidsplan",
         barmode="stack",
         width=width,
         bargap=0.04,
