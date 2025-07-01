@@ -123,13 +123,23 @@ def split_data_statistikk(
 
     # Split data_statistikk inn i data_status og data_eierskap
     eierskap_mask = data_statistikk["hendelse"] == "TA_EIERSKAP_I_SAK"
-    prosess_mask = data_statistikk["hendelse"].isin(
-        ["NY_PROSESS", "ENDRE_PROSESS", "SLETT_PROSESS"]
+    # BUG: VI må filtrere bort hendelser som relaterer til samarbeid, da de skaler løkker i sankey-diagram da de ikke fører til statusendring i sak
+    samarbeid_mask = data_statistikk["hendelse"].isin(
+        [
+            "NY_PROSESS",
+            "ENDRE_PROSESS",
+            "SLETT_PROSESS",
+            "FULLFØR_PROSESS",
+            "FULLFØR_PROSESS_MASKINELT_PÅ_EN_FULLFØRT_SAK",
+            "AVBRYT_PROSESS",
+        ]
     )
 
     data_eierskap = data_statistikk[eierskap_mask].reset_index(drop=True)
-    data_prosess = data_statistikk[prosess_mask].reset_index(drop=True)
-    data_status = data_statistikk[~eierskap_mask & ~prosess_mask].reset_index(drop=True)
+    data_prosess = data_statistikk[samarbeid_mask].reset_index(drop=True)
+    data_status = data_statistikk[~eierskap_mask & ~samarbeid_mask].reset_index(
+        drop=True
+    )
 
     return preprocess_data_status(data_status), data_eierskap, data_prosess
 

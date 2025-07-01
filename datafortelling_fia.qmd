@@ -51,13 +51,23 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
 
-## Statusflyt det siste 12 månedene
+## Statusflyt de siste 2 årene
+Grafen viser statusflyten for alle saker opprettet de siste 24 månedene (730 dager). Den illustrerer hvordan en sak endrer status fra den blir opprettet, til den avsluttes.
+
+::: {.callout-tip}
+## Obs!
 En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
+:::
 
 ```{python}
 from src.plots.statistikk import statusflyt
-from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
-data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_status)
+from datetime import datetime, timedelta
+
+saker_opprettet_for_2_år_siden = data_status[
+    data_status["opprettetTidspunkt"] < (datetime.now() - timedelta(days=730))
+]["saksnummer"].unique()
+data_input = data_status[~data_status["saksnummer"].isin(saker_opprettet_for_2_år_siden)]
+
 statusflyt(data_input)
 ```
 
@@ -118,6 +128,8 @@ virksomhetsprofil(data_input)
 Saker som ble satt til "Ikke aktuell" i de siste 365 dagene.\
 
 ```{python}
+from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
+
 data_input = data_status[data_status.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
 data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
 virksomhetsprofil(data_input)

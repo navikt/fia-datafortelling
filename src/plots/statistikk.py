@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pandas as pd
 import plotly.graph_objects as go
+from plotly.colors import hex_to_rgb
 from plotly.subplots import make_subplots
 
 from src.utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
@@ -369,10 +370,36 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
     return annotate_ikke_offisiell_statistikk(fig)
 
 
-def statusflyt(data_status: pd.DataFrame) -> go.Figure:
-    # Fjern slettede saker
-    data_status_uslettet = data_status[data_status.siste_status != "SLETTET"]
-    statusordre_uslettet = statusordre[:-1]
+def hexfarge_til_rgba(hex_farge: str, alpha: float) -> str:
+    r, g, b = hex_to_rgb(hex_farge)
+    return f"rgba({r}, {g}, {b}, {alpha})"
+
+
+def statusflyt(
+    data_status: pd.DataFrame,
+    farger_nodes: dict[str, str] = {
+        "Alle saker": "#828bfb",
+        "Vurderes": "#f68282",
+        "Kontaktes": "#47dbf5",
+        "Kartlegges": "#ffd799",
+        "Vi bistår": "#bb82fb",
+        "Fullført": "#33d6ab",
+        "Ikke aktuell": "#f27762",
+    },
+    farger_links: dict[str, str] = {
+        "Alle saker": "#cccccc",
+        "Vurderes": "#cccccc",
+        "Kontaktes": "#cccccc",
+        "Kartlegges": "#cccccc",
+        "Vi bistår": "#cccccc",
+        "Fullført": "#33d6ab",
+        "Ikke aktuell": "#f27762",
+    },
+) -> go.Figure:
+    data_status_uslettet: pd.DataFrame = data_status[
+        data_status["siste_status"] != "SLETTET"
+    ]
+    statusordre_uslettet: list[str] = [x for x in statusordre if x != "SLETTET"]
 
     status_indexes = dict(zip(statusordre_uslettet, range(len(statusordre_uslettet))))
     status_endringer = data_status_uslettet.value_counts(["forrige_status", "status"])
@@ -393,37 +420,6 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
     for node, total in node_plus.items():
         label_with_value.append(f"{status_label[node]} ({total})")
 
-    farge_vurderes = "246, 130, 130"
-    farge_fullført = "51, 214, 171"
-    farge_kartelgges = "255, 215, 153"
-    farge_vi_bistår = "187, 130, 251"
-    farge_kontaktes = "71, 219, 245"
-    farge_ikke_aktuell = "242, 119, 98"
-    farge_alle_saker = "130, 139, 251"
-
-    alpha = 1
-    farge_dict = {
-        "Alle saker": f"rgba({farge_alle_saker}, {alpha})",
-        "Vurderes": f"rgba({farge_vurderes}, {alpha})",
-        "Kontaktes": f"rgba({farge_kontaktes}, {alpha})",
-        "Kartlegges": f"rgba({farge_kartelgges}, {alpha})",
-        "Vi bistår": f"rgba({farge_vi_bistår}, {alpha})",
-        "Fullført": f"rgba({farge_fullført}, {alpha})",
-        "Ikke aktuell": f"rgba({farge_ikke_aktuell}, {alpha})",
-    }
-
-    alpha = 0.4
-    gråfarge = "204, 204, 204"
-    farge_dict_links = {
-        "Alle saker": f"rgba({gråfarge}, {alpha})",
-        "Vurderes": f"rgba({gråfarge}, {alpha})",
-        "Kontaktes": f"rgba({gråfarge}, {alpha})",
-        "Kartlegges": f"rgba({gråfarge}, {alpha})",
-        "Vi bistår": f"rgba({gråfarge}, {alpha})",
-        "Fullført": f"rgba({farge_fullført}, {alpha})",
-        "Ikke aktuell": f"rgba({farge_ikke_aktuell}, {alpha})",
-    }
-
     target_status_label = [status_label[i] for i in target_status]
 
     fig = go.Figure()
@@ -433,17 +429,20 @@ def statusflyt(data_status: pd.DataFrame) -> go.Figure:
                 # pad=200,
                 thickness=10,
                 label=label_with_value,
-                color=[farge_dict[status] for status in status_label],
+                color=[
+                    hexfarge_til_rgba(farger_nodes[status], 1)
+                    for status in status_label
+                ],
                 # node position in the open interval (0, 1)
                 x=[0.02, 0.2, 0.4, 0.6, 0.8, 0.98, 0.98],
-                y=[0.5, 0.5, 0.55, 0.6, 0.6, 0.7, 0.14],
+                y=[0.5, 0.5, 0.55, 0.6, 0.6, 0.7, 0.20],
             ),
             link=dict(
                 source=source_status,
                 target=target_status,
                 value=count_endringer,
                 color=[
-                    farge_dict_links[target_status]
+                    hexfarge_til_rgba(farger_links[target_status], 0.4)
                     for target_status in target_status_label
                 ],
             ),
@@ -565,6 +564,7 @@ def median_og_gjennomsnitt_av_tid_mellom_statusendringer(
         xaxis_title="Endringstidspunkt",
         yaxis_title="Antall dager",
     )
+
     fig.update_yaxes(title_text="Antall saker", secondary_y=True)
 
     return annotate_ikke_offisiell_statistikk(fig)
