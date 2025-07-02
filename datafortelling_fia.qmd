@@ -52,7 +52,7 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
 
 ## Statusflyt de siste 2 årene
-Grafen viser statusflyten for alle saker opprettet de siste 24 månedene (730 dager). Den illustrerer hvordan en sak endrer status fra den blir opprettet, til den avsluttes.
+Grafen viser statusflyten for alle saker opprettet de siste 24 månedene (730 dager). Den illustrerer hvordan en sak endrer status fra den blir opprettet, til den avsluttes. "Alle-saker" viser kun saker som har vært opprettet i Fia av en superbruker, og ikke alle virksomheter i Norge eller resultatområdet.
 
 ::: {.callout-tip}
 ## Obs!
