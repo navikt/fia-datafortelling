@@ -173,7 +173,7 @@ ruff format
 for å formatere koden.
 
 ## Oppdatering av Python
-Ved oppdatering av Python må versjonen oppdateres flere steder. Python sin siste versjon finner du [her](https://www.python.org/downloads/).
+Ved oppdatering av Python må versjonstallet oppdateres flere steder. Python sin siste versjon finner du [her](https://www.python.org/downloads/).
 
 Om du vil oppdatere versjonen av python bør den oppdateres i:
 1. [.python-version](.python-version) (Hvilken python versjon som vil bli brukt av uv og må oppdateres ved versjonsendring)
@@ -183,29 +183,14 @@ Om du vil oppdatere versjonen av python bør den oppdateres i:
 
 ## Oppdatering av avhengigheter
 
-Akkurat nå *(Sist oppdatert 15.01.2025)* er det ikke veldig lett å se hvilke avhengigheter det finnes oppdateringer innebygd i uv. Man kan oppdatere lock filen innenfor begrensningene satt i [pyproject.toml](pyproject.toml) ved å bruke `uv lock --upgrade`.
-
-En mulig bedre måte å oppdatere avhengigheter er å pinne alle versjoner i [pyproject.toml](pyproject.toml), feks:
-```
-dependencies = [
-    "pandas==2.2.3",
-    "plotly==5.23.0",
-]
-```
-Da kan man se hvilke avhengigheter det finnes oppdateringer til ved å bruke:
-```bash
-uv pip list --outdated
-```
-Endre pinned versjon i [pyproject.toml](pyproject.toml) til ny versjon og bruke:
-```bash
-uv sync
-```
-til å oppdatere versjonen.
-
 > [!Tip]
-> Om `uv pip list --outdated` viser en indirekte avhengighet som ikke ligger i pyproject.toml (men er i `uv tree`) bør disse kunne oppgraderes med `uv lock --upgrade`
+> kjør `uv tree` for oversikt over alle avhengigheter.
 
-Dependabot støtter desverre ikke uv.lock-filen enda, men det er planlagt [for første kvartal (Jan - Mar, 2025)](https://github.com/dependabot/dependabot-core/issues/10478)
+1. Se etter utdaterte avhengigheter med: `uv pip list --outdated`
+2. Oppdater disse avhengighetene i [pyproject.toml](pyproject.toml) til nyeste versjon.
+3. Kjør `uv sync --upgrade` for å oppdatere lock-filen og installere de nye avhengighetene, også indirekte avhengigheter.
+4. Kjør datafortellingene for å sjekke at de fortsatt fungerer som forventet.
+
 
 # Henvendelser
 Spørsmål knyttet til koden eller prosjektet kan stilles som et [issue her på GitHub](https://github.com/navikt/fia-datafortelling/issues).
