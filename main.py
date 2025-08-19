@@ -9,11 +9,11 @@ logging.basicConfig(
 )
 
 
-def render_quarto(file_to_render: str):
+def render_quarto(file_to_render: str) -> None:
     logging.info("Kjører quarto render for forside til datafortellingene")
     try:
         result = subprocess.run(
-            ["quarto", "render", file_to_render + ".qmd"],
+            ["uv", "run", "quarto", "render", file_to_render + ".qmd"],
             check=True,
             capture_output=True,
             text=True,
@@ -24,13 +24,15 @@ def render_quarto(file_to_render: str):
         raise
 
 
-def render_samarbeid_per_resultatområde(resultatområde: str):
+def render_samarbeid_per_resultatområde(resultatområde: str) -> None:
     logging.info(
         f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
     )
     try:
         result = subprocess.run(
             [
+                "uv",
+                "run",
                 "quarto",
                 "render",
                 f"fia_{resultatområde}_samarbeid.qmd",
@@ -46,13 +48,15 @@ def render_samarbeid_per_resultatområde(resultatområde: str):
         raise
 
 
-def render_samarbeidsplan_per_resultatområde(resultatområde: str):
+def render_samarbeidsplan_per_resultatområde(resultatområde: str) -> None:
     logging.info(
         f"Kjører quarto render for datafortelling om samarbeidsplaner - {resultatområde}"
     )
     try:
         result = subprocess.run(
             [
+                "uv",
+                "run",
                 "quarto",
                 "render",
                 f"fia_{resultatområde}_samarbeidsplan.qmd",
@@ -68,11 +72,13 @@ def render_samarbeidsplan_per_resultatområde(resultatområde: str):
         raise
 
 
-def render_fia_per_resultatområde(resultatområde: str):
+def render_fia_per_resultatområde(resultatområde: str) -> None:
     logging.info(f"Kjører quarto render for datafortelling om Fia - {resultatområde}")
     try:
         result = subprocess.run(
             [
+                "uv",
+                "run",
                 "quarto",
                 "render",
                 f"fia_{resultatområde}.qmd",
@@ -88,11 +94,13 @@ def render_fia_per_resultatområde(resultatområde: str):
         raise
 
 
-def render_ia_tjenester_per_resultatområde(resultatområde: str):
+def render_ia_tjenester_per_resultatområde(resultatområde: str) -> None:
     try:
         logging.info("IA-tjenester")
         result = subprocess.run(
             [
+                "uv",
+                "run",
                 "quarto",
                 "render",
                 f"ia_tjenester_{resultatområde}.qmd",
@@ -108,21 +116,20 @@ def render_ia_tjenester_per_resultatområde(resultatområde: str):
         raise
 
 
-def update_quarto(files_to_upload: list[str]):
-    multipart_form_data = {}
+def update_quarto(files_to_upload: list[str]) -> None:
+    multipart_form_data: dict[str, tuple[str, bytes]] = {}
     for file_path in files_to_upload:
-        file_name = file_path.replace("pages/", "", 1)
+        file_name: str = file_path.replace("pages/", "", 1)
         with open(file_path, "rb") as file:
-            file_contents = file.read()
+            file_contents: bytes = file.read()
             multipart_form_data[file_name] = (file_name, file_contents)
             logging.info(f"Fil klar for opplasting: {file_name}")
 
     logging.info("multipart form data prepared.")
 
     try:
-        # Send the request with all files in the dictionary
-        response = requests.put(
-            f"https://{os.environ['NADA_ENV']}/quarto/update/{os.environ['QUARTO_ID']}",
+        response: requests.Response = requests.put(
+            url=f"https://{os.environ['NADA_ENV']}/quarto/update/{os.environ['QUARTO_ID']}",
             headers={"Authorization": f"Bearer {os.environ['QUARTO_TOKEN']}"},
             files=multipart_form_data,
         )
@@ -158,27 +165,27 @@ if __name__ == "__main__":
             render_samarbeidsplan_per_resultatområde(resultatområde=resultatområde)
 
         logging.info("Henter filer å laste opp til NADA")
-        total_file_size_bytes = 0
-        # Gå gjennom alle filer i mappen og legg dem til i en liste
-        files_to_upload = []
+
+        total_file_size_bytes: int = 0
+        files_to_upload: list[str] = []
         for root, dirs, files in os.walk("pages"):
             for file in files:
                 files_to_upload.append(os.path.join(root, file))
-                file_size_bytes = os.path.getsize(os.path.join(root, file))
+                file_size_bytes: int = os.path.getsize(os.path.join(root, file))
                 total_file_size_bytes += file_size_bytes
-                file_size_kb = file_size_bytes / 1024
+                file_size_kb: float = file_size_bytes / 1024
                 logging.info(
                     f"Fil '{os.path.join(root, file)}' på {file_size_kb:.2f} KB lagt til i liste for opplasting"
                 )
 
-        file_size_mb = total_file_size_bytes / 1024 / 1024
+        file_size_mb: float = total_file_size_bytes / 1024 / 1024
         logging.info(
             f"Fant {len(files_to_upload)} filer å laste opp på totalt {file_size_mb:.2f} MB."
         )
 
         if total_file_size_bytes > 100000000:
             logging.warning(
-                f"Total filstørrelse: {file_size_mb:.2f} MB overstiger 100 MB. Opplasting vil sannsynligvis feile pga begrensning i NADA."
+                f"Total filstørrelse: {file_size_mb:.2f} MB overstiger 100 MB. Opplasting vil sannsynligvis feile pga begrensning i NADA. Sjekk at vi ikke embedder resources"
             )
 
         update_quarto(files_to_upload=files_to_upload)
