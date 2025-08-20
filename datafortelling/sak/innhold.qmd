@@ -1,0 +1,215 @@
+```{python}
+# Definer prosjekt og dataset
+PROJECT = "pia-prod-85b2"
+DATASET = "pia_bigquery_sink_v1_dataset_prod"
+```
+
+```{python}
+# Hent data om IA-saker
+import pandas as pd
+from datafortelling_utils.dataloader import last_inn_data_statistikk
+data_statistikk = last_inn_data_statistikk(
+    project=PROJECT,
+    dataset=DATASET,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om samarbeid
+from datafortelling_utils.dataloader import last_inn_samarbeid
+data_samarbeid = last_inn_samarbeid(
+    project=PROJECT,
+    dataset=DATASET,
+    data_statistikk=data_statistikk,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om spørreundersøkelser
+from datafortelling_utils.dataloader import last_inn_spørreundersøkelser
+data_spørreundersøkelse = last_inn_spørreundersøkelser(
+    project=PROJECT,
+    dataset=DATASET,
+    data_samarbeid=data_samarbeid,
+    resultatområde=RESULTATOMRÅDE,
+)
+```
+
+```{python}
+# Hent data om statusendringer for saker
+from datafortelling_utils.datahandler import split_data_statistikk
+data_status, _, _ = split_data_statistikk(data_statistikk)
+```
+
+```{python}
+# Hent data om ikke aktuelle saker
+from datafortelling_utils.datahandler import explode_ikke_aktuell_begrunnelse
+ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
+```
+
+
+## Statusflyt de siste 2 årene
+Grafen viser statusflyten for alle saker opprettet de siste 24 månedene (730 dager). Den illustrerer hvordan en sak endrer status fra den blir opprettet, til den avsluttes. "Alle-saker" viser kun saker som har vært opprettet i Fia av en superbruker, og ikke alle virksomheter i Norge eller resultatområdet.
+
+::: {.callout-tip}
+## Obs!
+En virksomhet kan bare ha én aktiv sak om gangen, men flere saker over tid.
+:::
+
+```{python}
+from datafortelling_utils.statistikk import statusflyt
+from datetime import datetime, timedelta
+
+saker_opprettet_for_2_år_siden = data_status[
+    data_status["opprettetTidspunkt"] < (datetime.now() - timedelta(days=730))
+]["saksnummer"].unique()
+data_input = data_status[~data_status["saksnummer"].isin(saker_opprettet_for_2_år_siden)]
+
+statusflyt(data_input)
+```
+
+
+## Antall saker per status
+::: {.panel-tabset}
+### Nåsituasjon
+```{python}
+from datafortelling_utils.statistikk import antall_saker_per_status
+antall_saker_per_status(data_status[data_status.aktiv_sak])
+```
+
+### Historikk
+Vi filtrerer bort saker som ble satt til "Fullført", "Ikke aktuell", eller "Slettet" for over ett år siden.
+```{python}
+from datafortelling_utils.statistikk import saker_per_status_per_måned
+saker_per_status_per_måned(data_status)
+```
+
+### Gjennomstrømmingstall
+Viser hvor mange saker som går inn og ut av status **Vi bistår**.
+Fra status Vi bistår er det mulig å skifte til enten Fullført eller Ikke aktuell.
+```{python}
+from datafortelling_utils.statistikk import gjennomstrømmingstall
+gjennomstrømmingstall(data_status)
+```
+
+:::
+
+
+## Virksomhetsprofil
+
+Her vises profilen til virksomheter som er registrert i Fia. Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+
+::: {.callout-tip}
+## Obs!
+Alle tallene er basert på informasjon vi hadde ved siste statusendring.
+:::
+
+::: {.panel-tabset}
+
+## Før bistand
+Saker med nåværende status "Vurderes", "Kontaktes" eller "Kartlegges".\
+```{python}
+from datafortelling_utils.statistikk import virksomhetsprofil
+data_input = data_status[data_status.siste_status.isin(["VURDERES", "KONTAKTES", "KARTLEGGES"])]
+virksomhetsprofil(data_input)
+```
+
+## I bistand
+Saker med nåværende status "Vi bistår".\
+```{python}
+data_input = data_status[data_status.siste_status=="VI_BISTÅR"]
+virksomhetsprofil(data_input)
+```
+
+## Ikke aktuell
+Saker som ble satt til "Ikke aktuell" i de siste 365 dagene.\
+
+```{python}
+from datafortelling_utils.datahandler import filtrer_bort_saker_på_avsluttet_tidspunkt
+
+data_input = data_status[data_status.siste_status=="IKKE_AKTUELL"].drop_duplicates("saksnummer", keep="last")
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
+virksomhetsprofil(data_input)
+```
+
+## Fullført
+Saker som ble satt til "Fullført" i de siste 365 dagene.\
+
+```{python}
+data_input = data_status[data_status.siste_status=="FULLFØRT"].drop_duplicates("saksnummer", keep="last")
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(data_input)
+virksomhetsprofil(data_input)
+```
+
+:::
+
+## Begrunnelse på ikke aktuell
+
+
+Her vises begrunnelser på hvorfor saker er satt til "Ikke aktuell". En sak kan ha flere begrunnelser, det betyr at summen kan bli over 100%.
+
+
+```{python}
+from datafortelling_utils.helper import ikke_aktuell_begrunnelse_sortering
+from datafortelling_utils.konstanter import ikkeaktuell_hovedgrunn
+
+begrunnelse_sortering = ikke_aktuell_begrunnelse_sortering(ikke_aktuell)
+bare_dagens_begrunnelser = ikke_aktuell.ikkeAktuelBegrunnelse.isin(ikkeaktuell_hovedgrunn.keys())
+```
+
+::: {.panel-tabset}
+
+## Fra alle mulige statuser
+```{python}
+from datafortelling_utils.leveranse import begrunnelse_ikke_aktuell
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(ikke_aktuell[bare_dagens_begrunnelser])
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
+```
+
+## Fra Vurderes
+```{python}
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
+    ikke_aktuell[
+        bare_dagens_begrunnelser &
+        (ikke_aktuell.forrige_status == "VURDERES")
+    ]
+)
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
+```
+
+## Fra Kontaktes
+```{python}
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
+    ikke_aktuell[
+        bare_dagens_begrunnelser &
+        (ikke_aktuell.forrige_status == "KONTAKTES")
+    ]
+)
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
+```
+
+## Fra Kartlegges
+```{python}
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
+    ikke_aktuell[
+        bare_dagens_begrunnelser &
+        (ikke_aktuell.forrige_status == "KARTLEGGES")
+    ]
+)
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
+```
+
+## Fra Vi bistår
+```{python}
+data_input = filtrer_bort_saker_på_avsluttet_tidspunkt(
+    ikke_aktuell[
+        bare_dagens_begrunnelser &
+        (ikke_aktuell.forrige_status == "VI_BISTÅR")
+    ]
+)
+begrunnelse_ikke_aktuell(data_input, begrunnelse_sortering)
+```
+
+:::

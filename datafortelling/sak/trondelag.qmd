@@ -1,0 +1,18 @@
+---
+title: Saksflyt i Fia - Trøndelag
+title-block-banner: true
+title-block-banner-color: white
+embed-resources: false
+---
+
+
+```{python}
+# Definerer resultatområde
+%load_ext autoreload
+%autoreload 2
+
+from datafortelling_utils.konstanter import Resultatområde
+RESULTATOMRÅDE = Resultatområde.TRØNDELAG
+```
+
+{{< include innhold.qmd >}}

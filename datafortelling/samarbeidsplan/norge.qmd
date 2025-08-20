@@ -1,0 +1,18 @@
+---
+title: Samarbeidsplan i Fia - Hele Norge
+title-block-banner: true
+title-block-banner-color: white
+embed-resources: false
+---
+
+
+```{python}
+# Definerer resultatområde
+%load_ext autoreload
+%autoreload 2
+
+RESULTATOMRÅDE = None
+```
+
+{{< include innhold.qmd >}}
+

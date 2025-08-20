@@ -10,14 +10,14 @@ embed-resources: false
 import os
 import pandas as pd
 
-from src.utils.datahandler import (
+from datafortelling_utils.datahandler import (
     load_data_deduplicate,
     split_data_statistikk,
     beregn_intervall_tid_siden_siste_endring,
     explode_ikke_aktuell_begrunnelse,
 )
 
-from src.utils.dataloader import last_inn_data_statistikk, last_inn_samarbeid
+from datafortelling_utils.dataloader import last_inn_data_statistikk, last_inn_samarbeid
 
 PROJECT = "pia-prod-85b2"
 DATASET = "pia_bigquery_sink_v1_dataset_prod"
@@ -25,7 +25,6 @@ DATASET = "pia_bigquery_sink_v1_dataset_prod"
 data_statistikk = last_inn_data_statistikk(
     project=PROJECT,
     dataset=DATASET,
-    adm_enheter=pd.read_csv("data/administrative_enheter.csv", dtype=str),
 )
 
 
@@ -38,7 +37,7 @@ ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 
 ## Antall saker per status over tid
 ```{python}
-from src.plots.statistikk import saker_per_status_over_tid
+from datafortelling_utils.statistikk import saker_per_status_over_tid
 saker_per_status_over_tid(data_status)
 ```
 
@@ -57,13 +56,13 @@ data_status = beregn_intervall_tid_siden_siste_endring(data_status)
 ::: {.panel-tabset}
 ## Til Kontaktes
 ```{python}
-from src.plots.statistikk import dager_mellom_statusendringer
+from datafortelling_utils.statistikk import dager_mellom_statusendringer
 dager_mellom_statusendringer(
     data_status[(data_status.forrige_status=="VURDERES") & (data_status.status=="KONTAKTES")]
 )
 ```
 ```{python}
-from src.plots.statistikk import median_og_gjennomsnitt_av_tid_mellom_statusendringer
+from datafortelling_utils.statistikk import median_og_gjennomsnitt_av_tid_mellom_statusendringer
 median_og_gjennomsnitt_av_tid_mellom_statusendringer(
     data_status[(data_status.forrige_status=="VURDERES") & (data_status.status=="KONTAKTES")]
 )
@@ -220,13 +219,13 @@ median_og_gjennomsnitt_av_tid_mellom_statusendringer(
 Vise antall saker i status "Vi bistår" eller "Fullført" per eier. Gjelder bare siste eier per sak.
 
 ```{python}
-from src.plots.statistikk import antall_saker_per_eier
+from datafortelling_utils.statistikk import antall_saker_per_eier
 antall_saker_per_eier(data_status)
 ```
 
 
 ## Antall fullførte saker per måned
 ```{python}
-from src.plots.statistikk import fullført_per_måned
+from datafortelling_utils.statistikk import fullført_per_måned
 fullført_per_måned(data_status)
 ```

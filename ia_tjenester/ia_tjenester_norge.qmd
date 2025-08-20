@@ -13,7 +13,7 @@ embed-resources: false
 import os
 import pandas as pd
 
-from src.utils.datahandler import (
+from datafortelling_utils.datahandler import (
     load_data_deduplicate,
     preprocess_data_statistikk,
     split_data_statistikk,
@@ -22,7 +22,7 @@ from src.utils.datahandler import (
     hent_leveranse_sistestatus,
     filtrer_bort_saker_på_avsluttet_tidspunkt,
 )
-from src.plots.leveranse import (
+from datafortelling_utils.leveranse import (
     antall_leveranser_per_tjeneste,
     leveranse_tjeneste_per_maaned,
 )

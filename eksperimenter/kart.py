@@ -4,7 +4,7 @@ import geojson_rewind
 import geopandas as gpd
 import plotly.express as px
 
-from src.utils.helper import annotate_ikke_offisiell_statistikk
+from datafortelling_utils.helper import annotate_ikke_offisiell_statistikk
 
 
 def last_kart():

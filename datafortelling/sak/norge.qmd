@@ -1,0 +1,26 @@
+---
+title: Saksflyt i Fia - Hele Norge
+title-block-banner: true
+title-block-banner-color: white
+embed-resources: false
+---
+```{python}
+# Definerer resultatområde
+%load_ext autoreload
+%autoreload 2
+
+RESULTATOMRÅDE = None  # Resultatområde er ikke relevant for nasjonal statistikk
+```
+
+<!-- Samme som resultatområder: -->
+
+{{< include innhold.qmd >}}
+
+<!-- Kun for Norge: -->
+
+## Antall aktive saker per resultatområde
+```{python}
+from datafortelling_utils.statistikk import aktive_saker_per_kolonne
+
+aktive_saker_per_kolonne(data_status, "resultatomrade")
+```

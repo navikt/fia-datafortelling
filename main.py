@@ -5,118 +5,49 @@ import subprocess
 import requests
 
 logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
 
-def render_quarto(file_to_render: str) -> None:
-    logging.info("Kjører quarto render for forside til datafortellingene")
+def kjør_quarto_render(path_to_file: str) -> None:
+    logging.info(f"Kjører quarto render for {path_to_file}")
     try:
         result = subprocess.run(
-            ["uv", "run", "quarto", "render", file_to_render + ".qmd"],
+            ["quarto", "render", path_to_file],
             check=True,
             capture_output=True,
             text=True,
         )
-        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
+        logging.info(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
         raise
 
 
-def render_samarbeid_per_resultatområde(resultatområde: str) -> None:
+def last_opp_filer_til_nada() -> None:
+    logging.info("Henter filer å laste opp til NADA")
+    total_file_size_bytes: int = 0
+    files_to_upload: list[str] = []
+    for root, _, files in os.walk("pages"):
+        for file in files:
+            files_to_upload.append(os.path.join(root, file))
+            file_size_bytes: int = os.path.getsize(os.path.join(root, file))
+            total_file_size_bytes += file_size_bytes
+            file_size_kb: float = file_size_bytes / 1024
+            logging.info(
+                f"Fil '{os.path.join(root, file)}' på {file_size_kb:.2f} KB lagt til i liste for opplasting"
+            )
+
+    file_size_mb: float = total_file_size_bytes / 1024 / 1024
     logging.info(
-        f"Kjører quarto render for datafortelling om samarbeid - {resultatområde}"
+        f"Fant {len(files_to_upload)} filer å laste opp på totalt {file_size_mb:.2f} MB."
     )
-    try:
-        result = subprocess.run(
-            [
-                "uv",
-                "run",
-                "quarto",
-                "render",
-                f"fia_{resultatområde}_samarbeid.qmd",
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
+
+    if total_file_size_bytes > 100000000:
+        logging.warning(
+            f"Total filstørrelse: {file_size_mb:.2f} MB overstiger 100 MB. Opplasting vil sannsynligvis feile pga begrensning i NADA. Sjekk at vi ikke embedder resources"
         )
 
-        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
-        raise
-
-
-def render_samarbeidsplan_per_resultatområde(resultatområde: str) -> None:
-    logging.info(
-        f"Kjører quarto render for datafortelling om samarbeidsplaner - {resultatområde}"
-    )
-    try:
-        result = subprocess.run(
-            [
-                "uv",
-                "run",
-                "quarto",
-                "render",
-                f"fia_{resultatområde}_samarbeidsplan.qmd",
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-
-        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
-        raise
-
-
-def render_fia_per_resultatområde(resultatområde: str) -> None:
-    logging.info(f"Kjører quarto render for datafortelling om Fia - {resultatområde}")
-    try:
-        result = subprocess.run(
-            [
-                "uv",
-                "run",
-                "quarto",
-                "render",
-                f"fia_{resultatområde}.qmd",
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-
-        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
-        raise
-
-
-def render_ia_tjenester_per_resultatområde(resultatområde: str) -> None:
-    try:
-        logging.info("IA-tjenester")
-        result = subprocess.run(
-            [
-                "uv",
-                "run",
-                "quarto",
-                "render",
-                f"ia_tjenester_{resultatområde}.qmd",
-            ],
-            check=True,
-            capture_output=True,
-            text=True,
-        )
-
-        logging.debug(f"Output fra quarto: \n{result.stdout} \n{result.stderr}")
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Feil ved rendering av quarto dokument: {e.stderr}")
-        raise
-
-
-def update_quarto(files_to_upload: list[str]) -> None:
     multipart_form_data: dict[str, tuple[str, bytes]] = {}
     for file_path in files_to_upload:
         file_name: str = file_path.replace("pages/", "", 1)
@@ -143,7 +74,7 @@ def update_quarto(files_to_upload: list[str]) -> None:
 if __name__ == "__main__":
     logging.info("Starter render av datafortellinger.")
     try:
-        render_quarto(file_to_render="index")
+        kjør_quarto_render("index.qmd")
 
         for resultatområde in [
             "norge",
@@ -160,35 +91,11 @@ if __name__ == "__main__":
             "vestfold_og_telemark",
             "vestland",
         ]:
-            render_fia_per_resultatområde(resultatområde=resultatområde)
-            render_samarbeid_per_resultatområde(resultatområde=resultatområde)
-            render_samarbeidsplan_per_resultatområde(resultatområde=resultatområde)
+            kjør_quarto_render(f"datafortelling/sak/{resultatområde}.qmd")
+            kjør_quarto_render(f"datafortelling/samarbeid/{resultatområde}.qmd")
+            kjør_quarto_render(f"datafortelling/samarbeidsplan/{resultatområde}.qmd")
 
-        logging.info("Henter filer å laste opp til NADA")
-
-        total_file_size_bytes: int = 0
-        files_to_upload: list[str] = []
-        for root, dirs, files in os.walk("pages"):
-            for file in files:
-                files_to_upload.append(os.path.join(root, file))
-                file_size_bytes: int = os.path.getsize(os.path.join(root, file))
-                total_file_size_bytes += file_size_bytes
-                file_size_kb: float = file_size_bytes / 1024
-                logging.info(
-                    f"Fil '{os.path.join(root, file)}' på {file_size_kb:.2f} KB lagt til i liste for opplasting"
-                )
-
-        file_size_mb: float = total_file_size_bytes / 1024 / 1024
-        logging.info(
-            f"Fant {len(files_to_upload)} filer å laste opp på totalt {file_size_mb:.2f} MB."
-        )
-
-        if total_file_size_bytes > 100000000:
-            logging.warning(
-                f"Total filstørrelse: {file_size_mb:.2f} MB overstiger 100 MB. Opplasting vil sannsynligvis feile pga begrensning i NADA. Sjekk at vi ikke embedder resources"
-            )
-
-        update_quarto(files_to_upload=files_to_upload)
+        last_opp_filer_til_nada()
 
     except Exception as e:
         logging.error(f"Script feilet: {e}")

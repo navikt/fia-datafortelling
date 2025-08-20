@@ -1,53 +1,55 @@
 project:
+  execute-dir: project # Ungår problemer med path, execute alltid fra prosjekt (rotmappe) ikke fra f.eks src/quarto/samarbeid om vi renderer en fil i undermapper
   type: website
   output-dir: pages
   render:
     - index.qmd
-    - datakvalitet.qmd
 
-    - datafortelling_fia.qmd
-    - datafortelling_samarbeid.qmd
-    - datafortelling_samarbeidsplan.qmd
+    - datafortelling/sak/innhold.qmd
+    - datafortelling/sak/norge.qmd
+    - datafortelling/sak/agder.qmd
+    - datafortelling/sak/innlandet.qmd
+    - datafortelling/sak/more_og_romsdal.qmd
+    - datafortelling/sak/nordland.qmd
+    - datafortelling/sak/oslo.qmd
+    - datafortelling/sak/ost-viken.qmd
+    - datafortelling/sak/rogaland.qmd
+    - datafortelling/sak/troms_og_finnmark.qmd
+    - datafortelling/sak/trondelag.qmd
+    - datafortelling/sak/vest-viken.qmd
+    - datafortelling/sak/vestfold_og_telemark.qmd
+    - datafortelling/sak/vestland.qmd
 
-    - fia_norge.qmd
-    - fia_norge_samarbeid.qmd
-    - fia_norge_samarbeidsplan.qmd
-    - fia_agder.qmd
-    - fia_agder_samarbeid.qmd
-    - fia_agder_samarbeidsplan.qmd
-    - fia_innlandet.qmd
-    - fia_innlandet_samarbeid.qmd
-    - fia_innlandet_samarbeidsplan.qmd
-    - fia_more_og_romsdal.qmd
-    - fia_more_og_romsdal_samarbeid.qmd
-    - fia_more_og_romsdal_samarbeidsplan.qmd
-    - fia_nordland.qmd
-    - fia_nordland_samarbeid.qmd
-    - fia_nordland_samarbeidsplan.qmd
-    - fia_oslo.qmd
-    - fia_oslo_samarbeid.qmd
-    - fia_oslo_samarbeidsplan.qmd
-    - fia_ost-viken.qmd
-    - fia_ost-viken_samarbeid.qmd
-    - fia_ost-viken_samarbeidsplan.qmd
-    - fia_rogaland.qmd
-    - fia_rogaland_samarbeid.qmd
-    - fia_rogaland_samarbeidsplan.qmd
-    - fia_troms_og_finnmark.qmd
-    - fia_troms_og_finnmark_samarbeid.qmd
-    - fia_troms_og_finnmark_samarbeidsplan.qmd
-    - fia_trondelag.qmd
-    - fia_trondelag_samarbeid.qmd
-    - fia_trondelag_samarbeidsplan.qmd
-    - fia_vest-viken.qmd
-    - fia_vest-viken_samarbeid.qmd
-    - fia_vest-viken_samarbeidsplan.qmd
-    - fia_vestfold_og_telemark.qmd
-    - fia_vestfold_og_telemark_samarbeid.qmd
-    - fia_vestfold_og_telemark_samarbeidsplan.qmd
-    - fia_vestland.qmd
-    - fia_vestland_samarbeid.qmd
-    - fia_vestland_samarbeidsplan.qmd
+    - datafortelling/samarbeid/innhold.qmd
+    - datafortelling/samarbeid/norge.qmd
+    - datafortelling/samarbeid/agder.qmd
+    - datafortelling/samarbeid/innlandet.qmd
+    - datafortelling/samarbeid/more_og_romsdal.qmd
+    - datafortelling/samarbeid/nordland.qmd
+    - datafortelling/samarbeid/oslo.qmd
+    - datafortelling/samarbeid/ost-viken.qmd
+    - datafortelling/samarbeid/rogaland.qmd
+    - datafortelling/samarbeid/troms_og_finnmark.qmd
+    - datafortelling/samarbeid/trondelag.qmd
+    - datafortelling/samarbeid/vest-viken.qmd
+    - datafortelling/samarbeid/vestfold_og_telemark.qmd
+    - datafortelling/samarbeid/vestland.qmd
+
+    - datafortelling/samarbeidsplan/innhold.qmd
+    - datafortelling/samarbeidsplan/norge.qmd
+    - datafortelling/samarbeidsplan/agder.qmd
+    - datafortelling/samarbeidsplan/innlandet.qmd
+    - datafortelling/samarbeidsplan/more_og_romsdal.qmd
+    - datafortelling/samarbeidsplan/nordland.qmd
+    - datafortelling/samarbeidsplan/oslo.qmd
+    - datafortelling/samarbeidsplan/ost-viken.qmd
+    - datafortelling/samarbeidsplan/rogaland.qmd
+    - datafortelling/samarbeidsplan/troms_og_finnmark.qmd
+    - datafortelling/samarbeidsplan/trondelag.qmd
+    - datafortelling/samarbeidsplan/vest-viken.qmd
+    - datafortelling/samarbeidsplan/vestfold_og_telemark.qmd
+    - datafortelling/samarbeidsplan/vestland.qmd
+
 
 date: now
 date-format: "DD.MM.YYYY HH:mm:ss z"
@@ -66,87 +68,87 @@ website:
     left:
       - text: Saksflyt
         menu:
-        - href: fia_norge.qmd
+        - href: datafortelling/sak/norge.qmd
           text: Hele Norge
-        - href: fia_agder.qmd
+        - href: datafortelling/sak/agder.qmd
           text: Agder
-        - href: fia_innlandet.qmd
+        - href: datafortelling/sak/innlandet.qmd
           text: Innlandet
-        - href: fia_more_og_romsdal.qmd
+        - href: datafortelling/sak/more_og_romsdal.qmd
           text: Møre og Romsdal
-        - href: fia_nordland.qmd
+        - href: datafortelling/sak/nordland.qmd
           text: Nordland
-        - href: fia_oslo.qmd
+        - href: datafortelling/sak/oslo.qmd
           text: Oslo
-        - href: fia_ost-viken.qmd
+        - href: datafortelling/sak/ost-viken.qmd
           text: Øst-Viken
-        - href: fia_rogaland.qmd
+        - href: datafortelling/sak/rogaland.qmd
           text: Rogaland
-        - href: fia_troms_og_finnmark.qmd
+        - href: datafortelling/sak/troms_og_finnmark.qmd
           text: Troms og Finnmark
-        - href: fia_trondelag.qmd
+        - href: datafortelling/sak/trondelag.qmd
           text: Trøndelag
-        - href: fia_vest-viken.qmd
+        - href: datafortelling/sak/vest-viken.qmd
           text: Vest-Viken
-        - href: fia_vestfold_og_telemark.qmd
+        - href: datafortelling/sak/vestfold_og_telemark.qmd
           text: Vestfold og Telemark
-        - href: fia_vestland.qmd
+        - href: datafortelling/sak/vestland.qmd
           text: Vestland
       - text: Samarbeid
         menu:
-        - href: fia_norge_samarbeid.qmd
+        - href: datafortelling/samarbeid/norge.qmd
           text: Hele Norge
-        - href: fia_agder_samarbeid.qmd
+        - href: datafortelling/samarbeid/agder.qmd
           text: Agder
-        - href: fia_innlandet_samarbeid.qmd
+        - href: datafortelling/samarbeid/innlandet.qmd
           text: Innlandet
-        - href: fia_more_og_romsdal_samarbeid.qmd
+        - href: datafortelling/samarbeid/more_og_romsdal.qmd
           text: Møre og Romsdal
-        - href: fia_nordland_samarbeid.qmd
+        - href: datafortelling/samarbeid/nordland.qmd
           text: Nordland
-        - href: fia_oslo_samarbeid.qmd
+        - href: datafortelling/samarbeid/oslo.qmd
           text: Oslo
-        - href: fia_ost-viken_samarbeid.qmd
+        - href: datafortelling/samarbeid/ost-viken.qmd
           text: Øst-Viken
-        - href: fia_rogaland_samarbeid.qmd
+        - href: datafortelling/samarbeid/rogaland.qmd
           text: Rogaland
-        - href: fia_troms_og_finnmark_samarbeid.qmd
+        - href: datafortelling/samarbeid/troms_og_finnmark.qmd
           text: Troms og Finnmark
-        - href: fia_trondelag_samarbeid.qmd
+        - href: datafortelling/samarbeid/trondelag.qmd
           text: Trøndelag
-        - href: fia_vest-viken_samarbeid.qmd
+        - href: datafortelling/samarbeid/vest-viken.qmd
           text: Vest-Viken
-        - href: fia_vestfold_og_telemark_samarbeid.qmd
+        - href: datafortelling/samarbeid/vestfold_og_telemark.qmd
           text: Vestfold og Telemark
-        - href: fia_vestland_samarbeid.qmd
+        - href: datafortelling/samarbeid/vestland.qmd
           text: Vestland
       - text: Samarbeidsplan
         menu:
-        - href: fia_norge_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/norge.qmd
           text: Hele Norge
-        - href: fia_agder_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/agder.qmd
           text: Agder
-        - href: fia_innlandet_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/innlandet.qmd
           text: Innlandet
-        - href: fia_more_og_romsdal_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/more_og_romsdal.qmd
           text: Møre og Romsdal
-        - href: fia_nordland_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/nordland.qmd
           text: Nordland
-        - href: fia_oslo_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/oslo.qmd
           text: Oslo
-        - href: fia_ost-viken_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/ost-viken.qmd
           text: Øst-Viken
-        - href: fia_rogaland_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/rogaland.qmd
           text: Rogaland
-        - href: fia_troms_og_finnmark_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/troms_og_finnmark.qmd
           text: Troms og Finnmark
-        - href: fia_trondelag_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/trondelag.qmd
           text: Trøndelag
-        - href: fia_vest-viken_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/vest-viken.qmd
           text: Vest-Viken
-        - href: fia_vestfold_og_telemark_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/vestfold_og_telemark.qmd
           text: Vestfold og Telemark
-        - href: fia_vestland_samarbeidsplan.qmd
+        - href: datafortelling/samarbeidsplan/vestland.qmd
           text: Vestland
     right:
       - icon: people-fill

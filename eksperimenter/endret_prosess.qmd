@@ -10,7 +10,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from google.cloud.bigquery import Client
 
-from src.utils.datahandler import load_data_deduplicate
+from datafortelling_utils.datahandler import load_data_deduplicate
 
 project = "pia-prod-85b2"
 bq_client = Client(project)

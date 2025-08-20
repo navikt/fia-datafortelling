@@ -1,5 +1,5 @@
 [project]
-name = "src"
+name = "datafortelling_utils"
 version = "0.1.0"
 description = "Datafortelling basert på data fra Fia"
 authors = [{name="NAV-IT"}]
@@ -20,12 +20,13 @@ dependencies = [
     "pandas==2.3.1",
     "papermill==2.6.0",
     "plotly==6.2.0",
+    "quarto-cli==1.7.33",
     "requests==2.32.4",
 ]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.8.12,<0.9.0"]
+build-backend = "uv_build"
 
 [project.urls]
 Repository = "https://github.com/navikt/fia-datafortelling.git"
