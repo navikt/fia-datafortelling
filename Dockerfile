@@ -67,8 +67,6 @@ COPY src/ /src
 
 # Datafortellinger
 COPY datafortelling/ datafortelling/
-# Delte quarto filer
-COPY includes/ includes/
 # Assets (logo)
 COPY assets/ assets/
 
