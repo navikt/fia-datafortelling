@@ -182,13 +182,9 @@ Om du vil oppdatere versjonen av python bør den oppdateres i:
 4. Kjør `uv lock --check` for å sjekke om lock-filen er oppdatert, om ikke vil `uv sync`oppdatere den.
 
 ## Oppdatering av avhengigheter
-
-> [!Tip]
-> kjør `uv tree` for oversikt over alle avhengigheter.
-
-1. Se etter utdaterte avhengigheter med: `uv pip list --outdated`
+1. Se etter utdaterte avhengigheter med: `uv tree --outdated --depth 1` 
 2. Oppdater disse avhengighetene i [pyproject.toml](pyproject.toml) til nyeste versjon.
-3. Kjør `uv sync --upgrade` for å oppdatere lock-filen og installere de nye avhengighetene, også indirekte avhengigheter.
+3. Kjør `uv sync --upgrade` for å oppdatere lock-filen og installere de nye avhengighetene, dette oppdaterer også indirekte avhengigheter. Man kan se alle med `uv tree --outdated`
 4. Kjør datafortellingene for å sjekke at de fortsatt fungerer som forventet.
 
 
