@@ -37,9 +37,3 @@ spec:
       value: {{ nada_env }}
     - name: QUARTO_ID
       value: {{ quarto_id }}
-    - name: QUARTO_ID_TEAMPIA
-      value: {{ quarto_id_teampia }}
-    - name: GCP_PROJECT
-      value: {{ project }}
-    - name: DATASET
-      value: {{ dataset }}

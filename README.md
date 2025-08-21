@@ -1,5 +1,4 @@
 # Fia datafortelling
-## Beskrivelse
 Datafortelling basert på data fra fagsystemet [Fia](https://github.com/navikt/lydia-api).
 Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writing-workflows/about-workflows) og deployes til NAIS som en [NAIS job](https://docs.nais.io/workloads/job/).
 
@@ -7,8 +6,8 @@ Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writi
 - [Oppsett](#oppsett)
 	- [Installer Quarto](#installer-quarto)
 	- [Installer uv](#installer-uv)
-	- [Sett opp virtuelt miljø](#sett-opp-virtuelt-miljø)
 	- [Git pre-commit hooks](#git-pre-commit-hooks)
+	- [Sett opp virtuelt miljø](#sett-opp-virtuelt-miljø)
 - [Kjør prosjektet](#kjør-prosjektet)
 - [Vedlikehold og videreutvikling](#vedlikehold-og-videreutvikling)
 	- [Oppdatering av avhengigheter](#oppdatering-av-avhengigheter)
@@ -20,6 +19,8 @@ Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writi
 Dette prosjektet bruker Quarto for å generere html filer for datafortellingene.
 
 Som prosjekt- og avhengighetsmanager bruker vi [uv](https://docs.astral.sh/uv/).
+
+Prosjektet krever at riktig versjon av Python er installert, som definert i [pyproject.toml](pyproject.toml) og [.python-version](.python-version).
 
 ## Installer Quarto
 Installer Quarto ved å følge guiden [på quarto sine nettsider](https://quarto.org/docs/get-started/).
@@ -34,6 +35,12 @@ evt med andre måter som forklart [på uv sine nettsider](https://docs.astral.sh
 
 Om ønskelig kan uv også installere og [håndtere forskjellige Python versjoner for deg](https://docs.astral.sh/uv/guides/install-python/).
 
+## Git pre-commit hooks
+Installer git pre-commit hooks med
+```bash
+uv run pre-commit install
+```
+
 ## Sett opp virtuelt miljø
 Avhengigheter og oppsettet av prosjektet er definert i [pyproject.toml](pyproject.toml), denne og [uv.lock](uv.lock) brukes av uv for å lage det i virtuelle miljøet.
 
@@ -42,12 +49,6 @@ For å opprette det virtuelle miljøet og installere avhengighetene, kjør:
 uv sync
 ```
 output fra disse sier også hvor det virtuelle miljøet legges (default i en .venv mappe i roten av prosjektet), hvilken Python interpreter som ble brukt og versjonen av Python.
-
-## Git pre-commit hooks
-Installer git pre-commit hooks med
-```bash
-uv run pre-commit install
-```
 
 # Kjør prosjektet
 Datafortellingene renderes og lastes opp til NADA med [main.py](main.py). Ferdig rendret filer blir lagt i mappen `pages` og lastes opp til NADA av scriptet.
@@ -58,12 +59,15 @@ Datafortellingene renderes og lastes opp til NADA med [main.py](main.py). Ferdig
 ## Bygg datafortellinger i docker lokalt
 For å teste at datafortellingen kjører i docker lokalt må man supplere docker-imaget med en Application Default Credentials (ADC) fil. Denne genererer man på forhånd og limer inn i variabelen `ADC` i scriptet.
 
+
+0. Sett `ENV CPU=arm64` i Dockerfile om du kjører lokalt på Apple Silicon Mac
+
 1. Sett riktig prosjekt for gcloud
 ```bash
 gcloud config set project <PROSJEKT>
 ```
 
-2. Generer ADC
+2. Oppdater ADC
 ```bash
 gcloud auth application-default login
 ```

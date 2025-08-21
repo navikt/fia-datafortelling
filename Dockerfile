@@ -54,7 +54,7 @@ ENV PATH="/home/python/.venv/bin:$PATH" \
     XDG_CACHE_HOME=/home/python/cache \
     XDG_DATA_HOME=/home/python/share
 
-# Config for quarto website
+# Config for quarto
 COPY _quarto.yml .
 COPY index.qmd .
 COPY main.py .
