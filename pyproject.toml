@@ -4,13 +4,11 @@ version = "0.1.0"
 description = "Datafortelling basert på data fra Fia"
 authors = [{name="NAV-IT"}]
 readme = "README.md"
-requires-python = ">=3.13.2"
+requires-python = "==3.13.7"
 dependencies = [
     "db-dtypes==1.4.3",
-    "geojson-rewind==1.1.0",
-    "geopandas==1.1.1",
     "google-auth==2.40.3",
-    "google-cloud-bigquery==3.35.1",
+    "google-cloud-bigquery==3.36.0",
     "ipython==9.4.0",
     "jupyter-client==8.6.3",
     "jupyter-server==2.16.0",
@@ -18,7 +16,6 @@ dependencies = [
     "notebook==7.4.5",
     "numpy==2.3.2",
     "pandas==2.3.1",
-    "papermill==2.6.0",
     "plotly==6.3.0",
     "requests==2.32.5",
 ]

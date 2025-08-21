@@ -54,22 +54,16 @@ ENV PATH="/home/python/.venv/bin:$PATH" \
     XDG_CACHE_HOME=/home/python/cache \
     XDG_DATA_HOME=/home/python/share
 
-
 # Config for quarto website
 COPY _quarto.yml .
 COPY index.qmd .
 COPY main.py .
-
-
-
 # Python scripts
 COPY src/ /src
-
 # Datafortellinger
 COPY datafortelling/ datafortelling/
 # Assets (logo)
 COPY assets/ assets/
-
 
 RUN chown python:python /home/python -R
 

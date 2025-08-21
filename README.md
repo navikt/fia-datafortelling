@@ -5,7 +5,10 @@ Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writi
 
 ## Innhold
 - [Oppsett](#oppsett)
-	- [Hvordan installere](#hvordan-installere-prosjektet)
+	- [Installer Quarto](#installer-quarto)
+	- [Installer uv](#installer-uv)
+	- [Sett opp virtuelt miljø](#sett-opp-virtuelt-miljø)
+	- [Git pre-commit hooks](#git-pre-commit-hooks)
 - [Kjør prosjektet](#kjør-prosjektet)
 - [Vedlikehold og videreutvikling](#vedlikehold-og-videreutvikling)
 	- [Oppdatering av avhengigheter](#oppdatering-av-avhengigheter)
@@ -14,8 +17,13 @@ Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writi
 ----
 
 # Oppsett
+Dette prosjektet bruker Quarto for å generere html filer for datafortellingene.
+
+Som prosjekt- og avhengighetsmanager bruker vi [uv](https://docs.astral.sh/uv/).
+
 ## Installer Quarto
-Installer Quarto CLI ved å følge guiden [på quarto sine nettsider](https://quarto.org/docs/get-started/).
+Installer Quarto ved å følge guiden [på quarto sine nettsider](https://quarto.org/docs/get-started/).
+
 ## Installer uv
 [uv](https://docs.astral.sh/uv/) kan installeres med:
 ```bash
@@ -24,32 +32,16 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 
 evt med andre måter som forklart [på uv sine nettsider](https://docs.astral.sh/uv/getting-started/installation/#homebrew).
 
-Om ønskelig kan uv også installere og håndtere forskjellige Python versjoner [for deg](https://docs.astral.sh/uv/guides/install-python/)
+Om ønskelig kan uv også installere og [håndtere forskjellige Python versjoner for deg](https://docs.astral.sh/uv/guides/install-python/).
 
 ## Sett opp virtuelt miljø
 Avhengigheter og oppsettet av prosjektet er definert i [pyproject.toml](pyproject.toml), denne og [uv.lock](uv.lock) brukes av uv for å lage det i virtuelle miljøet.
 
+For å opprette det virtuelle miljøet og installere avhengighetene, kjør:
 ```bash
 uv sync
 ```
-
-For å ikke oppdatere lock-filen kan du alternativt bruke:
-```bash
-uv sync --frozen
-```
-
-output fra disse sier også hvor det virtuelle miljøet legges (default i en .venv mappe i roten av prosjektet)
-
-## Aktiver virtuelt miljø
-For å aktivere det virtuelle miljøet bruker du:
-```bash
-source .venv/bin/activate
-```
-det er aktivt når du ser navnet på det virtuelle miljøet i parantes i terminalvinduet:
-```
-fia-datafortelling~$ source .venv/bin/activate
-(src) fia-datafortelling~$
-```
+output fra disse sier også hvor det virtuelle miljøet legges (default i en .venv mappe i roten av prosjektet), hvilken Python interpreter som ble brukt og versjonen av Python.
 
 ## Git pre-commit hooks
 Installer git pre-commit hooks med
@@ -58,51 +50,12 @@ uv run pre-commit install
 ```
 
 # Kjør prosjektet
-## Logg på Google Cloud CLI {#gcloud}
-Logg inn med:
-```bash
-gcloud auth login --update-adc
-```
-eller:
-```bash
-nais login
-```
-
-## Kjør én datafortelling
-> [!Tip]
-> Pass på å aktivere det virtuelle miljøet før du kjører `quarto render` eller
-> `quarto preview` da det avhenger av avhengighetene.
-
-For å få en forhåndsvisning som endrer seg når du oppdaterer .qmd filen bør du bruke f.eks:
-```bash
-quarto preview src/index.qmd
-```
-
-For å bygge en ferdig html fil av en datafortelling kan du bruke:
-
-```bash
-quarto render src/<datafortelling>.qmd
-```
-
-Noen datafortellinger er avhengige av miljøvariabler, de kan settes og kjøres med:
-
-```bash
-export RESULTATOMRADE="<resultatområde>" && quarto preview src/datafortelling_per_resultatområde.qmd
-```
-
-## Script for å bygge alle datafortellinger
-Datafortellingene renderes og lastes opp til NADA med [main.py](main.py). Ferdig rendret filer eksporteres til mappen `_site` og lastes opp til NADA. Om du ønsker kan du kontrollere at alt ser bra ut før du laster opp til NADA ved å kjøre:
-
-```bash
-uv run main.py
-```
-Og åpne [index.html](_site/index.html) i en nettleser.
-
-> [!Tip]
-> TODO: Lokal kjøring med flagg for å unngå å laste opp til Nada
+Datafortellingene renderes og lastes opp til NADA med [main.py](main.py). Ferdig rendret filer blir lagt i mappen `pages` og lastes opp til NADA av scriptet.
+1. Logg på Google Cloud CLI `nais login`
+2. Kjør `uv run main.py` for å rendere alle datafortellingene. Kjører du scriptet lokalt på maskinen vil det feile ved opplastning, men det er uproblematisk.
+3. Åpne output filen i [index.html](pages/index.html) i en nettleser.
 
 ## Bygg datafortellinger i docker lokalt
-
 For å teste at datafortellingen kjører i docker lokalt må man supplere docker-imaget med en Application Default Credentials (ADC) fil. Denne genererer man på forhånd og limer inn i variabelen `ADC` i scriptet.
 
 1. Sett riktig prosjekt for gcloud
@@ -125,40 +78,41 @@ export ADC=path/til/adc.json
 docker run -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/adc.json -v $ADC:/tmp/keys/adc.json:ro datafortelling
 ```
 
+## Kjør kun én datafortelling
+For å rendere en individuell quarto fil kan man kjøre f.eks:
+```bash
+source .venv/bin/activate
+quarto render datafortelling/sak/norge.qmd
+```
+
+Eller ved å bruke uv for å aktivere miljøet:
+```bash
+uv run quarto render datafortelling/sak/norge.qmd
+```
+
 ## Kjør NAIS job manuelt
 Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writing-workflows/about-workflows) og deployes til NAIS som en [NAIS job](https://docs.nais.io/workloads/job/).
 
-Jobben kjører i intervaller som er definert i cron-utrykket `spec.schedule` i [nais.yaml](.nais/nais.yaml). Når jobben spinner opp kjører den [run.sh](run.sh).
-
-### Fra NAIS console
+Jobben kjører daglige, i intervaller som er definert i cron-utrykket `spec.schedule` i [nais.yaml](.nais/nais.yaml). Når jobben spinner opp kjører den [main.py](main.py).
 
 Velg "Trigger run" fra [NAIS console](https://console.nav.cloud.nais.io/team/pia/prod-gcp/job/fia-datafortelling) og gi gjenkjennelig navn, feks: "ad-hoc".
 
-### Manuell kjøring
-
-For å kjøre Jobben manuelt (utenfor intervallet som kjører automatisk):
-
-1. Logge på nais:
-```bash
-nais login
-```
-2. Sett namespace til pia:
-```bash
-kubens pia
-```
-3. Sett cluster til prod-gcp: ``
-```bash
-kubectx prod-gcp
-```
-4. Kjør NAIS jobben manuelt med:
-```bash
-kubectl create job --from=cronjob/fia-datafortelling fia-datafortelling-ad-hoc
-```
-
-> [!tip]
-> Om du vil finne cronjobben finner man den med: `kubectl get cronjobs | grep fia-datafortelling`
-
 # Vedlikehold og videreutvikling
+
+## Oppdatering av avhengigheter
+1. Se etter utdaterte avhengigheter med: `uv tree --outdated --depth 1` 
+2. Oppdater disse avhengighetene i [pyproject.toml](pyproject.toml) til nyeste versjon.
+3. Kjør `uv sync --upgrade` for å oppdatere lock-filen og installere de nye avhengighetene, dette oppdaterer også indirekte avhengigheter. Man kan se alle med `uv tree --outdated`
+4. Kjør datafortellingene for å sjekke at de fortsatt fungerer som forventet.
+
+## Oppdatering av Python
+Ved oppdatering av Python må versjonstallet oppdateres flere steder. Python sin siste versjon finner du [her](https://www.python.org/downloads/).
+
+Om du vil oppdatere versjonen av python bør den oppdateres i:
+1. [.python-version](.python-version) (Hvilken python versjon som vil bli brukt av uv og må oppdateres ved versjonsendring)
+2. Versjonen som brukes i [Dockerfile](Dockerfile) bør være det samme som i [.python-version](.python-version)
+3. Om versjonsnummeret endres til noe som er utenfor kravet i [pyproject.toml](pyproject.toml) må det også oppdateres.
+4. Kjør `uv lock --check` for å sjekke om lock-filen er oppdatert, om ikke vil `uv sync`oppdatere den.
 
 ## Linting og formatering
 Dette prosjektet bruker [ruff](https://docs.astral.sh/ruff/) som [linter](https://docs.astral.sh/ruff/linter/) og [formaterer](https://docs.astral.sh/ruff/formatter/) koden. For å kjøre ruff kan du bruke:
@@ -170,32 +124,15 @@ for linting, og
 ```bash
 ruff format
 ```
+
 for å formatere koden.
-
-## Oppdatering av Python
-Ved oppdatering av Python må versjonstallet oppdateres flere steder. Python sin siste versjon finner du [her](https://www.python.org/downloads/).
-
-Om du vil oppdatere versjonen av python bør den oppdateres i:
-1. [.python-version](.python-version) (Hvilken python versjon som vil bli brukt av uv og må oppdateres ved versjonsendring)
-2. Versjonen som brukes i [Dockerfile](Dockerfile) bør være det samme som i [.python-version](.python-version)
-3. Om versjonsnummeret endres til noe som er utenfor kravet i [pyproject.toml](pyproject.toml) må det også oppdateres.
-4. Kjør `uv lock --check` for å sjekke om lock-filen er oppdatert, om ikke vil `uv sync`oppdatere den.
-
-## Oppdatering av avhengigheter
-1. Se etter utdaterte avhengigheter med: `uv tree --outdated --depth 1` 
-2. Oppdater disse avhengighetene i [pyproject.toml](pyproject.toml) til nyeste versjon.
-3. Kjør `uv sync --upgrade` for å oppdatere lock-filen og installere de nye avhengighetene, dette oppdaterer også indirekte avhengigheter. Man kan se alle med `uv tree --outdated`
-4. Kjør datafortellingene for å sjekke at de fortsatt fungerer som forventet.
 
 
 # Henvendelser
 Spørsmål knyttet til koden eller prosjektet kan stilles som et [issue her på GitHub](https://github.com/navikt/fia-datafortelling/issues).
 ## For NAV-ansatte
 Interne henvendelser kan sendes via Slack i kanalen #team-pia.
+
 # Krediteringer
-## Kartdata
-Data brukt for kommunesgrenser i `src/data/Kommuner-s.geojson` er basert på [dette repoet](https://github.com/robhop/fylker-og-kommuner)
-## Kommunedata
-Data brukt for kommuneinndelinger er basert på [kartverkets data](https://www.kartverket.no/til-lands/fakta-om-norge/norske-fylke-og-kommunar)
 ## Kode generert av GitHub Copilot
 Dette repoet bruker GitHub Copilot til å generere kode.
