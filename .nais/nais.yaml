@@ -23,7 +23,7 @@ spec:
       - host: {{ nada_env }}
   gcp:
     bigQueryDatasets:
-      - name: {{ dataset }}
+      - name: pia_bigquery_sink_v1_dataset_prod
         permission: READ
   observability:
     logging:
