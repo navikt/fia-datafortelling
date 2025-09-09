@@ -107,10 +107,6 @@ def last_inn_samarbeid(
 
     data_samarbeid["opprettet"] = pd.to_datetime(data_samarbeid["opprettet"])
 
-    dato_samarbeid_lansert = "2024-10-01"
-    target_date: pd.Timestamp = pd.to_datetime(dato_samarbeid_lansert, utc=True)
-    data_samarbeid = data_samarbeid[data_samarbeid["opprettet"] >= target_date]
-
     return data_samarbeid
 
 
