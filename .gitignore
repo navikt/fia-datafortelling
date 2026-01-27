@@ -149,3 +149,5 @@ local-files/
 
 # output directory
 /pages/
+/env/
+**/*.quarto_ipynb

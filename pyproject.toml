@@ -15,7 +15,7 @@ dependencies = [
     "logging==0.4.9.6",
     "notebook==7.4.7",
     "numpy==2.3.4",
-    "pandas==2.3.3",
+    "pandas==3.0.0",
     "plotly==6.4.0",
     "requests==2.32.5",
 ]
