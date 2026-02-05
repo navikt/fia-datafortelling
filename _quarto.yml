@@ -176,7 +176,7 @@ website:
     icon: info-circle
     content: "**NB!** - Dette er ikke offisiell statistikk og må ikke deles utenfor Nav."
     position: above-navbar
-    dismissable: true
+    dismissable: false
 
 execute:
     echo: false
