@@ -99,7 +99,7 @@ gjennomstrømmingstall(data_status)
 
 ## Virksomhetsprofil
 
-Her vises profilen til virksomheter som er registrert i Fia. Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor, bransjeprogram og de 10 vanligste hovednæringer.
+Her vises profilen til virksomheter som er registrert i Fia. Grafene viser antall saker per antall arbeidsforhold, sykefravæarsprosent, sektor og de 10 vanligste hovednæringer.
 
 ::: {.callout-tip}
 ## Obs!

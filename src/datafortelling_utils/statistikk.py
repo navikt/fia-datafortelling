@@ -249,7 +249,6 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
         "Antall arbeidsforhold",
         "Sykefraværsprosent",
         "Sektor",
-        "Bransjeprogram",
         "",
         "Topp 10 hovednæringer",
     )
@@ -317,26 +316,6 @@ def virksomhetsprofil(data_input: pd.DataFrame) -> go.Figure:
         col=1,
     )
     fig.update_xaxes(visible=False, row=2, col=1)
-
-    # Bransje
-    virksomheter_per_bransje = (
-        data.groupby("bransjeprogram", dropna=False)
-        .saksnummer.nunique()
-        .sort_values(ascending=True)
-        .reset_index()
-        .fillna("Ikke bransjeprogram")
-    )
-    fig.add_trace(
-        go.Bar(
-            y=virksomheter_per_bransje.bransjeprogram.str.capitalize(),
-            x=virksomheter_per_bransje.saksnummer,
-            text=virksomheter_per_bransje.saksnummer,
-            orientation="h",
-        ),
-        row=2,
-        col=2,
-    )
-    fig.update_xaxes(visible=False, row=2, col=2)
 
     # Hoved næring
     virksomheter_per_nering = (

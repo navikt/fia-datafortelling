@@ -11,7 +11,7 @@ def annotate_ikke_offisiell_statistikk(
     Legger til en annotasjon om at dette ikke er offisiell statistikk
     """
     fig.add_annotation(
-        text="NB! Dette er ikke offisiell statistikk og må ikke deles utenfor NAV.",
+        text="NB! Dette er ikke offisiell statistikk og må ikke deles utenfor Nav.",
         xref="paper",
         yref="paper",
         x=x,
