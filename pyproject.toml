@@ -6,17 +6,17 @@ authors = [{name="NAV-IT"}]
 readme = "README.md"
 requires-python = "==3.13.7"
 dependencies = [
-    "db-dtypes==1.4.3",
-    "google-auth==2.42.1",
-    "google-cloud-bigquery==3.38.0",
-    "ipython==9.7.0",
-    "jupyter-client==8.6.3",
+    "db-dtypes==1.4.4",
+    "google-auth==2.48.0",
+    "google-cloud-bigquery==3.40.1",
+    "ipython==9.11.0",
+    "jupyter-client==8.8.0",
     "jupyter-server==2.17.0",
     "logging==0.4.9.6",
-    "notebook==7.4.7",
-    "numpy==2.3.4",
-    "pandas==3.0.0",
-    "plotly==6.4.0",
+    "notebook==7.5.4",
+    "numpy==2.4.2",
+    "pandas==3.0.1",
+    "plotly==6.6.0",
     "requests==2.32.5",
 ]
 
@@ -35,7 +35,7 @@ testpaths = ["tests"]
 
 [dependency-groups]
 dev = [
-    "nbstripout==0.8.1",
-    "pre-commit==4.3.0",
+    "nbstripout==0.9.1",
+    "pre-commit==4.5.1",
     "pytest==8.4.2",
 ]
