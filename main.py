@@ -91,7 +91,6 @@ if __name__ == "__main__":
             "vestfold_og_telemark",
             "vestland",
         ]:
-            kjør_quarto_render(f"datafortelling/sak/{resultatområde}.qmd")
             kjør_quarto_render(f"datafortelling/samarbeid/{resultatområde}.qmd")
             kjør_quarto_render(f"datafortelling/samarbeidsplan/{resultatområde}.qmd")
 

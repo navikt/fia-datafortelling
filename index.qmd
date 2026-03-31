@@ -10,6 +10,8 @@ embed-resources: false
 ::: {.callout-tip collapse="false"}
 ## Om denne datafortellingen
 
+NB! "Saksflyt-siden" blir ikke oppdatert med ny data f.o.m. 1. april 2026.
+
 Disse datafortellingene viser tall fra Fagsystemet for oppfølging av IA-oppdraget i NAV (Fia). De illustrerer hvordan Fia brukes nasjonalt og i ulike resultatområder.
 
 :::
