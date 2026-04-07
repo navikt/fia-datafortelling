@@ -83,6 +83,7 @@ def load_data_deduplicate(
     table: str,
     distinct_colunms: str,
     dtypes: dict[str, Any] | None = None,
+    limit: str = "",
 ) -> pd.DataFrame:
     """
     Henter data fra BigQuery og fjerner duplikater med å beholde siste tidsstempel av repeterende distinct_colunms.
@@ -95,6 +96,7 @@ def load_data_deduplicate(
                 *,
                 row_number() over (partition by {distinct_colunms} order by tidsstempel desc) radnummerBasertPaaTidsstempel
             FROM `{project}.{dataset}.{table}`
+            {limit}
         ) WHERE radnummerBasertPaaTidsstempel = 1;
     """
     bq_client = bigquery.Client(project=project)

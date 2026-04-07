@@ -182,6 +182,7 @@ def last_inn_data_statistikk(
     project: str,
     dataset: str,
     resultatområde: Resultatområde | None = None,
+    limit: str = "",
 ) -> pd.DataFrame:
     data_file = Path(__file__).resolve().parent / "data" / "administrative_enheter.csv"
     adm_enheter: pd.DataFrame = pd.read_csv(data_file, dtype=str)
@@ -192,6 +193,7 @@ def last_inn_data_statistikk(
         table="ia-sak-statistikk-v1",
         distinct_colunms="endretAvHendelseId",
         dtypes=statistikk_dtypes,
+        limit=limit,
     )
 
     kolonner_ikke_i_bruk_i_datafortellinger: list[str] = [

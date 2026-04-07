@@ -12,32 +12,9 @@ data_statistikk = last_inn_data_statistikk(
     project=PROJECT,
     dataset=DATASET,
     resultatområde=RESULTATOMRÅDE,
+    limit=" WHERE tidsstempel < '2026-04-01' ",
 )
-```
 
-```{python}
-# Hent data om samarbeid
-from datafortelling_utils.dataloader import last_inn_samarbeid
-data_samarbeid = last_inn_samarbeid(
-    project=PROJECT,
-    dataset=DATASET,
-    data_statistikk=data_statistikk,
-    resultatområde=RESULTATOMRÅDE,
-)
-```
-
-```{python}
-# Hent data om spørreundersøkelser
-from datafortelling_utils.dataloader import last_inn_spørreundersøkelser
-data_spørreundersøkelse = last_inn_spørreundersøkelser(
-    project=PROJECT,
-    dataset=DATASET,
-    data_samarbeid=data_samarbeid,
-    resultatområde=RESULTATOMRÅDE,
-)
-```
-
-```{python}
 # Hent data om statusendringer for saker
 from datafortelling_utils.datahandler import split_data_statistikk
 data_status, _, _ = split_data_statistikk(data_statistikk)
@@ -49,6 +26,10 @@ from datafortelling_utils.datahandler import explode_ikke_aktuell_begrunnelse
 ikke_aktuell = explode_ikke_aktuell_begrunnelse(data_status)
 ```
 
+::: {.callout-important}
+## Saksflyt blir ikke lenger oppdatert
+NB! Denne siden blir ikke lenger oppdatert med nye tall. Siste data på denne siden er fra 2026-03-31.
+:::
 
 ## Statusflyt de siste 2 årene
 Grafen viser statusflyten for alle saker opprettet de siste 24 månedene (730 dager). Den illustrerer hvordan en sak endrer status fra den blir opprettet, til den avsluttes. "Alle-saker" viser kun saker som har vært opprettet i Fia av en superbruker, og ikke alle virksomheter i Norge eller resultatområdet.
