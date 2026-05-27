@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Datafortelling basert på data fra Fia"
 authors = [{name="NAV-IT"}]
 readme = "README.md"
-requires-python = "==3.14.3"
+requires-python = "==3.14.5"
 dependencies = [
     "db-dtypes==1.4.4",
     "google-auth==2.53.0",
