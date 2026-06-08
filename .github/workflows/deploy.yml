@@ -11,7 +11,7 @@ jobs:
     name: Build and push Docker container
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
       - name: Build and push docker image
         uses: nais/docker-build-push@v0
         id: docker-push
@@ -32,7 +32,7 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v6.0.2
       - uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ needs.build.outputs.image }}
@@ -50,7 +50,7 @@ jobs:
       id-token: write # for nais/login
     runs-on: ubuntu-latest
     steps:
-      - uses: navikt/pia-actions/trivy-scan@v1.1.12 # https://github.com/navikt/pia-actions/tree/main/trivy-scan
+      - uses: navikt/pia-actions/trivy-scan@v1.1.13 # https://github.com/navikt/pia-actions/tree/main/trivy-scan
         with:
           image: ${{ needs.build.outputs.image }}
           team: pia
