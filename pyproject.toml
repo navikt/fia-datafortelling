@@ -7,9 +7,9 @@ readme = "README.md"
 requires-python = "==3.14.5"
 dependencies = [
     "db-dtypes==1.7.0",
-    "google-auth==2.55.0",
+    "google-auth==2.55.1",
     "google-cloud-bigquery==3.42.1",
-    "ipython==9.14.1",
+    "ipython==9.15.0",
     "jupyter-client==8.9.1",
     "jupyter-server==2.20.0",
     "logging==0.4.9.6",
@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.11.24,<0.12.0"]
+requires = ["uv_build>=0.11.26,<0.12.0"]
 build-backend = "uv_build"
 
 [project.urls]
