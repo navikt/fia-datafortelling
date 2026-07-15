@@ -6,22 +6,22 @@ authors = [{name="NAV-IT"}]
 readme = "README.md"
 requires-python = "==3.14.5"
 dependencies = [
-    "db-dtypes==1.7.0",
-    "google-auth==2.55.0",
-    "google-cloud-bigquery==3.42.1",
-    "ipython==9.14.1",
+    "db-dtypes==1.7.1",
+    "google-auth==2.56.0",
+    "google-cloud-bigquery==3.42.2",
+    "ipython==9.15.0",
     "jupyter-client==8.9.1",
     "jupyter-server==2.20.0",
     "logging==0.4.9.6",
     "notebook==7.6.0",
-    "numpy==2.5.0",
+    "numpy==2.5.1",
     "pandas==3.0.3",
-    "plotly==6.8.0",
+    "plotly==6.9.0",
     "requests==2.34.2",
 ]
 
 [build-system]
-requires = ["uv_build>=0.11.24,<0.12.0"]
+requires = ["uv_build>=0.11.28,<0.12.0"]
 build-backend = "uv_build"
 
 [project.urls]
