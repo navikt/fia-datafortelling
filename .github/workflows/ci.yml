@@ -6,6 +6,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   render-smoke-test:
     name: Smoke test - quarto render
