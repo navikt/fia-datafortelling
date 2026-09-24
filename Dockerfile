@@ -7,6 +7,7 @@ ENV CPU=amd64
 # ENV CPU=arm64
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -yq --no-install-recommends curl jq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
@@ -33,8 +34,8 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /home/python
 
 RUN apt-get update \
+    && apt-get upgrade -y \
     && apt-get install -yq --no-install-recommends curl \
-    && apt-get upgrade -y curl \
     && apt-get purge -y imagemagick git-man golang libexpat1-dev \
     && apt-get -y autoremove \
     && apt-get clean \

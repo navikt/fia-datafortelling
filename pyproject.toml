@@ -6,6 +6,8 @@ authors = [{name="NAV-IT"}]
 readme = "README.md"
 requires-python = "==3.14.6"
 dependencies = [
+    "anyio>=4.14.2",
+    "cryptography>=50.0.1",
     "db-dtypes==1.7.1",
     "google-auth==2.56.3",
     "google-cloud-bigquery==3.43.0",
@@ -13,11 +15,13 @@ dependencies = [
     "jupyter-client==8.9.1",
     "jupyter-server==2.20.0",
     "logging==0.4.9.6",
+    "mistune>=3.3.4",
     "notebook==7.6.2",
     "numpy==2.5.2",
     "pandas==3.0.5",
     "plotly==6.9.0",
     "requests==2.34.2",
+    "tornado>=6.5.10",
 ]
 
 [build-system]
