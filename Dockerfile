@@ -9,11 +9,11 @@ ENV CPU=amd64
 # for å bygge for Apple Silicon Mac til local kjøring:
 # ENV CPU=arm64
 
-RUN apk add --no-cache jq wget tar gzip
+RUN apk add --no-cache jq wget
 
 RUN QUARTO_VERSION=$(wget -qO- https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest | jq -r '.tag_name' | sed -e 's/^v//') && \
     wget "https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-${CPU}.tar.gz" && \
-    tar -xzf "quarto-${QUARTO_VERSION}-linux-${CPU}.tar.gz" && \
+    python -c "import tarfile; tarfile.open('quarto-${QUARTO_VERSION}-linux-${CPU}.tar.gz', 'r:gz').extractall('.')" && \
     mv "quarto-${QUARTO_VERSION}" quarto-dist && \
     rm "quarto-${QUARTO_VERSION}-linux-${CPU}.tar.gz"
 
