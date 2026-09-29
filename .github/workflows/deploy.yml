@@ -27,8 +27,8 @@ jobs:
     outputs:
       image: ${{ steps.docker-push.outputs.image }}
 
-  render-smoke-test-dev:
-    name: Smoke test before dev deploy
+  render-smoke-test-branch:
+    name: Smoke test before prod copy deploy
     if: github.ref == 'refs/heads/upgrade-vulnerabilities'
     permissions:
       contents: read
@@ -55,26 +55,51 @@ jobs:
           RESOURCE: .nais/nais.yaml
           VARS: .nais/${{ matrix.cluster }}.yaml
 
-  deploy-dev-branch:
+  trivy-scan-prod-copy:
     permissions:
       contents: read
       id-token: write
-    name: Deploy datafortelling to dev
-    needs: [build, render-smoke-test-dev]
+    name: Scan prod copy image
+    needs: build
+    if: github.ref == 'refs/heads/upgrade-vulnerabilities'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: nais/login@bb6c3e1e14e53d40d69d0d092bd2fce2e39ae3bf # v0
+        with:
+          team: pia
+      - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        env:
+          TRIVY_JAVA_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-java-db:1
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db
+        with:
+          image-ref: ${{ needs.build.outputs.image }}
+          vuln-type: os,library
+          severity: CRITICAL
+          ignore-unfixed: true
+          exit-code: '1'
+
+  deploy-prod-copy-branch:
+    permissions:
+      contents: read
+      id-token: write
+    name: Deploy fia-datafortelling-2 to prod
+    needs: [build, render-smoke-test-branch, trivy-scan-prod-copy]
     if: github.ref == 'refs/heads/upgrade-vulnerabilities'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
-      group: fia-datafortelling-dev
+      group: fia-datafortelling-2-prod
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: nais/deploy/actions/deploy@v2
         env:
           IMAGE: ${{ needs.build.outputs.image }}
-          CLUSTER: dev-gcp
-          RESOURCE: .nais/nais-dev.yaml
-          VARS: .nais/dev.yaml
+          CLUSTER: prod-gcp
+          RESOURCE: .nais/nais-prod-copy.yaml
+          VARS: .nais/prod-copy.yaml
 
   trivy-scan:
     name: Scanner docker image med Trivy

@@ -101,17 +101,13 @@ Jobben kjører daglige, i intervaller som er definert i cron-utrykket `spec.sche
 
 Velg "Trigger run" fra [NAIS console](https://console.nav.cloud.nais.io/team/pia/prod-gcp/job/fia-datafortelling) og gi gjenkjennelig navn, feks: "ad-hoc".
 
-## Deploy til dev fra en branch
+## Deploy en egen kopi i prod fra en branch
 
-En push til `upgrade-vulnerabilities` bygger imaget og deployer `fia-datafortelling-dev` til `dev-gcp`. Jobben kjører én gang ved deploy, uten daglig tidsplan. For å teste en annen branch, endre både branchnavnet under `on.push.branches` og `if` for `render-smoke-test-dev` og `deploy-dev-branch` i [.github/workflows/deploy.yml](.github/workflows/deploy.yml). Push til `main` deployer fortsatt bare prod-jobben.
+En push til `upgrade-vulnerabilities` bygger imaget, kjører tester og skanner imaget før workflowen deployer `fia-datafortelling-2` til `prod-gcp`. Scanningen stopper deploy ved fikserbare CRITICAL-funn. Den nye jobben kjører én gang ved deploy, uten daglig tidsplan. Den leser samme prod-datasett som `fia-datafortelling`, men laster opp til en egen Quarto-ressurs med ID `27312d46-19d4-4a22-8882-8c481045db7f`. Verdiene ligger i [.nais/prod-copy.yaml](.nais/prod-copy.yaml). Push til `main` deployer fortsatt bare den opprinnelige prod-jobben. Dev-manifestet ligger i repoet, men denne branchen deployer ikke lenger til dev.
 
-Før første push:
+Før første push må teamet bekrefte at `fia-quarto-secrets` i Nais Console for `pia` i `prod-gcp` kan laste opp til den nye Quarto-ressursen, og at ressursen har samme lesetilgang som dagens side. Ingen tokenverdi skal ligge i Git. En ny Naisjob får egen workload-identitet; kontroller at den kan lese prod-BigQuery når Nais har provisjonert tilgangen.
 
-1. Kontroller at `pia-dev-214a.pia_bigquery_sink_v1_dataset_dev` inneholder de forventede tabellene og kan leses fra `dev-gcp`.
-2. Kontroller at secreten `fia-quarto-secrets` i Nais Console for team `pia` i `dev-gcp` har nøkkelen `QUARTO_TOKEN` med opplastingsrettighet til dev-ressursen. Ikke bruk prod-tokenet. Legg aldri tokenverdien i Git.
-3. Bekreft at Quarto-ressursen med ID `8e683469-b6fa-4df7-b5df-92f634235828` på `data.ansatt.dev.nav.no` bare kan leses av utviklingsteamet.
-
-Verdiene for dev ligger i [.nais/dev.yaml](.nais/dev.yaml). Etter push, kontroller at dev-jobben har lykkes i Nais Console og at sidene er oppdatert i NADA dev. Prod-jobben og prod-Quarto-ressursen skal ikke berøres.
+Etter push, kontroller at dagens prod-jobb er hoppet over i workflowen, at `fia-datafortelling-2` har fullført med exitkode 0 i Nais Console, og at loggen viser `pages/index.html` og vellykket NADA-opplasting. Bekreft at den nye siden vises. Ved feil kan teamet stanse nye branch-deployer ved å deaktivere kopiens deploy-jobb; den opprinnelige prod-jobben og dens Quarto-ID skal ikke endres.
 
 # Vedlikehold og videreutvikling
 
