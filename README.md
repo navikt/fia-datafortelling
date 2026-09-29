@@ -53,7 +53,7 @@ output fra disse sier også hvor det virtuelle miljøet legges (default i en .ve
 # Kjør prosjektet
 Datafortellingene renderes og lastes opp til NADA med [main.py](main.py). Ferdig rendret filer blir lagt i mappen `pages` og lastes opp til NADA av scriptet.
 1. Logg på Google Cloud CLI `nais login`
-2. Kjør `uv run main.py` for å rendere alle datafortellingene. Kjører du scriptet lokalt på maskinen vil det feile ved opplastning, men det er uproblematisk.
+2. Sett `PROJECT` og `DATASET` til datakilden du har tilgang til, for eksempel `export PROJECT=pia-dev-214a` og `export DATASET=pia_bigquery_sink_v1_dataset_dev`. Kjør `uv run main.py` for å rendere alle datafortellingene. Uten opplastingsrettigheter avslutter lokal kjøring med feil etter rendering, men filene blir liggende i `pages`.
 3. Åpne output filen i [index.html](pages/index.html) i en nettleser.
 
 ## Bygg datafortellinger i docker lokalt
@@ -83,7 +83,7 @@ docker run -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/adc.json -v $ADC:/tmp/key
 ```
 
 ## Kjør kun én datafortelling
-For å rendere en individuell quarto fil kan man kjøre f.eks:
+Sett `PROJECT` og `DATASET` som beskrevet over. For å rendere en individuell Quarto-fil kan du kjøre for eksempel:
 ```bash
 source .venv/bin/activate
 quarto render datafortelling/sak/norge.qmd
@@ -100,6 +100,18 @@ Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writi
 Jobben kjører daglige, i intervaller som er definert i cron-utrykket `spec.schedule` i [nais.yaml](.nais/nais.yaml). Når jobben spinner opp kjører den [main.py](main.py).
 
 Velg "Trigger run" fra [NAIS console](https://console.nav.cloud.nais.io/team/pia/prod-gcp/job/fia-datafortelling) og gi gjenkjennelig navn, feks: "ad-hoc".
+
+## Deploy til dev fra en branch
+
+En push til `upgrade-vulnerabilities` bygger imaget og deployer `fia-datafortelling-dev` til `dev-gcp`. Jobben kjører én gang ved deploy, uten daglig tidsplan. For å teste en annen branch, endre både branchnavnet under `on.push.branches` og `if` for `render-smoke-test-dev` og `deploy-dev-branch` i [.github/workflows/deploy.yml](.github/workflows/deploy.yml). Push til `main` deployer fortsatt bare prod-jobben.
+
+Før første push:
+
+1. Kontroller at `pia-dev-214a.pia_bigquery_sink_v1_dataset_dev` inneholder de forventede tabellene og kan leses fra `dev-gcp`.
+2. Kontroller at secreten `fia-quarto-secrets` i Nais Console for team `pia` i `dev-gcp` har nøkkelen `QUARTO_TOKEN` med opplastingsrettighet til dev-ressursen. Ikke bruk prod-tokenet. Legg aldri tokenverdien i Git.
+3. Bekreft at Quarto-ressursen med ID `8e683469-b6fa-4df7-b5df-92f634235828` på `data.ansatt.dev.nav.no` bare kan leses av utviklingsteamet.
+
+Verdiene for dev ligger i [.nais/dev.yaml](.nais/dev.yaml). Etter push, kontroller at dev-jobben har lykkes i Nais Console og at sidene er oppdatert i NADA dev. Prod-jobben og prod-Quarto-ressursen skal ikke berøres.
 
 # Vedlikehold og videreutvikling
 

@@ -34,7 +34,7 @@ Repository = "https://github.com/navikt/fia-datafortelling.git"
 ##### Pytest options
 [tool.pytest.ini_options]
 addopts = "-ra -q" # reduserer output så lenge alle tester består
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
 
 [dependency-groups]

@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+  workflow_call:
   push:
     branches:
       - main
@@ -13,6 +14,7 @@ jobs:
   render-smoke-test:
     name: Smoke test - quarto render
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Installer uv
@@ -25,3 +27,5 @@ jobs:
         run: uv sync --frozen
       - name: Rendre index.qmd som røyktest
         run: uv run quarto render index.qmd
+      - name: Kjør Python-tester
+        run: uv run pytest

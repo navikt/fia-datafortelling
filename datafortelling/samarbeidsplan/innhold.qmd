@@ -1,7 +1,8 @@
 ```{python}
 # Definer prosjekt og dataset
-PROJECT = "pia-prod-85b2"
-DATASET = "pia_bigquery_sink_v1_dataset_prod"
+from datafortelling_utils.config import bigquery_kilde
+
+PROJECT, DATASET = bigquery_kilde()
 ```
 
 ```{python}

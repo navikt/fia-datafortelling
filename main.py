@@ -71,32 +71,32 @@ def last_opp_filer_til_nada() -> None:
         raise
 
 
-if __name__ == "__main__":
+def main() -> None:
     logging.info("Starter render av datafortellinger.")
-    try:
-        kjør_quarto_render("index.qmd")
+    kjør_quarto_render("index.qmd")
 
-        for resultatområde in [
-            "norge",
-            "agder",
-            "innlandet",
-            "more_og_romsdal",
-            "nordland",
-            "oslo",
-            "ost-viken",
-            "rogaland",
-            "troms_og_finnmark",
-            "trondelag",
-            "vest-viken",
-            "vestfold_og_telemark",
-            "vestland",
-        ]:
-            kjør_quarto_render(f"datafortelling/sak/{resultatområde}.qmd")
-            kjør_quarto_render(f"datafortelling/samarbeid/{resultatområde}.qmd")
-            kjør_quarto_render(f"datafortelling/samarbeidsplan/{resultatområde}.qmd")
+    for resultatområde in [
+        "norge",
+        "agder",
+        "innlandet",
+        "more_og_romsdal",
+        "nordland",
+        "oslo",
+        "ost-viken",
+        "rogaland",
+        "troms_og_finnmark",
+        "trondelag",
+        "vest-viken",
+        "vestfold_og_telemark",
+        "vestland",
+    ]:
+        kjør_quarto_render(f"datafortelling/sak/{resultatområde}.qmd")
+        kjør_quarto_render(f"datafortelling/samarbeid/{resultatområde}.qmd")
+        kjør_quarto_render(f"datafortelling/samarbeidsplan/{resultatområde}.qmd")
 
-        last_opp_filer_til_nada()
-
-    except Exception as e:
-        logging.error(f"Script feilet: {e}")
+    last_opp_filer_til_nada()
     logging.info("Oppdatering av datafortellinger ferdig")
+
+
+if __name__ == "__main__":
+    main()
