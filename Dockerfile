@@ -56,5 +56,12 @@ COPY --chown=1069:1069 assets/ assets/
 
 USER 1069:1069
 
+RUN /home/python/.venv/bin/python -c "import shutil; print('quarto:', shutil.which('quarto'), flush=True); print('bash:', shutil.which('bash'), flush=True)" && \
+    echo "PATH=$PATH"  && \
+    echo "Quarto ls: "  && \
+    ls -l /home/python/quarto-dist/bin/quarto && \
+    echo "Quarto versjon: "  && \
+    head -n 1 /home/python/quarto-dist/bin/quarto \
+
 RUN ["/home/python/.venv/bin/python", "-c", "import shutil, subprocess, tempfile; tempfile.TemporaryFile(dir='.').close(); tempfile.TemporaryFile(dir='pages').close(); q = shutil.which('quarto'); assert q, 'quarto not found in PATH'; print(f'QUARTO_PATH={q}', flush=True); subprocess.run([q, '--version'], check=True)"]
 ENTRYPOINT ["/home/python/.venv/bin/python", "main.py"]
