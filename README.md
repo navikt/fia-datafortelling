@@ -59,8 +59,6 @@ Datafortellingene renderes og lastes opp til NADA med [main.py](main.py). Ferdig
 ## Bygg datafortellinger i docker lokalt
 For å teste at datafortellingen kjører i docker lokalt må man supplere docker-imaget med en Application Default Credentials (ADC) fil. Denne genererer man på forhånd og limer inn i variabelen `ADC` i scriptet.
 
-Baseimagene kommer fra Navs Chainguard-registry. Lokalt image-bygg krever tilgang til dette registryet; GitHub Actions autentiseres gjennom `nais/docker-build-push`.
-
 
 0. Sett `ENV CPU=arm64` i Dockerfile om du kjører lokalt på Apple Silicon Mac
 
@@ -124,8 +122,8 @@ Ved oppdatering av Python må versjonstallet oppdateres flere steder. Python sin
 
 Om du vil oppdatere versjonen av python bør den oppdateres i:
 1. [.python-version](.python-version) (Hvilken python versjon som vil bli brukt av uv og må oppdateres ved versjonsendring)
-2. [Dockerfile](Dockerfile) bruker Chainguard-images fra Python 3.14-serien. Sjekk hvilken patchversjon de inneholder når du bygger imaget.
-3. [.python-version](.python-version) styrer lokal Python-versjon. [pyproject.toml](pyproject.toml) krever minst 3.14.6 og tillater versjoner under 3.15; oppdater kravet hvis du bytter Python-serie.
+2. Versjonen som brukes i [Dockerfile](Dockerfile) bør være det samme som i [.python-version](.python-version)
+3. Om versjonsnummeret endres til noe som er utenfor kravet i [pyproject.toml](pyproject.toml) må det også oppdateres.
 4. Kjør `uv lock --check` for å sjekke om lock-filen er oppdatert, om ikke vil `uv sync`oppdatere den.
 
 ## Linting og formatering

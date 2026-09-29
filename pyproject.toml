@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Datafortelling basert på data fra Fia"
 authors = [{name="NAV-IT"}]
 readme = "README.md"
-requires-python = ">=3.14.6,<3.15"
+requires-python = "==3.14.6"
 dependencies = [
     "anyio>=4.14.2",
     "cryptography>=50.0.1",
