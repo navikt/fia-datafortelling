@@ -1,0 +1,7 @@
+.git
+.github
+.venv
+.quarto
+pages
+.env*
+__pycache__
