@@ -56,6 +56,6 @@ COPY --chown=1069:1069 assets/ assets/
 
 USER 1069:1069
 
-RUN ["/home/python/.venv/bin/python", "-c", "import subprocess, tempfile; tempfile.TemporaryFile(dir='.').close(); tempfile.TemporaryFile(dir='pages').close(); subprocess.run(['quarto', '--version'], check=True)"]
+RUN ["/home/python/.venv/bin/python", "-c", "import subprocess, tempfile; tempfile.TemporaryFile(dir='.').close(); tempfile.TemporaryFile(dir='pages').close(); subprocess.run(['/home/python/quarto-dist/bin/quarto', '--version'], check=True)"]
 
 ENTRYPOINT ["/home/python/.venv/bin/python", "main.py"]
