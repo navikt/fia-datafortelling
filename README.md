@@ -10,6 +10,7 @@ Prosjektet bygges med github [workflow](https://docs.github.com/en/actions/writi
 	- [Sett opp virtuelt miljø](#sett-opp-virtuelt-miljø)
 - [Kjør prosjektet](#kjør-prosjektet)
 - [Vedlikehold og videreutvikling](#vedlikehold-og-videreutvikling)
+	- [Python-tester](#python-tester)
 	- [Oppdatering av avhengigheter](#oppdatering-av-avhengigheter)
 - [Henvendelser](#henvendelser)
 - [Krediteringer](#krediteringer)
@@ -110,6 +111,11 @@ Før første push må teamet bekrefte at `fia-quarto-secrets` i Nais Console for
 Etter push, kontroller at dagens prod-jobb er hoppet over i workflowen, at `fia-datafortelling-2` har fullført med exitkode 0 i Nais Console, og at loggen viser `pages/index.html` og vellykket NADA-opplasting. Bekreft at den nye siden vises. Ved feil kan teamet stanse nye branch-deployer ved å deaktivere kopiens deploy-jobb; den opprinnelige prod-jobben og dens Quarto-ID skal ikke endres.
 
 # Vedlikehold og videreutvikling
+
+## Python-tester
+Testene fanger opp feil før vi deployer. De sjekker at BigQuery-kilden bruker `PROJECT` og `DATASET`, og at manglende eller tomme verdier gir feil. De sjekker også at feil ved rendering eller opplasting ikke skjules. Hvis rendering feiler, skal opplasting ikke starte.
+
+Kjør testene med `uv run pytest`. CI kjører samme kommando.
 
 ## Oppdatering av avhengigheter
 1. Se etter utdaterte avhengigheter med: `uv tree --outdated --depth 1` 
