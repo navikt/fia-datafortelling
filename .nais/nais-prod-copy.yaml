@@ -5,7 +5,7 @@ metadata:
     nais.io/read-only-file-system: "false"
   labels:
     team: pia
-  name: fia-datafortelling
+  name: fia-datafortelling-2
   namespace: pia
 spec:
   image: {{ image }}
@@ -15,12 +15,11 @@ spec:
     requests:
       memory: 1Gi
   ttlSecondsAfterFinished: 340
-  schedule: "0 4 * * *"
   backoffLimit: 2
   accessPolicy:
     outbound:
       external:
-      - host: {{ nada_env }}
+        - host: {{ nada_env }}
   gcp:
     bigQueryDatasets:
       - name: pia_bigquery_sink_v1_dataset_prod
@@ -31,7 +30,7 @@ spec:
         - id: loki
         - id: elastic
   envFrom:
-    - secret: fia-quarto-secrets # Administreres i Nais Console
+    - secret: fia-quarto-secrets
   env:
     - name: NADA_ENV
       value: {{ nada_env }}

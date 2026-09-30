@@ -7,11 +7,12 @@ ENV CPU=amd64
 # ENV CPU=arm64
 
 RUN apt-get update \
-    && apt-get install -yq --no-install-recommends curl jq \
+    && apt-get upgrade -y \
+    && apt-get install -yq --no-install-recommends jq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN QUARTO_VERSION=$(curl https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest | jq '.tag_name' | sed -e 's/[\"v]//g') && \
+RUN QUARTO_VERSION=$(wget -qO- https://api.github.com/repos/quarto-dev/quarto-cli/releases/latest | jq '.tag_name' | sed -e 's/[\"v]//g') && \
     wget https://github.com/quarto-dev/quarto-cli/releases/download/v${QUARTO_VERSION}/quarto-${QUARTO_VERSION}-linux-${CPU}.tar.gz && \
     tar -xvzf quarto-${QUARTO_VERSION}-linux-${CPU}.tar.gz && \
     ln -s quarto-${QUARTO_VERSION} quarto-dist && \
@@ -33,8 +34,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /home/python
 
 RUN apt-get update \
-    && apt-get install -yq --no-install-recommends curl \
-    && apt-get upgrade -y curl \
+    && apt-get upgrade -y \
     && apt-get purge -y imagemagick git-man golang libexpat1-dev \
     && apt-get -y autoremove \
     && apt-get clean \

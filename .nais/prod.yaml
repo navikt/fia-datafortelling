@@ -1,2 +1,4 @@
 nada_env: data.nav.no
 quarto_id: 6e8d4a02-f303-49ae-92ca-b4a4cada5bc6
+project: pia-prod-85b2
+dataset: pia_bigquery_sink_v1_dataset_prod
