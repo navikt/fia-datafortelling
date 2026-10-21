@@ -29,7 +29,7 @@ jobs:
 
   render-smoke-test-branch:
     name: Smoke test before prod copy deploy
-    if: github.ref == 'refs/heads/upgrade-vulnerabilities'
+    if: github.ref == 'refs/heads/upgrade-packe-certifi'
     permissions:
       contents: read
     uses: ./.github/workflows/ci.yml
