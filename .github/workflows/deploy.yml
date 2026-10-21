@@ -2,7 +2,7 @@ on:
   push:
     branches:
       - main
-      - upgrade-vulnerabilities
+      - upgrade-packe-certifi
 
 permissions:
   contents: read
