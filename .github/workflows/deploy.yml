@@ -61,7 +61,7 @@ jobs:
       id-token: write
     name: Scan prod copy image
     needs: build
-    if: github.ref == 'refs/heads/upgrade-vulnerabilities'
+    if: github.ref == 'refs/heads/upgrade-packe-certifi'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
