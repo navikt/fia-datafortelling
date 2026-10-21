@@ -86,7 +86,7 @@ jobs:
       id-token: write
     name: Deploy fia-datafortelling-2 to prod
     needs: [build, render-smoke-test-branch, trivy-scan-prod-copy]
-    if: github.ref == 'refs/heads/upgrade-vulnerabilities'
+    if: github.ref == 'refs/heads/upgrade-packe-certifi'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
