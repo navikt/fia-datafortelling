@@ -40,19 +40,26 @@ jobs:
       id-token: write
     strategy:
       matrix:
-        cluster: [prod]
+        include:
+          - cluster: dev
+            resource: .nais/nais-dev.yaml
+          - cluster: prod
+            resource: .nais/nais.yaml
     name: Deploy naisjob to ${{ matrix.cluster }}
     needs: build
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    concurrency:
+      group: fia-datafortelling-${{ matrix.cluster }}-deploy
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@7ad7c2b833e1db74a80954e3ee6bb6ac060a8ae7 # v2
         env:
           IMAGE: ${{ needs.build.outputs.image }}
           CLUSTER: ${{ matrix.cluster }}-gcp
-          RESOURCE: .nais/nais.yaml
+          RESOURCE: ${{ matrix.resource }}
           VARS: .nais/${{ matrix.cluster }}.yaml
 
   trivy-scan-prod-copy:
