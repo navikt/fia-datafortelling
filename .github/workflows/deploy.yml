@@ -55,7 +55,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/deploy/actions/deploy@7ad7c2b833e1db74a80954e3ee6bb6ac060a8ae7 # v2
+      - uses: nais/deploy/actions/deploy@3944168fd20b7eea3818e97de3810f74b54c78ff # v2
         env:
           IMAGE: ${{ needs.build.outputs.image }}
           CLUSTER: ${{ matrix.cluster }}-gcp
@@ -73,7 +73,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/login@bb6c3e1e14e53d40d69d0d092bd2fce2e39ae3bf # v0
+      - uses: nais/login@40b72a35a18ddf2ad74b632461139ab838cc2a2f # v0
         with:
           team: pia
       - uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
@@ -101,7 +101,7 @@ jobs:
       cancel-in-progress: false
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: nais/deploy/actions/deploy@v2
+      - uses: nais/deploy/actions/deploy@v3
         env:
           IMAGE: ${{ needs.build.outputs.image }}
           CLUSTER: prod-gcp
@@ -119,7 +119,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: navikt/pia-actions/trivy-scan@v1.1.16 # https://github.com/navikt/pia-actions/tree/main/trivy-scan
+      - uses: navikt/pia-actions/trivy-scan@v1.1.17 # https://github.com/navikt/pia-actions/tree/main/trivy-scan
         with:
           image: ${{ needs.build.outputs.image }}
           team: pia
