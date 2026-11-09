@@ -15,7 +15,7 @@ dependencies = [
     "jupyter-client==8.9.1",
     "jupyter-server==2.21.0",
     "mistune>=3.3.4",
-    "notebook==7.6.2",
+    "notebook==7.6.3",
     "numpy==2.5.2",
     "pandas==3.0.5",
     "plotly==6.9.0",
