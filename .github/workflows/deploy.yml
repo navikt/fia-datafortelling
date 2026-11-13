@@ -3,6 +3,10 @@ on:
     branches:
       - main
       - patch-runtime-high-2026-11-09
+  workflow_dispatch:
+  schedule:
+    - cron: '0 6 * * 1'
+      timezone: Europe/Oslo
 
 permissions:
   contents: read
