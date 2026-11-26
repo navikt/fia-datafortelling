@@ -2,7 +2,7 @@ on:
   push:
     branches:
       - main
-      - patch-runtime-high-2026-11-09
+      - patch-dependabot-2026-11-26
   workflow_dispatch:
   schedule:
     - cron: '0 6 * * 1'
@@ -33,7 +33,7 @@ jobs:
 
   render-smoke-test-branch:
     name: Smoke test before prod copy deploy
-    if: github.ref == 'refs/heads/patch-runtime-high-2026-11-09'
+    if: github.ref == 'refs/heads/patch-dependabot-2026-11-26'
     permissions:
       contents: read
     uses: ./.github/workflows/ci.yml
@@ -72,7 +72,7 @@ jobs:
       id-token: write
     name: Scan prod copy image
     needs: build
-    if: github.ref == 'refs/heads/patch-runtime-high-2026-11-09'
+    if: github.ref == 'refs/heads/patch-dependabot-2026-11-26'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -97,7 +97,7 @@ jobs:
       id-token: write
     name: Deploy fia-datafortelling-2 to prod
     needs: [build, render-smoke-test-branch, trivy-scan-prod-copy]
-    if: github.ref == 'refs/heads/patch-runtime-high-2026-11-09'
+    if: github.ref == 'refs/heads/patch-dependabot-2026-11-26'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     concurrency:
